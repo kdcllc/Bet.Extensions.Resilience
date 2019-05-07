@@ -1,0 +1,38 @@
+<Project>
+
+  <PropertyGroup Label="Basic Settings">
+    <VersionPrefix>1.0.0-pre</VersionPrefix>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <SuppressNETCoreSdkPreviewMessage>true</SuppressNETCoreSdkPreviewMessage>
+    <NoWarn>$(NoWarn);CS1591;</NoWarn>
+    <TieredCompilation>true</TieredCompilation>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp2.2' Or '$(TargetFramework)' == 'netstandard2.0'">
+    <LangVersion>7.3</LangVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp3.0' AND '$(LangVersion)' == '8.0'">
+    <LangVersion>latest</LangVersion>
+    <NullableReferenceTypes>true</NullableReferenceTypes>
+    <NullableContextOptions>enable</NullableContextOptions>
+  </PropertyGroup>
+
+  <PropertyGroup Label="Nuget Package Settings">
+    <Description>Resilience Library for Micro Services running in containers like Kubernetes.</Description>
+    <PackageProjectUrl>https://github.com/kdcllc/Bet.Extensions.Resilience</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/kdcllc/Bet.Extensions.Resilience.git</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageLicense>https://github.com/kdcllc/Bet.Extensions.Resilience/master/LICENSE</PackageLicense>
+    <PackageIconUrl>https://raw.githubusercontent.com/kdcllc/Bet.Extensions.Resilience/master/img/logo64x64.png</PackageIconUrl>
+    <PackageTags>AspNetCore, DotNet, Resilience, Kubernetes</PackageTags>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <PropertyGroup Label="SourceLink Settings">
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
+  </PropertyGroup>
+</Project>
