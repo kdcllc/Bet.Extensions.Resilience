@@ -2,7 +2,7 @@
 
 namespace Bet.Extensions.Resilience.Http
 {
-    public class Class1
+    public static class ServiceCollectionExtensions
     {
     }
 }

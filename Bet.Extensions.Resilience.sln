@@ -22,6 +22,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{EDACF3E2
 		build\sources.props = build\sources.props
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bet.Extensions.Resilience.SampleWebApp", "src\Bet.Extensions.Resilience.SampleWebApp\Bet.Extensions.Resilience.SampleWebApp.csproj", "{EFA33EF3-60AC-41F9-AB21-722E54644C5A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -44,6 +46,10 @@ Global
 		{5C0FD67F-89DB-4C32-97B8-E4C0C0DC83E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5C0FD67F-89DB-4C32-97B8-E4C0C0DC83E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5C0FD67F-89DB-4C32-97B8-E4C0C0DC83E4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EFA33EF3-60AC-41F9-AB21-722E54644C5A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EFA33EF3-60AC-41F9-AB21-722E54644C5A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EFA33EF3-60AC-41F9-AB21-722E54644C5A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EFA33EF3-60AC-41F9-AB21-722E54644C5A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -53,6 +59,7 @@ Global
 		{A7C3FDE4-CA19-40C4-A58C-3CD3386D7A78} = {23BB98BA-5F4A-4220-BE4D-5604E58F56E5}
 		{4BA05CA6-9669-4014-8856-034B7229B835} = {32C6BDF4-6EEB-4C13-B084-AB554A2ACDAC}
 		{5C0FD67F-89DB-4C32-97B8-E4C0C0DC83E4} = {32C6BDF4-6EEB-4C13-B084-AB554A2ACDAC}
+		{EFA33EF3-60AC-41F9-AB21-722E54644C5A} = {32C6BDF4-6EEB-4C13-B084-AB554A2ACDAC}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {23EAFD8A-DAB7-43F6-86D1-9F6C6A81F6D0}

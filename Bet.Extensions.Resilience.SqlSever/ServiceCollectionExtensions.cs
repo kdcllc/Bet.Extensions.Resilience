@@ -2,7 +2,7 @@
 
 namespace Bet.Extensions.Resilience.SqlSever
 {
-    public class Class1
+    public static class ServiceCollectionExtensions
     {
     }
 }
