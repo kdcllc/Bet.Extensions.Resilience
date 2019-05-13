@@ -8,6 +8,5 @@ namespace Bet.Extensions.Resilience.Http.MessageHandlers.PollyHttp
 {
     public static class PollyRegistryExtensions
     {
-
     }
 }
