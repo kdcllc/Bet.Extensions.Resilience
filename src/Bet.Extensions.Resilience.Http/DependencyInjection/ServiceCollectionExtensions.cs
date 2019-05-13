@@ -3,8 +3,10 @@ using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 
+using Bet.Extensions.Resilience.Abstractions;
 using Bet.Extensions.Resilience.Http.MessageHandlers.PollyHttp;
 using Bet.Extensions.Resilience.Http.Options;
+using Bet.Extensions.Resilience.Http.Setup;
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -24,6 +26,14 @@ namespace Microsoft.Extensions.DependencyInjection
         private static readonly Func<IResilienceHttpClientBuilder, IConfiguration>
             _configuration = (builder) => (IConfiguration) builder.Services.Single(sd => sd.ServiceType == typeof(IConfiguration)).ImplementationInstance;
 
+        /// <summary>
+        /// Adds Resilience <see cref="HttpClient"/>.
+        /// </summary>
+        /// <typeparam name="TClient">The interface for the typed client.</typeparam>
+        /// <typeparam name="TImplementation">The implementation of the typed client./</typeparam>
+        /// <typeparam name="TOptions">The options type to be used to register with DI.</typeparam>
+        /// <param name="services">The <see cref="IServiceCollection"/>.</param>
+        /// <returns>IResilienceHttpClientBuilder</returns>
         public static IResilienceHttpClientBuilder AddResilienceTypedClient<TClient, TImplementation, TOptions>(
             this IServiceCollection services)
             where TClient : class
@@ -72,16 +82,20 @@ namespace Microsoft.Extensions.DependencyInjection
             return builder;
         }
 
-        private static IResilienceHttpClientBuilder AddDefaults<TClient>(IServiceCollection services)
-            where TClient : class
+        public static IResilienceHttpClientBuilder AddDefaultPolicies(this IResilienceHttpClientBuilder builder)
         {
-            // register default services
-            services.TryAddSingleton(new ResilienceHttpClientOptions());
-            services.TryAddPolicyRegistry();
+            builder.Services.TryAddPolicyRegistry(addDefaultPolicies:true);
 
-            // create builder based on the name of the type
-            var name = TypeNameHelper.GetTypeDisplayName(typeof(TClient), fullName: false);
-            return new ResilienceHttpClientBuilder(services, name);
+            builder.Services.AddTransient<IConfigureOptions<HttpPolicyOptions>>(sp =>
+            {
+                return new ConfigureOptions<HttpPolicyOptions>((options) =>
+                {
+                    var configuration = sp.GetRequiredService<IConfiguration>();
+                    configuration.Bind(Constants.Policies, options);
+                });
+            });
+
+            return builder;
         }
 
         public static IResilienceHttpClientBuilder AddPrimaryHandler(
@@ -122,25 +136,42 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         /// <param name="services">The <see cref="IServiceCollection"/>.</param>
         /// <param name="registry">The <see cref="IPolicyRegistry{String}"/>. The default value is null.</param>
+        /// <param name="addDefaultPolicies"></param>
         /// <returns>The provided <see cref="IPolicyRegistry{String}"/>.</returns>
         public static IPolicyRegistry<string> TryAddPolicyRegistry(
             this IServiceCollection services,
-            IPolicyRegistry<string> registry = null)
+            IPolicyRegistry<string> registry = null,
+            bool addDefaultPolicies = false)
         {
             if (services == null)
             {
                 throw new ArgumentNullException(nameof(services));
             }
 
-            if (!services.Any(d=> d.ServiceType == typeof(IReadOnlyPolicyRegistry<string>)))
+            if (!services.Any(d=> d.ServiceType == typeof(IReadOnlyPolicyRegistry<string>))
+                || !services.Any(d=> d.ServiceType == typeof(IPolicyRegistry<string>)))
             {
                 if (registry == null)
                 {
                     registry = new PolicyRegistry();
                 }
 
-                services.AddSingleton<IPolicyRegistry<string>>(registry);
-                services.AddSingleton<IReadOnlyPolicyRegistry<string>>(registry);
+                services.AddSingleton<IPolicyRegistry<string>>(sp=>
+                {
+                    if (addDefaultPolicies)
+                    {
+                        var options = sp.GetService<IOptions<HttpPolicyOptions>>();
+                        if (options != null)
+                        {
+                            Policies.AddDefaultPolicies(registry, options.Value);
+                        }
+                    }
+                   return registry;
+                });
+                services.AddSingleton<IReadOnlyPolicyRegistry<string>>(sp =>
+                {
+                    return registry;
+                });
             }
 
             return registry;
@@ -190,6 +221,17 @@ namespace Microsoft.Extensions.DependencyInjection
 
             var message = $"The HttpClient factory with the name '{builder.Name}' is not registered.";
             throw new InvalidOperationException(message);
+        }
+
+        private static IResilienceHttpClientBuilder AddDefaults<TClient>(IServiceCollection services)
+            where TClient : class
+        {
+            // register default services
+            services.TryAddSingleton(new ResilienceHttpClientOptions());
+
+            // create builder based on the name of the type
+            var name = TypeNameHelper.GetTypeDisplayName(typeof(TClient), fullName: false);
+            return new ResilienceHttpClientBuilder(services, name);
         }
 
         private static void Configure<TClient, TImplementation>(

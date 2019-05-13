@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using Bet.Extensions.Resilience.Http.MessageHandlers;
@@ -91,8 +92,7 @@ namespace Bet.Extensions.Resilience.UnitTest
                 .AddPrimaryHandler((sp) =>
                 {
                    return new DefaultHttpClientHandler();
-                })
-                .Build();
+                });
 
             var services = serviceCollection.BuildServiceProvider();
 
@@ -103,6 +103,45 @@ namespace Bet.Extensions.Resilience.UnitTest
             var value = options.Get(nameof(TestTypedClient));
 
             Assert.NotNull(value);
+        }
+
+        [Fact]
+        public void Test_AddClientTyped_WithOptions()
+        {
+            // Assign
+            var serviceCollection = new ServiceCollection();
+
+            var id = Guid.NewGuid().ToString();
+
+            var dic1 = new Dictionary<string, string>()
+            {
+                {"TestHttpClientOptions:BaseAddress", "http://localhost"},
+                {"TestHttpClientOptions:Timeout", "00:05:00"},
+                {"TestHttpClientOptions:ContentType", "application/json"},
+                {"TestHttpClientOptions:Id", id}
+            };
+
+            var configurationBuilder = new ConfigurationBuilder().AddInMemoryCollection(dic1);
+
+            serviceCollection.AddSingleton<IConfiguration>(configurationBuilder.Build());
+
+            var clientBuilder = serviceCollection.AddResilienceTypedClient<ITestTypedClientWithOptions, TestTypedClientWithOptions, TestHttpClientOptions>()
+                .AddPrimaryHandler((sp) =>
+                {
+                    return new DefaultHttpClientHandler();
+                })
+                .AddDefaultPolicies();
+
+            var services = serviceCollection.BuildServiceProvider();
+
+            var client = services.GetRequiredService<ITestTypedClientWithOptions>();
+
+            Assert.Equal(id, client.Id);
+
+            var policyRegistry = services.GetRequiredService<IPolicyRegistry<string>>();
+
+            // checks for 4 default added policies.
+            Assert.Equal(4, policyRegistry.Count);
         }
     }
 }
