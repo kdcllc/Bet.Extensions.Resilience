@@ -11,17 +11,20 @@ namespace Bet.Extensions.Resilience.UnitTest
 {
     internal sealed class TestServerBuilder
     {
-        private ITestOutputHelper _output;
+        private readonly ITestOutputHelper _output;
 
         public TestServerBuilder(ITestOutputHelper output)
         {
             _output = output;
         }
 
+        public int CallCount { get; private set; }
+
         public TestServer GetSimpleServer()
         {
             var testServer = new TestServer(
                 new WebHostBuilder()
+                .UseUrls("http://testserver:5000")
                 .ConfigureLogging(logger =>
                 {
                     logger.AddDebug();
@@ -29,16 +32,21 @@ namespace Bet.Extensions.Resilience.UnitTest
                 })
                 .Configure(app =>
                 {
-                    app.Map("/", (response) =>
-                    {
-                        response.Run(async context =>
-                        {
-                            context.Response.StatusCode = StatusCodes.Status200OK;
-                            await context.Response.WriteAsync(string.Empty);
-                        });
-                    });
-                }))
-                { BaseAddress = new Uri("https://localhost") };
+                    app.Run(async context =>
+                      {
+                          if (CallCount++ % 2 == 0)
+                          {
+                              context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+                          }
+                          else
+                          {
+                              context.Response.StatusCode = StatusCodes.Status200OK;
+                          }
+
+                          await context.Response.WriteAsync(string.Empty);
+
+                      });
+                }));
 
             return testServer;
         }

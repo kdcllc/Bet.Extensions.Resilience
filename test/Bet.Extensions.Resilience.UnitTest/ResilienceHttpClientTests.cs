@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Bet.Extensions.Resilience.Http.MessageHandlers;
@@ -158,7 +159,7 @@ namespace Bet.Extensions.Resilience.UnitTest
 
             var dic1 = new Dictionary<string, string>()
             {
-                {"TestHttpClient:BaseAddress", "http://localhost"},
+                {"TestHttpClient:BaseAddress", "http://testserver:5000"},
                 {"TestHttpClient:Timeout", "00:05:00"},
                 {"TestHttpClient:ContentType", "application/json"},
                 {"TestHttpClient:Id", id}
@@ -172,11 +173,14 @@ namespace Bet.Extensions.Resilience.UnitTest
 
             serviceCollection.AddSingleton<IConfiguration>(configurationBuilder.Build());
 
+            var server = new TestServerBuilder(Output).GetSimpleServer();
+            var handler = server.CreateHandler();
+
             var clientBuilder = serviceCollection
                 .AddResilienceTypedClient<ITestTypedClientWithOptions, TestTypedClientWithOptions, TestHttpClientOptions>("TestHttpClient")
                 .AddPrimaryHandler((sp) =>
                 {
-                    return new DefaultHttpClientHandler();
+                    return handler;
                 })
                 .AddDefaultPolicies(enableLogging:true);
 
@@ -185,6 +189,8 @@ namespace Bet.Extensions.Resilience.UnitTest
             var client = services.GetRequiredService<ITestTypedClientWithOptions>();
 
             var result = await client.SendRequestAsync();
+
+            Assert.Equal(HttpStatusCode.OK, result.StatusCode);
         }
     }
 }

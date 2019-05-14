@@ -146,6 +146,8 @@ namespace Microsoft.Extensions.DependencyInjection
             if (instance.ClientOptions.TryGetValue(builder.Name, out var options))
             {
                 options.PrimaryHandler = (sp) => configure(sp);
+
+                options.HttpClientBuilder.ConfigurePrimaryHttpMessageHandler(options.PrimaryHandler);
             }
 
             return builder;
@@ -197,7 +199,6 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         /// <param name="services">The <see cref="IServiceCollection"/>.</param>
         /// <param name="registry">The <see cref="IPolicyRegistry{String}"/>. The default value is null.</param>
-        /// <param name="addDefaultPolicies"></param>
         /// <returns>The provided <see cref="IPolicyRegistry{String}"/>.</returns>
         public static IPolicyRegistry<string> TryAddPolicyRegistry(
             this IServiceCollection services,
@@ -232,7 +233,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 options.HttpClientBuilder.AddHttpMessageHandler((sp) =>
                 {
                     var logger = sp.GetRequiredService<ILoggerFactory>().CreateLogger($"System.Net.Http.HttpClient.{options.Name}");
-                    return new PolicyWithLoggingHttpMessageHandler((request) => policy(sp, request), logger);
+                    return new PolicyWithLoggingHttpMessageHandler((request) => policy(sp, request), logger,options.Name);
                 });
             }
             else

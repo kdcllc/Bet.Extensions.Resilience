@@ -122,7 +122,7 @@ namespace Bet.Extensions.Resilience.Http.Setup
                 logger,
                 typedClientName,
                 context.PolicyKey,
-                (int)result?.Result?.StatusCode,
+                result?.Result?.StatusCode == null ? 0 : (int)result?.Result?.StatusCode,
                 numberOfExceptionsBeforeBreaking,
                 result?.Exception);
         }
@@ -190,7 +190,7 @@ namespace Bet.Extensions.Resilience.Http.Setup
                 logger,
                 typedClientName,
                 context.PolicyKey,
-                (int)result?.Result?.StatusCode,
+                result?.Result?.StatusCode == null ? 0 : (int)result?.Result?.StatusCode,
                 retryAttempt,
                 retryCount,
                 result?.Exception);

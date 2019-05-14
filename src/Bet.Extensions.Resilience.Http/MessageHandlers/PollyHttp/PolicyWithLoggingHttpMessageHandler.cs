@@ -101,10 +101,12 @@ namespace Bet.Extensions.Resilience.Http.MessageHandlers.PollyHttp
         /// <param name="logger">The logger to be used for Polly context.</param>
         public PolicyWithLoggingHttpMessageHandler(
             Func<HttpRequestMessage, IAsyncPolicy<HttpResponseMessage>> policySelector,
-            ILogger logger)
+            ILogger logger,
+            string typedClientName)
         {
             _policySelector = policySelector ?? throw new ArgumentNullException(nameof(policySelector));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _typedClientName = typedClientName;
         }
 
         /// <inheritdoc />
