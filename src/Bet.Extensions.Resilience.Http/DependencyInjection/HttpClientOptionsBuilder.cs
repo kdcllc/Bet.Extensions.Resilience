@@ -59,5 +59,7 @@ namespace Microsoft.Extensions.DependencyInjection
         internal string SectionName { get; set; }
 
         internal IHttpClientBuilder HttpClientBuilder { get; set; }
+
+        internal bool IsPrimaryHanlderAdded { get; set; } = false;
     }
 }

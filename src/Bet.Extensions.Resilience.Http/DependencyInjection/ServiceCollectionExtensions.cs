@@ -145,9 +145,16 @@ namespace Microsoft.Extensions.DependencyInjection
 
             if (instance.ClientOptions.TryGetValue(builder.Name, out var options))
             {
-                options.PrimaryHandler = (sp) => configure(sp);
-
-                options.HttpClientBuilder.ConfigurePrimaryHttpMessageHandler(options.PrimaryHandler);
+                if (!options.IsPrimaryHanlderAdded)
+                {
+                    options.PrimaryHandler = (sp) => configure(sp);
+                    options.HttpClientBuilder.ConfigurePrimaryHttpMessageHandler(options.PrimaryHandler);
+                    options.IsPrimaryHanlderAdded = true;
+                }
+                else
+                {
+                    throw new InvalidOperationException("Primary Handler was already added");
+                }
             }
 
             return builder;
@@ -167,7 +174,15 @@ namespace Microsoft.Extensions.DependencyInjection
 
                 httpBuilder.SetHandlerLifetime(options.ClientOptions.Timeout);
 
-                httpBuilder.ConfigurePrimaryHttpMessageHandler(options.PrimaryHandler);
+                if (!options.IsPrimaryHanlderAdded)
+                {
+                    httpBuilder.ConfigurePrimaryHttpMessageHandler(options.PrimaryHandler);
+                    options.IsPrimaryHanlderAdded = true;
+                }
+                else
+                {
+                    throw new InvalidOperationException("Primary Handler was already added");
+                }
 
                 // allows for multiple configurations to be registered.
                 foreach (var httpClientAction in options.HttpClientActions)
@@ -268,10 +283,8 @@ namespace Microsoft.Extensions.DependencyInjection
 
                 var newOptions = new HttpClientOptionsBuilder(builder.Name, httpClientBuilder);
 
-                var configuration = (IConfiguration)builder.Services.Single(sd => sd.ServiceType == typeof(IConfiguration)).ImplementationInstance;
-
                 // configures default values from configuration provider.
-                if (configuration != null)
+                if (builder.Services.SingleOrDefault(sd => sd.ServiceType == typeof(IConfiguration))?.ImplementationInstance is IConfiguration configuration)
                 {
                     sectionName = string.IsNullOrWhiteSpace(sectionName) ? typeof(TImplementation).Name : sectionName;
                     newOptions.SectionName = sectionName;

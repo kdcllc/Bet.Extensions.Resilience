@@ -192,5 +192,32 @@ namespace Bet.Extensions.Resilience.UnitTest
 
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
         }
+
+        [Fact]
+        public void Test_AddClientTyped_OnlyOnePrimaryHandler()
+        {
+            // Assign
+            var serviceCollection = new ServiceCollection();
+
+            serviceCollection.AddLogging(builder => {
+                builder.AddProvider(new TestLoggerProvider(Output));
+            });
+
+            var server = new TestServerBuilder(Output).GetSimpleServer();
+            var handler = server.CreateHandler();
+
+            Assert.Throws<InvalidOperationException>(() => serviceCollection
+                .AddResilienceTypedClient<ITestTypedClient, TestTypedClient>()
+                .AddPrimaryHandler((sp) =>
+                {
+                    return new DefaultHttpClientHandler();
+                })
+
+                .AddPrimaryHandler((sp) =>
+                {
+                    return new DefaultHttpClientHandler();
+                }));
+
+        }
     }
 }
