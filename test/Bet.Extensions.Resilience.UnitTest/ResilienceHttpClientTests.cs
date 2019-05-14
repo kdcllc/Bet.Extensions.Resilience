@@ -1,19 +1,29 @@
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Threading.Tasks;
 using Bet.Extensions.Resilience.Http.MessageHandlers;
 using Bet.Extensions.Resilience.Http.Options;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Polly.Registry;
 
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Bet.Extensions.Resilience.UnitTest
 {
     public class ResilienceHttpClientTests
     {
+        public ITestOutputHelper Output { get; }
+
+        public ResilienceHttpClientTests(ITestOutputHelper output)
+        {
+            Output = output;
+        }
+
         [Fact]
         public void Test1()
         {
@@ -129,19 +139,52 @@ namespace Bet.Extensions.Resilience.UnitTest
                 .AddPrimaryHandler((sp) =>
                 {
                     return new DefaultHttpClientHandler();
-                })
-                .AddDefaultPolicies();
+                });
 
             var services = serviceCollection.BuildServiceProvider();
 
             var client = services.GetRequiredService<ITestTypedClientWithOptions>();
 
             Assert.Equal(id, client.Id);
+        }
 
-            var policyRegistry = services.GetRequiredService<IPolicyRegistry<string>>();
+        [Fact]
+        public async Task Test_AddClientTyped_WithOptions_And_Default_Policies()
+        {
+            // Assign
+            var serviceCollection = new ServiceCollection();
 
-            // checks for 4 default added policies.
-            Assert.Equal(4, policyRegistry.Count);
+            var id = Guid.NewGuid().ToString();
+
+            var dic1 = new Dictionary<string, string>()
+            {
+                {"TestHttpClient:BaseAddress", "http://localhost"},
+                {"TestHttpClient:Timeout", "00:05:00"},
+                {"TestHttpClient:ContentType", "application/json"},
+                {"TestHttpClient:Id", id}
+            };
+
+            var configurationBuilder = new ConfigurationBuilder().AddInMemoryCollection(dic1);
+
+            serviceCollection.AddLogging(builder => {
+                builder.AddProvider(new TestLoggerProvider(Output));
+            });
+
+            serviceCollection.AddSingleton<IConfiguration>(configurationBuilder.Build());
+
+            var clientBuilder = serviceCollection
+                .AddResilienceTypedClient<ITestTypedClientWithOptions, TestTypedClientWithOptions, TestHttpClientOptions>("TestHttpClient")
+                .AddPrimaryHandler((sp) =>
+                {
+                    return new DefaultHttpClientHandler();
+                })
+                .AddDefaultPolicies(enableLogging:true);
+
+            var services = serviceCollection.BuildServiceProvider();
+
+            var client = services.GetRequiredService<ITestTypedClientWithOptions>();
+
+            var result = await client.SendRequestAsync();
         }
     }
 }

@@ -13,7 +13,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Internal;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-
+using Polly;
 using Polly.Registry;
 
 namespace Microsoft.Extensions.DependencyInjection
@@ -27,22 +27,26 @@ namespace Microsoft.Extensions.DependencyInjection
             _configuration = (builder) => (IConfiguration) builder.Services.Single(sd => sd.ServiceType == typeof(IConfiguration)).ImplementationInstance;
 
         /// <summary>
-        /// Adds Resilience <see cref="HttpClient"/>.
+        /// Adds Resilience <see cref="HttpClient"/> with custom options that can be used to inject inside of the TypedClient.
         /// </summary>
         /// <typeparam name="TClient">The interface for the typed client.</typeparam>
         /// <typeparam name="TImplementation">The implementation of the typed client./</typeparam>
         /// <typeparam name="TOptions">The options type to be used to register with DI.</typeparam>
         /// <param name="services">The <see cref="IServiceCollection"/>.</param>
+        /// <param name="sectionName">The configuration section name if provided overrides the TImplementation type for the configuration.
+        ///                           The default is null; thus TOptions type is used for the
+        /// </param>
         /// <returns>IResilienceHttpClientBuilder</returns>
         public static IResilienceHttpClientBuilder AddResilienceTypedClient<TClient, TImplementation, TOptions>(
-            this IServiceCollection services)
+            this IServiceCollection services,
+            string sectionName = null)
             where TClient : class
             where TImplementation : class, TClient
             where TOptions: HttpClientOptions, new()
         {
             var builder = AddDefaults<TClient>(services);
 
-            var sectionName = typeof(TOptions).Name;
+            sectionName = sectionName ?? typeof(TOptions).Name;
 
             services.AddTransient<IConfigureOptions<TOptions>>(sp =>
             {
@@ -58,6 +62,16 @@ namespace Microsoft.Extensions.DependencyInjection
             return builder;
         }
 
+        /// <summary>
+        /// Adds Resilience <see cref="HttpClient"/>.
+        /// </summary>
+        /// <typeparam name="TClient">The interface for the typed client.</typeparam>
+        /// <typeparam name="TImplementation">The implementation of the typed client./</typeparam>
+        /// <param name="services">The <see cref="IServiceCollection"/>.</param>
+        /// <param name="sectionName">The configuration section name if provided overrides the TImplementation type name.
+        ///                           The default is null.
+        /// </param>
+        /// <returns></returns>
         public static IResilienceHttpClientBuilder AddResilienceTypedClient<TClient, TImplementation>(
             this IServiceCollection services,
             string sectionName = null)
@@ -82,10 +96,10 @@ namespace Microsoft.Extensions.DependencyInjection
             return builder;
         }
 
-        public static IResilienceHttpClientBuilder AddDefaultPolicies(this IResilienceHttpClientBuilder builder)
+        public static IResilienceHttpClientBuilder AddDefaultPolicies(
+            this IResilienceHttpClientBuilder builder,
+            bool enableLogging = false)
         {
-            builder.Services.TryAddPolicyRegistry(addDefaultPolicies:true);
-
             builder.Services.AddTransient<IConfigureOptions<HttpPolicyOptions>>(sp =>
             {
                 return new ConfigureOptions<HttpPolicyOptions>((options) =>
@@ -94,6 +108,31 @@ namespace Microsoft.Extensions.DependencyInjection
                     configuration.Bind(Constants.Policies, options);
                 });
             });
+
+            var instance = _findIntance(builder);
+
+            if (instance.ClientOptions.TryGetValue(builder.Name, out var clientOptions))
+            {
+                clientOptions.EnableLogging = enableLogging;
+
+                IAsyncPolicy<HttpResponseMessage> retryPolicy(IServiceProvider sp, HttpRequestMessage request)
+                {
+                    var httpPolicyOptions = sp.GetRequiredService<IOptions<HttpPolicyOptions>>().Value;
+                    return Policies.GetRetryAsync(httpPolicyOptions.HttpRetry.Count, httpPolicyOptions.HttpRetry.BackoffPower);
+                }
+
+                AddPollyPolicy(clientOptions, retryPolicy);
+
+                IAsyncPolicy<HttpResponseMessage> circuitBreakerPolicy(IServiceProvider sp, HttpRequestMessage request)
+                {
+                    var httpPolicyOptions = sp.GetRequiredService<IOptions<HttpPolicyOptions>>().Value;
+                    return Policies.GetCircuitBreakerAsync(
+                        httpPolicyOptions.HttpCircuitBreaker.ExceptionsAllowedBeforeBreaking,
+                        httpPolicyOptions.HttpCircuitBreaker.DurationOfBreak);
+                }
+
+                AddPollyPolicy(clientOptions, circuitBreakerPolicy);
+            }
 
             return builder;
         }
@@ -122,67 +161,6 @@ namespace Microsoft.Extensions.DependencyInjection
             {
                 configure?.Invoke(options);
 
-                return builder;
-            }
-
-            var message = $"The HttpClient factory with the name '{builder.Name}' is not registered.";
-            throw new InvalidOperationException(message);
-        }
-
-        /// <summary>
-        /// Registers the provided <see cref="IPolicyRegistry{String}"/> in the service collection with service types
-        /// <see cref="IPolicyRegistry{String}"/>, and <see cref="IReadOnlyPolicyRegistry{String}"/> and returns
-        /// the provided registry.
-        /// </summary>
-        /// <param name="services">The <see cref="IServiceCollection"/>.</param>
-        /// <param name="registry">The <see cref="IPolicyRegistry{String}"/>. The default value is null.</param>
-        /// <param name="addDefaultPolicies"></param>
-        /// <returns>The provided <see cref="IPolicyRegistry{String}"/>.</returns>
-        public static IPolicyRegistry<string> TryAddPolicyRegistry(
-            this IServiceCollection services,
-            IPolicyRegistry<string> registry = null,
-            bool addDefaultPolicies = false)
-        {
-            if (services == null)
-            {
-                throw new ArgumentNullException(nameof(services));
-            }
-
-            if (!services.Any(d=> d.ServiceType == typeof(IReadOnlyPolicyRegistry<string>))
-                || !services.Any(d=> d.ServiceType == typeof(IPolicyRegistry<string>)))
-            {
-                if (registry == null)
-                {
-                    registry = new PolicyRegistry();
-                }
-
-                services.AddSingleton<IPolicyRegistry<string>>(sp=>
-                {
-                    if (addDefaultPolicies)
-                    {
-                        var options = sp.GetService<IOptions<HttpPolicyOptions>>();
-                        if (options != null)
-                        {
-                            Policies.AddDefaultPolicies(registry, options.Value);
-                        }
-                    }
-                   return registry;
-                });
-                services.AddSingleton<IReadOnlyPolicyRegistry<string>>(sp =>
-                {
-                    return registry;
-                });
-            }
-
-            return registry;
-        }
-
-        public static IResilienceHttpClientBuilder Build(this IResilienceHttpClientBuilder builder)
-        {
-            var registry = _findIntance(builder);
-
-            if (registry.ClientOptions.TryGetValue(builder.Name, out var options))
-            {
                 var httpBuilder = options.HttpClientBuilder;
 
                 httpBuilder.SetHandlerLifetime(options.ClientOptions.Timeout);
@@ -202,18 +180,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
                 foreach (var policy in options.Policies)
                 {
-                    if (options.EnableLogging)
-                    {
-                        httpBuilder.AddHttpMessageHandler((sp) =>
-                        {
-                            var logger = sp.GetRequiredService<ILoggerFactory>().CreateLogger($"System.Net.Http.HttpClient.{builder.Name}");
-                            return new PolicyWithLoggingHttpMessageHandler((request) => policy(sp, request), logger);
-                        });
-                    }
-                    else
-                    {
-                        httpBuilder.AddPolicyHandler(policy);
-                    }
+                    AddPollyPolicy(options, policy);
                 }
 
                 return builder;
@@ -221,6 +188,57 @@ namespace Microsoft.Extensions.DependencyInjection
 
             var message = $"The HttpClient factory with the name '{builder.Name}' is not registered.";
             throw new InvalidOperationException(message);
+        }
+
+        /// <summary>
+        /// Registers the provided <see cref="IPolicyRegistry{String}"/> in the service collection with service types
+        /// <see cref="IPolicyRegistry{String}"/>, and <see cref="IReadOnlyPolicyRegistry{String}"/> and returns
+        /// the provided registry.
+        /// </summary>
+        /// <param name="services">The <see cref="IServiceCollection"/>.</param>
+        /// <param name="registry">The <see cref="IPolicyRegistry{String}"/>. The default value is null.</param>
+        /// <param name="addDefaultPolicies"></param>
+        /// <returns>The provided <see cref="IPolicyRegistry{String}"/>.</returns>
+        public static IPolicyRegistry<string> TryAddPolicyRegistry(
+            this IServiceCollection services,
+            IPolicyRegistry<string> registry = null)
+        {
+            if (services == null)
+            {
+                throw new ArgumentNullException(nameof(services));
+            }
+
+            if (!services.Any(d=> d.ServiceType == typeof(IReadOnlyPolicyRegistry<string>))
+                || !services.Any(d=> d.ServiceType == typeof(IPolicyRegistry<string>)))
+            {
+                if (registry == null)
+                {
+                    registry = new PolicyRegistry();
+                }
+
+                services.AddSingleton<IPolicyRegistry<string>>(registry);
+                services.AddSingleton<IReadOnlyPolicyRegistry<string>>(registry);
+            }
+
+            return registry;
+        }
+
+        private static void AddPollyPolicy(
+            HttpClientOptionsBuilder options,
+            Func<IServiceProvider, HttpRequestMessage, Polly.IAsyncPolicy<HttpResponseMessage>> policy)
+        {
+            if (options.EnableLogging)
+            {
+                options.HttpClientBuilder.AddHttpMessageHandler((sp) =>
+                {
+                    var logger = sp.GetRequiredService<ILoggerFactory>().CreateLogger($"System.Net.Http.HttpClient.{options.Name}");
+                    return new PolicyWithLoggingHttpMessageHandler((request) => policy(sp, request), logger);
+                });
+            }
+            else
+            {
+                options.HttpClientBuilder.AddPolicyHandler(policy);
+            }
         }
 
         private static IResilienceHttpClientBuilder AddDefaults<TClient>(IServiceCollection services)
@@ -276,6 +294,12 @@ namespace Microsoft.Extensions.DependencyInjection
                             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(newOptions.ClientOptions.ContentType));
                         }
                     });
+
+                    // configure default actions
+                    foreach (var httpClientAction in newOptions.HttpClientActions)
+                    {
+                        httpClientBuilder.ConfigureHttpClient(httpClientAction);
+                    }
                 }
 
                 instance.ClientOptions[builder.Name] = newOptions;
