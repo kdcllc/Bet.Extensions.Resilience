@@ -97,6 +97,13 @@ namespace Microsoft.Extensions.DependencyInjection
             return builder;
         }
 
+        /// <summary>
+        /// Adds Default Http Policies to be executed within the context of the request.
+        /// WaitAndRetry and CircuitBreaker
+        /// </summary>
+        /// <param name="builder">The <see cref="IResilienceHttpClientBuilder"/> instance to configure.</param>
+        /// <param name="enableLogging">The configuration of the default policies to log the output. The default is false.</param>
+        /// <returns></returns>
         public static IResilienceHttpClientBuilder AddDefaultPolicies(
             this IResilienceHttpClientBuilder builder,
             bool enableLogging = false)
@@ -138,7 +145,13 @@ namespace Microsoft.Extensions.DependencyInjection
             return builder;
         }
 
-        public static IResilienceHttpClientBuilder AddPrimaryHandler(
+        /// <summary>
+        /// Adds <see cref="HttpClient"/> primary message handler.
+        /// </summary>
+        /// <param name="builder">The <see cref="IResilienceHttpClientBuilder"/> instance to configure.</param>
+        /// <param name="configure">The delegate to configure Primary Http MessageHandler for the <see cref="HttpClient"/> client.</param>
+        /// <returns></returns>
+        public static IResilienceHttpClientBuilder AddPrimaryHttpMessageHandler(
             this IResilienceHttpClientBuilder builder,
             Func<IServiceProvider, HttpMessageHandler> configure)
         {
@@ -161,7 +174,74 @@ namespace Microsoft.Extensions.DependencyInjection
             return builder;
         }
 
-        public static IResilienceHttpClientBuilder ConfigureAll(
+        /// <summary>
+        /// Adds <see cref="HttpClient"/> configuration for the client.
+        /// </summary>
+        /// <param name="builder">The <see cref="IResilienceHttpClientBuilder"/> instance to configure.</param>
+        /// <param name="configureClient">The delegate to configure <see cref="HttpClient"/> properties.</param>
+        /// <returns></returns>
+        public static IResilienceHttpClientBuilder AddHttpClientConfiguration(
+            this IResilienceHttpClientBuilder builder,
+            Action<IServiceProvider, HttpClient> configureClient)
+        {
+            var instance = _findIntance(builder);
+
+            if (instance.RegisteredBuilders.TryGetValue(builder.Name, out var options))
+            {
+                options.HttpClientActions.Add(configureClient);
+                options.HttpClientBuilder.ConfigureHttpClient(configureClient);
+            }
+
+            return builder;
+        }
+
+        /// <summary>
+        /// Adds Http Message Handler, will be executed in the order that added.
+        /// </summary>
+        /// <param name="builder">The <see cref="IResilienceHttpClientBuilder"/> instance to configure.</param>
+        /// <param name="configureHandler">The delegate to configure additional http message handler.</param>
+        /// <returns></returns>
+        public static IResilienceHttpClientBuilder AddHttpMessageHandler(
+            this IResilienceHttpClientBuilder builder,
+            Func<IServiceProvider, DelegatingHandler> configureHandler)
+        {
+            var instance = _findIntance(builder);
+
+            if (instance.RegisteredBuilders.TryGetValue(builder.Name, out var options))
+            {
+                options.AdditionalHandlers.Add(configureHandler);
+                options.HttpClientBuilder.ConfigurePrimaryHttpMessageHandler(configureHandler);
+            }
+            return builder;
+        }
+
+        /// <summary>
+        /// Adds Polly policy to be executed.
+        /// </summary>
+        /// <param name="builder">The <see cref="IResilienceHttpClientBuilder"/> instance to configure.</param>
+        /// <param name="policySelector">The delegate to configure Polly policy for the handlers.</param>
+        /// <returns></returns>
+        public static IResilienceHttpClientBuilder AddPolicy(
+            this IResilienceHttpClientBuilder builder,
+            Func<IServiceProvider, HttpRequestMessage, IAsyncPolicy<HttpResponseMessage>> policySelector)
+        {
+                    var instance = _findIntance(builder);
+
+                    if (instance.RegisteredBuilders.TryGetValue(builder.Name, out var options))
+                    {
+                        options.Policies.Add(policySelector);
+                        options.HttpClientBuilder.AddPolicyHandler(policySelector);
+            }
+            return builder;
+        }
+
+        /// <summary>
+        /// Adds all of the <see cref="HttpClient"/> configurations at once.
+        /// </summary>
+        /// <param name="builder">The <see cref="IResilienceHttpClientBuilder"/> instance to configure.</param>
+        /// <param name="configure">The delegate to configure <see cref="HttpClient"/></param>
+        /// <returns></returns>
+        public static IResilienceHttpClientBuilder AddAllConfigurations(
             this IResilienceHttpClientBuilder builder,
             Action<HttpClientOptionsBuilder> configure)
         {
@@ -173,17 +253,12 @@ namespace Microsoft.Extensions.DependencyInjection
 
                 var httpBuilder = options.HttpClientBuilder;
 
+                // the default is 2 min.
                 httpBuilder.SetHandlerLifetime(options.HttpClientOptions.Timeout);
 
-                if (!options.IsPrimaryHanlderAdded)
-                {
-                    httpBuilder.ConfigurePrimaryHttpMessageHandler(options.PrimaryHandler);
-                    options.IsPrimaryHanlderAdded = true;
-                }
-                else
-                {
-                    throw new InvalidOperationException("Primary Handler was already added");
-                }
+                // allows to register new primary handler.
+                httpBuilder.ConfigurePrimaryHttpMessageHandler(options.PrimaryHandler);
+                options.IsPrimaryHanlderAdded = true;
 
                 // allows for multiple configurations to be registered.
                 foreach (var httpClientAction in options.HttpClientActions)

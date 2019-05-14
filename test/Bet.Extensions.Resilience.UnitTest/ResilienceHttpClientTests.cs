@@ -71,10 +71,13 @@ namespace Bet.Extensions.Resilience.UnitTest
             serviceCollection.AddSingleton<IConfiguration>(configurationBuilder.Build());
 
             var client = serviceCollection.AddResilienceTypedClient<ITestTypedClient, TestTypedClient>()
-                .ConfigureAll(options =>
+                .AddAllConfigurations(options =>
                 {
-                    options.EnableLogging = true;
-                    //options.Policies.Add()
+                    options.HttpClientActions.Add((sp, client) => client.Timeout = TimeSpan.FromSeconds(5) );
+                })
+                .AddAllConfigurations(options =>
+                {
+                    options.HttpClientActions.Add((sp, client) => client.Timeout = TimeSpan.FromSeconds(15));
                 });
 
             Assert.Equal(nameof(ITestTypedClient), client.Name);
@@ -134,7 +137,7 @@ namespace Bet.Extensions.Resilience.UnitTest
             serviceCollection.AddSingleton<IConfiguration>(configurationBuilder.Build());
 
             var clientBuilder = serviceCollection.AddResilienceTypedClient<ITestTypedClient, TestTypedClient>()
-                .AddPrimaryHandler((sp) =>
+                .AddPrimaryHttpMessageHandler((sp) =>
                 {
                    return new DefaultHttpClientHandler();
                 });
@@ -171,7 +174,7 @@ namespace Bet.Extensions.Resilience.UnitTest
             serviceCollection.AddSingleton<IConfiguration>(configurationBuilder.Build());
 
             var clientBuilder = serviceCollection.AddResilienceTypedClient<ITestTypedClientWithOptions, TestTypedClientWithOptions, TestHttpClientOptions>()
-                .AddPrimaryHandler((sp) =>
+                .AddPrimaryHttpMessageHandler((sp) =>
                 {
                     return new DefaultHttpClientHandler();
                 });
@@ -212,7 +215,7 @@ namespace Bet.Extensions.Resilience.UnitTest
 
             var clientBuilder = serviceCollection
                 .AddResilienceTypedClient<ITestTypedClientWithOptions, TestTypedClientWithOptions, TestHttpClientOptions>("TestHttpClient")
-                .AddPrimaryHandler((sp) =>
+                .AddPrimaryHttpMessageHandler((sp) =>
                 {
                     return handler;
                 })
@@ -242,12 +245,12 @@ namespace Bet.Extensions.Resilience.UnitTest
 
             Assert.Throws<InvalidOperationException>(() => serviceCollection
                 .AddResilienceTypedClient<ITestTypedClient, TestTypedClient>()
-                .AddPrimaryHandler((sp) =>
+                .AddPrimaryHttpMessageHandler((sp) =>
                 {
                     return new DefaultHttpClientHandler();
                 })
 
-                .AddPrimaryHandler((sp) =>
+                .AddPrimaryHttpMessageHandler((sp) =>
                 {
                     return new DefaultHttpClientHandler();
                 }));
