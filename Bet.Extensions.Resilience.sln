@@ -11,9 +11,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{32C6BDF4-6EE
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{23BB98BA-5F4A-4220-BE4D-5604E58F56E5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bet.Extensions.Resilience.Http", "src\Bet.Extensions.Resilience.Http\Bet.Extensions.Resilience.Http.csproj", "{4BA05CA6-9669-4014-8856-034B7229B835}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bet.Extensions.Resilience.Http", "src\Bet.Extensions.Resilience.Http\Bet.Extensions.Resilience.Http.csproj", "{4BA05CA6-9669-4014-8856-034B7229B835}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bet.Extensions.Resilience.SqlSever", "Bet.Extensions.Resilience.SqlSever\Bet.Extensions.Resilience.SqlSever.csproj", "{5C0FD67F-89DB-4C32-97B8-E4C0C0DC83E4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bet.Extensions.Resilience.SqlSever", "Bet.Extensions.Resilience.SqlSever\Bet.Extensions.Resilience.SqlSever.csproj", "{5C0FD67F-89DB-4C32-97B8-E4C0C0DC83E4}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{EDACF3E2-D1FD-4ACD-92DA-D7B2B0D1DCF4}"
 	ProjectSection(SolutionItems) = preProject
@@ -22,7 +22,21 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{EDACF3E2
 		build\sources.props = build\sources.props
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bet.Extensions.Resilience.SampleWebApp", "src\Bet.Extensions.Resilience.SampleWebApp\Bet.Extensions.Resilience.SampleWebApp.csproj", "{EFA33EF3-60AC-41F9-AB21-722E54644C5A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bet.Extensions.Resilience.SampleWebApp", "src\Bet.Extensions.Resilience.SampleWebApp\Bet.Extensions.Resilience.SampleWebApp.csproj", "{EFA33EF3-60AC-41F9-AB21-722E54644C5A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{D6D65A0B-5D03-44DC-A730-DB8A333CDC81}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+		.gitattributes = .gitattributes
+		.gitignore = .gitignore
+		appveyor.yml = appveyor.yml
+		CHANGELOG.md = CHANGELOG.md
+		clean.sh = clean.sh
+		Directory.Build.props = Directory.Build.props
+		Directory.Build.targets = Directory.Build.targets
+		LICENSE = LICENSE
+		README.md = README.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

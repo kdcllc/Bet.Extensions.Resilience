@@ -16,7 +16,7 @@ namespace Bet.Extensions.Resilience.Http.Options
         /// <summary>
         /// The timespan before the <see cref="HttpClient"/> timeouts.
         /// </summary>
-        public TimeSpan Timeout { get; set; }
+        public TimeSpan Timeout { get; set; } = TimeSpan.FromMinutes(2);
 
         /// <summary>
         /// The content type of the <see cref="HttpClient"/> request.

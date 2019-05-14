@@ -99,6 +99,7 @@ namespace Bet.Extensions.Resilience.Http.MessageHandlers.PollyHttp
         /// </summary>
         /// <param name="policySelector">A function which can select the desired policy for a given <see cref="HttpRequestMessage"/>.</param>
         /// <param name="logger">The logger to be used for Polly context.</param>
+        /// <param name="typedClientName">The name of the typed HttpClient to be used for the logging.</param>
         public PolicyWithLoggingHttpMessageHandler(
             Func<HttpRequestMessage, IAsyncPolicy<HttpResponseMessage>> policySelector,
             ILogger logger,

@@ -24,7 +24,7 @@ namespace Microsoft.Extensions.DependencyInjection
           _findIntance = (builder) => (ResilienceHttpClientOptions)builder.Services.Single(sd => sd.ServiceType == typeof(ResilienceHttpClientOptions)).ImplementationInstance;
 
         private static readonly Func<IResilienceHttpClientBuilder, IConfiguration>
-            _configuration = (builder) => (IConfiguration) builder.Services.Single(sd => sd.ServiceType == typeof(IConfiguration)).ImplementationInstance;
+            _configuration = (builder) => builder.Services.SingleOrDefault(sd => sd.ServiceType == typeof(IConfiguration))?.ImplementationInstance as IConfiguration;
 
         /// <summary>
         /// Adds Resilience <see cref="HttpClient"/> with custom options that can be used to inject inside of the TypedClient.
@@ -44,10 +44,11 @@ namespace Microsoft.Extensions.DependencyInjection
             where TImplementation : class, TClient
             where TOptions: HttpClientOptions, new()
         {
-            var builder = AddDefaults<TClient>(services);
+            var builder = AddResilienceHttpClientBuilder<TClient>(services);
 
             sectionName = sectionName ?? typeof(TOptions).Name;
 
+            // create options instance from configuration
             services.AddTransient<IConfigureOptions<TOptions>>(sp =>
             {
                 return new ConfigureOptions<TOptions>((options) =>
@@ -78,7 +79,7 @@ namespace Microsoft.Extensions.DependencyInjection
             where TClient : class
             where TImplementation : class, TClient
         {
-            var builder = AddDefaults<TClient>(services);
+            var builder = AddResilienceHttpClientBuilder<TClient>(services);
 
             builder.Services.AddTransient<IConfigureOptions<HttpClientOptions>>(sp =>
             {
@@ -111,7 +112,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
             var instance = _findIntance(builder);
 
-            if (instance.ClientOptions.TryGetValue(builder.Name, out var clientOptions))
+            if (instance.RegisteredBuilders.TryGetValue(builder.Name, out var clientOptions))
             {
                 clientOptions.EnableLogging = enableLogging;
 
@@ -143,7 +144,7 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             var instance = _findIntance(builder);
 
-            if (instance.ClientOptions.TryGetValue(builder.Name, out var options))
+            if (instance.RegisteredBuilders.TryGetValue(builder.Name, out var options))
             {
                 if (!options.IsPrimaryHanlderAdded)
                 {
@@ -166,13 +167,13 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             var instance = _findIntance(builder);
 
-            if (instance.ClientOptions.TryGetValue(builder.Name, out var options))
+            if (instance.RegisteredBuilders.TryGetValue(builder.Name, out var options))
             {
                 configure?.Invoke(options);
 
                 var httpBuilder = options.HttpClientBuilder;
 
-                httpBuilder.SetHandlerLifetime(options.ClientOptions.Timeout);
+                httpBuilder.SetHandlerLifetime(options.HttpClientOptions.Timeout);
 
                 if (!options.IsPrimaryHanlderAdded)
                 {
@@ -257,13 +258,19 @@ namespace Microsoft.Extensions.DependencyInjection
             }
         }
 
-        private static IResilienceHttpClientBuilder AddDefaults<TClient>(IServiceCollection services)
-            where TClient : class
+        /// <summary>
+        /// Creates <see cref="ResilienceHttpClientBuilder"/>.
+        /// </summary>
+        /// <typeparam name="TClient"></typeparam>
+        /// <param name="services"></param>
+        /// <returns></returns>
+        private static IResilienceHttpClientBuilder AddResilienceHttpClientBuilder<TClient>(IServiceCollection services) where TClient : class
         {
             // register default services
             services.TryAddSingleton(new ResilienceHttpClientOptions());
 
             // create builder based on the name of the type
+            // this matches the HttpFactoryClient logic https://github.com/aspnet/Extensions/blob/11cf90103841c35cbefe9afb8e5bf9fee696dd17/src/HttpClientFactory/Http/src/DependencyInjection/HttpClientFactoryServiceCollectionExtensions.cs#L517
             var name = TypeNameHelper.GetTypeDisplayName(typeof(TClient), fullName: false);
             return new ResilienceHttpClientBuilder(services, name);
         }
@@ -276,36 +283,37 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             var instance = _findIntance(builder);
 
-            // the instance of the resilience client wasn't added yet.
-            if (!instance.ClientOptions.TryGetValue(builder.Name, out var options))
+            // the instance of the resilience client wasn't added yet, so add it only once.
+            if (!instance.RegisteredBuilders.TryGetValue(builder.Name, out var options))
             {
+                // Create Typed Client HttpFactoryClient
                 var httpClientBuilder = builder.Services.AddHttpClient<TClient, TImplementation>();
 
                 var newOptions = new HttpClientOptionsBuilder(builder.Name, httpClientBuilder);
 
-                // configures default values from configuration provider.
-                if (builder.Services.SingleOrDefault(sd => sd.ServiceType == typeof(IConfiguration))?.ImplementationInstance is IConfiguration configuration)
+                // configures default values from configuration provider if present.
+                if (_configuration(builder) is IConfiguration configuration)
                 {
                     sectionName = string.IsNullOrWhiteSpace(sectionName) ? typeof(TImplementation).Name : sectionName;
                     newOptions.SectionName = sectionName;
-                    configuration.Bind(sectionName, newOptions.ClientOptions);
+                    configuration.Bind(sectionName, newOptions.HttpClientOptions);
 
                     newOptions.HttpClientActions.Add((sp, client) =>
                     {
-                        if (newOptions.ClientOptions?.BaseAddress != null)
+                        if (newOptions.HttpClientOptions?.BaseAddress != null)
                         {
-                            client.BaseAddress = newOptions.ClientOptions.BaseAddress;
+                            client.BaseAddress = newOptions.HttpClientOptions.BaseAddress;
                         }
 
-                        if (newOptions.ClientOptions?.Timeout != null)
+                        if (newOptions.HttpClientOptions?.Timeout != null)
                         {
-                            client.Timeout = newOptions.ClientOptions.Timeout;
+                            client.Timeout = newOptions.HttpClientOptions.Timeout;
                         }
 
-                        if (newOptions.ClientOptions?.ContentType != null)
+                        if (newOptions.HttpClientOptions?.ContentType != null)
                         {
-                            client.DefaultRequestHeaders.Add("accept", newOptions.ClientOptions.ContentType);
-                            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(newOptions.ClientOptions.ContentType));
+                            client.DefaultRequestHeaders.Add("accept", newOptions.HttpClientOptions.ContentType);
+                            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(newOptions.HttpClientOptions.ContentType));
                         }
                     });
 
@@ -316,7 +324,7 @@ namespace Microsoft.Extensions.DependencyInjection
                     }
                 }
 
-                instance.ClientOptions[builder.Name] = newOptions;
+                instance.RegisteredBuilders[builder.Name] = newOptions;
 
                 return;
             }

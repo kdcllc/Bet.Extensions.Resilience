@@ -49,12 +49,12 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         public IList<Func<IServiceProvider, HttpRequestMessage, IAsyncPolicy<HttpResponseMessage>>> Policies { get; } = new List<Func<IServiceProvider, HttpRequestMessage, IAsyncPolicy<HttpResponseMessage>>>();
 
-        public HttpClientOptions ClientOptions { get; set; } = new HttpClientOptions();
+        public HttpClientOptions HttpClientOptions { get; set; } = new HttpClientOptions();
 
         /// <summary>
         /// The name of the registered <see cref="HttpClient"/>.
         /// </summary>
-        public string Name { get; set; }
+        internal string Name { get; set; }
 
         internal string SectionName { get; set; }
 

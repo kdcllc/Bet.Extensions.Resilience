@@ -26,7 +26,7 @@ namespace Bet.Extensions.Resilience.UnitTest
         }
 
         [Fact]
-        public void Test1()
+        public void Test_ResilienceHttpClientBuilder()
         {
             var serviceCollection = new ServiceCollection();
 
@@ -51,6 +51,40 @@ namespace Bet.Extensions.Resilience.UnitTest
             var result2 = serviceCollection.TryAddPolicyRegistry(registry);
 
             Assert.Equal(result, result2);
+        }
+
+        [Fact]
+        public void Test_AddResilienceTypedClient_ConfigureAll()
+        {
+            // Assign
+            var serviceCollection = new ServiceCollection();
+
+            var dic1 = new Dictionary<string, string>()
+            {
+                {"TestTypedClient:BaseAddress", "http://localhost"},
+                {"TestTypedClient:Timeout", "00:05:00"},
+                {"TestTypedClient:ContentType", "application/json"}
+            };
+
+            var configurationBuilder = new ConfigurationBuilder().AddInMemoryCollection(dic1);
+
+            serviceCollection.AddSingleton<IConfiguration>(configurationBuilder.Build());
+
+            var client = serviceCollection.AddResilienceTypedClient<ITestTypedClient, TestTypedClient>()
+                .ConfigureAll(options =>
+                {
+                    options.EnableLogging = true;
+                    //options.Policies.Add()
+                });
+
+            Assert.Equal(nameof(ITestTypedClient), client.Name);
+
+            var services = serviceCollection.BuildServiceProvider();
+            var factory = services.GetRequiredService<IHttpMessageHandlerFactory>();
+            // Act2
+            var handler = factory.CreateHandler();
+            // Assert
+            Assert.NotNull(handler);
         }
 
         [Fact]
