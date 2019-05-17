@@ -13,6 +13,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Internal;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+
 using Polly;
 using Polly.Registry;
 
@@ -21,7 +22,7 @@ namespace Microsoft.Extensions.DependencyInjection
     public static class ServiceCollectionExtensions
     {
         private static readonly Func<IResilienceHttpClientBuilder, ResilienceHttpClientOptions>
-          _findIntance = (builder) => (ResilienceHttpClientOptions)builder.Services.Single(sd => sd.ServiceType == typeof(ResilienceHttpClientOptions)).ImplementationInstance;
+          _findIntance = (builder) => builder.Services.SingleOrDefault(sd => sd.ServiceType == typeof(ResilienceHttpClientOptions))?.ImplementationInstance as ResilienceHttpClientOptions;
 
         private static readonly Func<IResilienceHttpClientBuilder, IConfiguration>
             _configuration = (builder) => builder.Services.SingleOrDefault(sd => sd.ServiceType == typeof(IConfiguration))?.ImplementationInstance as IConfiguration;
@@ -33,32 +34,44 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <typeparam name="TImplementation">The implementation of the typed client./</typeparam>
         /// <typeparam name="TOptions">The options type to be used to register with DI.</typeparam>
         /// <param name="services">The <see cref="IServiceCollection"/>.</param>
-        /// <param name="sectionName">The configuration section name if provided overrides the TImplementation type for the configuration.
-        ///                           The default is null; thus TOptions type is used for the
-        /// </param>
+        /// <param name="sectionName">The default is null and resolves TOptions name as root.</param>
+        /// <param name="optionsName">The default is TOptions name.</param>
         /// <returns>IResilienceHttpClientBuilder</returns>
         public static IResilienceHttpClientBuilder AddResilienceTypedClient<TClient, TImplementation, TOptions>(
             this IServiceCollection services,
-            string sectionName = null)
+            string sectionName = null,
+            string optionsName = null)
             where TClient : class
             where TImplementation : class, TClient
             where TOptions: HttpClientOptions, new()
         {
             var builder = AddResilienceHttpClientBuilder<TClient>(services);
+            optionsName = optionsName ?? typeof(TOptions).Name;
 
-            sectionName = sectionName ?? typeof(TOptions).Name;
+            // adds default HttpOptionsConfiguration
+            var implName = typeof(TImplementation).Name;
+            AddDefaultHttpClientOptions(sectionName, optionsName, builder, implName);
 
-            // create options instance from configuration
+            // create options instance from the configuration
             services.AddTransient<IConfigureOptions<TOptions>>(sp =>
             {
                 return new ConfigureOptions<TOptions>((options) =>
                 {
                     var configuration = sp.GetRequiredService<IConfiguration>();
-                    configuration.Bind(sectionName, options);
+
+                    if (sectionName == null)
+                    {
+                        configuration.Bind(optionsName, options);
+                    }
+                    else
+                    {
+                        var section = configuration.GetSection(sectionName);
+                        section.Bind(optionsName, options);
+                    }
                 });
             });
 
-            Configure<TClient, TImplementation>(builder, sectionName);
+            Configure<TClient, TImplementation>(builder, sectionName, optionsName);
 
             return builder;
         }
@@ -69,32 +82,60 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <typeparam name="TClient">The interface for the typed client.</typeparam>
         /// <typeparam name="TImplementation">The implementation of the typed client./</typeparam>
         /// <param name="services">The <see cref="IServiceCollection"/>.</param>
-        /// <param name="sectionName">The configuration section name if provided overrides the TImplementation type name.
-        ///                           The default is null.
-        /// </param>
+        /// <param name="sectionName">The default is null and resolves TOptions name as root.</param>
+        /// <param name="optionsName">The default is TOptions name.</param>
         /// <returns></returns>
         public static IResilienceHttpClientBuilder AddResilienceTypedClient<TClient, TImplementation>(
             this IServiceCollection services,
-            string sectionName = null)
+            string sectionName = null,
+            string optionsName = null)
             where TClient : class
             where TImplementation : class, TClient
         {
             var builder = AddResilienceHttpClientBuilder<TClient>(services);
 
+            var implName = typeof(TImplementation).Name;
+
+            // if not optionName present then Implementation name is used.
+            optionsName = optionsName ?? implName;
+
+            AddDefaultHttpClientOptions(sectionName, optionsName, builder, implName);
+
+            Configure<TClient, TImplementation>(builder, sectionName, optionsName);
+
+            return builder;
+        }
+
+        /// <summary>
+        /// This is required by both registrations, in order to get the basic configurations passed to DI.
+        /// </summary>
+        /// <param name="sectionName"></param>
+        /// <param name="optionsName"></param>
+        /// <param name="builder"></param>
+        /// <param name="implName"></param>
+        private static void AddDefaultHttpClientOptions(
+            string sectionName,
+            string optionsName,
+            IResilienceHttpClientBuilder builder,
+            string implName)
+        {
             builder.Services.AddTransient<IConfigureOptions<HttpClientOptions>>(sp =>
             {
-                var implName = TypeNameHelper.GetTypeDisplayName(typeof(TImplementation), fullName: false);
-
+                // this always must be associated with TImplementation
                 return new ConfigureNamedOptions<HttpClientOptions>(implName, (options) =>
                 {
                     var configuration = sp.GetRequiredService<IConfiguration>();
-                    configuration.Bind(sectionName ?? implName, options);
+                    if (sectionName == null)
+                    {
+                        configuration.Bind(optionsName, options);
+                    }
+                    else
+                    {
+                        var section = configuration.GetSection(sectionName);
+                        section.Bind(optionsName, options);
+                    }
                 });
             });
-
-            Configure<TClient, TImplementation>(builder, sectionName);
-
-            return builder;
         }
 
         /// <summary>
@@ -352,7 +393,8 @@ namespace Microsoft.Extensions.DependencyInjection
 
         private static void Configure<TClient, TImplementation>(
             IResilienceHttpClientBuilder builder,
-            string sectionName = null)
+            string sectionName = null,
+            string optionsName = null)
             where TClient : class
             where TImplementation : class, TClient
         {
@@ -366,37 +408,45 @@ namespace Microsoft.Extensions.DependencyInjection
 
                 var newOptions = new HttpClientOptionsBuilder(builder.Name, httpClientBuilder);
 
+                newOptions.HttpClientActions.Add((sp, client) =>
+                {
+                    var config = sp.GetRequiredService<IOptionsMonitor<HttpClientOptions>>().Get(typeof(TImplementation).Name);
+
+                    if (config?.BaseAddress != null)
+                    {
+                        client.BaseAddress = config.BaseAddress;
+                    }
+
+                    if (config?.Timeout != null)
+                    {
+                        client.Timeout = config.Timeout;
+                    }
+
+                    if (config?.ContentType != null)
+                    {
+                        client.DefaultRequestHeaders.Add("accept", config.ContentType);
+                        client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(config.ContentType));
+                    }
+                });
+
                 // configures default values from configuration provider if present.
                 if (_configuration(builder) is IConfiguration configuration)
                 {
-                    sectionName = string.IsNullOrWhiteSpace(sectionName) ? typeof(TImplementation).Name : sectionName;
-                    newOptions.SectionName = sectionName;
-                    configuration.Bind(sectionName, newOptions.HttpClientOptions);
-
-                    newOptions.HttpClientActions.Add((sp, client) =>
+                    if (sectionName == null)
                     {
-                        if (newOptions.HttpClientOptions?.BaseAddress != null)
-                        {
-                            client.BaseAddress = newOptions.HttpClientOptions.BaseAddress;
-                        }
-
-                        if (newOptions.HttpClientOptions?.Timeout != null)
-                        {
-                            client.Timeout = newOptions.HttpClientOptions.Timeout;
-                        }
-
-                        if (newOptions.HttpClientOptions?.ContentType != null)
-                        {
-                            client.DefaultRequestHeaders.Add("accept", newOptions.HttpClientOptions.ContentType);
-                            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(newOptions.HttpClientOptions.ContentType));
-                        }
-                    });
-
-                    // configure default actions
-                    foreach (var httpClientAction in newOptions.HttpClientActions)
-                    {
-                        httpClientBuilder.ConfigureHttpClient(httpClientAction);
+                        configuration.Bind(optionsName, newOptions.HttpClientOptions);
                     }
+                    else
+                    {
+                        var section = configuration.GetSection(sectionName);
+                        section.Bind(optionsName, newOptions.HttpClientOptions);
+                    }
+                }
+
+                // configure default actions
+                foreach (var httpClientAction in newOptions.HttpClientActions)
+                {
+                    httpClientBuilder.ConfigureHttpClient(httpClientAction);
                 }
 
                 instance.RegisteredBuilders[builder.Name] = newOptions;

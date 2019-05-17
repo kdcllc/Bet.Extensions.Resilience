@@ -44,7 +44,6 @@ namespace Bet.Extensions.Resilience.UnitTest
                           }
 
                           await context.Response.WriteAsync(string.Empty);
-
                       });
                 }));
 

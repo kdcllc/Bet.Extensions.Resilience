@@ -3,12 +3,15 @@ using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+
 using Bet.Extensions.Resilience.Http.MessageHandlers;
 using Bet.Extensions.Resilience.Http.Options;
+
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+
 using Polly.Registry;
 
 using Xunit;
@@ -120,7 +123,90 @@ namespace Bet.Extensions.Resilience.UnitTest
         }
 
         [Fact]
-        public void Test_AddTyped_Configure_Build_Client()
+        public void Test_AddResilienceTypedClientDefault_With_Custom_SectionName()
+        {
+            // Assign
+            var serviceCollection = new ServiceCollection();
+
+            var dic1 = new Dictionary<string, string>()
+            {
+                {"Clients:TestTypedClient:BaseAddress", "http://localhost"},
+                {"Clients:TestTypedClient:Timeout", "00:05:00"},
+                {"Clients:TestTypedClient:ContentType", "application/json"}
+            };
+
+            var configurationBuilder = new ConfigurationBuilder().AddInMemoryCollection(dic1);
+
+            serviceCollection.AddSingleton<IConfiguration>(configurationBuilder.Build());
+
+            var clientBuilder = serviceCollection.AddResilienceTypedClient<ITestTypedClient, TestTypedClient>(sectionName: "Clients")
+                 .AddPrimaryHttpMessageHandler((sp) =>
+                 {
+                     return new DefaultHttpClientHandler();
+                 })
+                .AddAllConfigurations(options => {
+                        options.HttpClientActions.Add((sp, client) =>
+                        {
+                            // checks if the options have been already configured via configuration.
+                            client.BaseAddress = options.HttpClientOptions.BaseAddress;
+                        });
+                });
+
+            var services = serviceCollection.BuildServiceProvider();
+
+            var client = services.GetRequiredService<ITestTypedClient>();
+
+            Assert.Equal("http://localhost/", client.HttpClient.BaseAddress.ToString());
+
+            var options = services.GetRequiredService<IOptionsMonitor<HttpClientOptions>>();
+
+            var value = options.Get(nameof(TestTypedClient));
+
+            Assert.NotNull(value);
+        }
+
+        [Fact]
+        public void Test_AddResilienceTypedClientDefault_With_Custom_SectionName_And_OptionName()
+        {
+            // Assign
+            var serviceCollection = new ServiceCollection();
+
+            var dic1 = new Dictionary<string, string>()
+            {
+                {"Clients:TestTypedClient2:BaseAddress", "http://localhost"},
+                {"Clients:TestTypedClient2:Timeout", "00:05:00"},
+                {"Clients:TestTypedClient2:ContentType", "application/json"}
+            };
+
+            var configurationBuilder = new ConfigurationBuilder().AddInMemoryCollection(dic1);
+
+            serviceCollection.AddSingleton<IConfiguration>(configurationBuilder.Build());
+
+            var clientBuilder = serviceCollection.AddResilienceTypedClient<ITestTypedClient, TestTypedClient>(sectionName: "Clients", "TestTypedClient2")
+                 .AddPrimaryHttpMessageHandler((sp) =>
+                 {
+                     return new DefaultHttpClientHandler();
+                 })
+                .AddAllConfigurations(options => {
+                    options.HttpClientActions.Add((sp, client) =>
+                    {
+                        // checks if the options have been already configured via configuration.
+                        client.BaseAddress = options.HttpClientOptions.BaseAddress;
+                    });
+                });
+
+            var services = serviceCollection.BuildServiceProvider();
+
+            var client = services.GetRequiredService<ITestTypedClient>();
+
+            Assert.Equal("http://localhost/", client.HttpClient.BaseAddress.ToString());
+
+            var options = services.GetRequiredService<IOptionsMonitor<HttpClientOptions>>().Get(nameof(TestTypedClient));
+            Assert.NotNull(options?.BaseAddress);
+        }
+
+        [Fact]
+        public void Test_AddResilienceTypedClientDefault()
         {
             // Assign
             var serviceCollection = new ServiceCollection();
@@ -154,7 +240,7 @@ namespace Bet.Extensions.Resilience.UnitTest
         }
 
         [Fact]
-        public void Test_AddClientTyped_WithOptions()
+        public void Test_AddClientTypedCustomOptions()
         {
             // Assign
             var serviceCollection = new ServiceCollection();
@@ -174,16 +260,29 @@ namespace Bet.Extensions.Resilience.UnitTest
             serviceCollection.AddSingleton<IConfiguration>(configurationBuilder.Build());
 
             var clientBuilder = serviceCollection.AddResilienceTypedClient<ITestTypedClientWithOptions, TestTypedClientWithOptions, TestHttpClientOptions>()
-                .AddPrimaryHttpMessageHandler((sp) =>
-                {
-                    return new DefaultHttpClientHandler();
+               .AddPrimaryHttpMessageHandler((sp) =>
+               {
+                   return new DefaultHttpClientHandler();
+               })
+                .AddAllConfigurations(options => {
+                    options.HttpClientActions.Add((sp, client) =>
+                    {
+                        // checks if the options have been already configured via configuration.
+                        client.BaseAddress = options.HttpClientOptions.BaseAddress;
+                    });
                 });
 
             var services = serviceCollection.BuildServiceProvider();
 
-            var client = services.GetRequiredService<ITestTypedClientWithOptions>();
+            var options = services.GetRequiredService<IOptionsMonitor<HttpClientOptions>>().Get(nameof(TestTypedClientWithOptions));
+            Assert.NotNull(options?.BaseAddress);
 
+            var client = services.GetRequiredService<ITestTypedClientWithOptions>();
             Assert.Equal(id, client.Id);
+
+            var clientOptions = services.GetRequiredService<IOptions<TestHttpClientOptions>>().Value;
+            Assert.NotNull(clientOptions?.BaseAddress);
+            Assert.Equal(id, clientOptions.Id);
         }
 
         [Fact]
@@ -214,7 +313,7 @@ namespace Bet.Extensions.Resilience.UnitTest
             var handler = server.CreateHandler();
 
             var clientBuilder = serviceCollection
-                .AddResilienceTypedClient<ITestTypedClientWithOptions, TestTypedClientWithOptions, TestHttpClientOptions>("TestHttpClient")
+                .AddResilienceTypedClient<ITestTypedClientWithOptions, TestTypedClientWithOptions, TestHttpClientOptions>(optionsName:"TestHttpClient")
                 .AddPrimaryHttpMessageHandler((sp) =>
                 {
                     return handler;
@@ -254,7 +353,6 @@ namespace Bet.Extensions.Resilience.UnitTest
                 {
                     return new DefaultHttpClientHandler();
                 }));
-
         }
     }
 }

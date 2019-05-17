@@ -56,8 +56,6 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         internal string Name { get; set; }
 
-        internal string SectionName { get; set; }
-
         internal IHttpClientBuilder HttpClientBuilder { get; set; }
 
         internal bool IsPrimaryHanlderAdded { get; set; } = false;
