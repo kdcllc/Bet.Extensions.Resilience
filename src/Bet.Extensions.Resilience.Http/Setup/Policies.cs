@@ -25,28 +25,28 @@ namespace Bet.Extensions.Resilience.Http.Setup
             // retry async
             policyRegistry.Add(
                 PolicyKeys.HttpRetryAsyncPolicy,
-                Policies.GetRetryAsync(
+                GetRetryAsync(
                     options.HttpRetry.Count,
                     options.HttpRetry.BackoffPower));
 
             // retry sync
             policyRegistry.Add(
                 PolicyKeys.HttpRetrySyncPolicy,
-                Policies.GetRetry(
+                GetRetry(
                     options.HttpRetry.Count,
                     options.HttpRetry.BackoffPower));
 
             // circuit breaker async
             policyRegistry.Add(
                 PolicyKeys.HttpCircuitBreakerAsyncPolicy,
-                Policies.GetCircuitBreakerAsync(
+                GetCircuitBreakerAsync(
                     options.HttpCircuitBreaker.ExceptionsAllowedBeforeBreaking,
                     options.HttpCircuitBreaker.DurationOfBreak));
 
             // circuit breaker async
             policyRegistry.Add(
                     PolicyKeys.HttpCircuitBreakerSyncPolicy,
-                    Policies.GetCircuitBreaker(
+                    GetCircuitBreaker(
                         options.HttpCircuitBreaker.ExceptionsAllowedBeforeBreaking,
                         options.HttpCircuitBreaker.DurationOfBreak));
         }
