@@ -1,4 +1,5 @@
-﻿using Bet.Extensions.Resilience.Abstractions;
+﻿using System.Net.Http;
+using Bet.Extensions.Resilience.Abstractions;
 
 using Microsoft.Extensions.Logging;
 
@@ -7,7 +8,7 @@ namespace Polly
     public static class PollyContextExtensions
     {
         /// <summary>
-        /// Adds Logger to Polly Context.
+        /// Adds Logger to Polly Context for <see cref="HttpClient"/>.
         /// </summary>
         /// <param name="context">The Polly execution context.</param>
         /// <param name="logger">The logger to be used by Polly's execution.</param>
@@ -25,6 +26,28 @@ namespace Polly
 
             context[PolicyContextItems.Logger] = logger;
             context[PolicyContextItems.HttpClientName] = typedClientName ?? "Untracked";
+            return context;
+        }
+
+        /// <summary>
+        /// Adds Logger to Polly Context.
+        /// </summary>
+        /// <param name="context">The Polly execution context.</param>
+        /// <param name="logger">The logger to be used by Polly's execution.</param>
+        /// <param name="actionName"></param>
+        /// <returns></returns>
+        public static Context AddLogger(
+            this Context context,
+            ILogger logger,
+            string actionName = default)
+        {
+            if (context == null)
+            {
+                return null;
+            }
+
+            context[PolicyContextItems.Logger] = logger;
+            context[PolicyContextItems.ActionName] = actionName ?? "Unnamed";
             return context;
         }
 
@@ -63,6 +86,25 @@ namespace Polly
             }
 
             typedHttpClientName = "Untracked";
+            return false;
+        }
+
+        /// <summary>
+        /// Attempts to get the name of the execution action.
+        /// </summary>
+        /// <param name="context">The Polly execution context.</param>
+        /// <param name="actionName">The name of the executing action.</param>
+        /// <returns></returns>
+        public static bool TryGetActionName(this Context context, out string actionName)
+        {
+            if (context.TryGetValue(PolicyContextItems.ActionName, out var name)
+                && name is string theName)
+            {
+                actionName = theName;
+                return true;
+            }
+
+            actionName = "Unnamed";
             return false;
         }
     }
