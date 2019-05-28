@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Bet.Extensions.Resilience.SampleWebApp.Clients;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -34,7 +35,12 @@ namespace Bet.Extensions.Resilience.SampleWebApp
             services.AddControllersWithViews()
                 .AddNewtonsoftJson();
 
-            services.AddRazorPages();
+            // https://docs.microsoft.com/sr-latn-rs/aspnet/core/mvc/views/view-compilation?view=aspnetcore-3.0
+            // https://github.com/aspnet/Announcements/issues/343
+            services.AddRazorPages().AddRazorRuntimeCompilation();
+
+            services.AddResilienceTypedClient<IChavahClient, ChavahClient>()
+                .AddDefaultPolicies();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

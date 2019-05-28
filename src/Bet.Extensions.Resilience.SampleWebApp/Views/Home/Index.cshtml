@@ -2,7 +2,41 @@
     ViewData["Title"] = "Home Page";
 }
 
+@section Styles{
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <link rel="stylesheet" href="~/css/AudioPlayer.css" asp-append-version="true" />
+    <style>
+
+        /*#player {
+            position: relative;
+            max-width: 700px;
+            height: 500px;
+            border: solid 1px gray;
+        }*/
+
+    </style>
+}
+
 <div class="text-center">
     <h1 class="display-4">Welcome</h1>
     <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+
+
 </div>
+
+<!-- Audio player container-->
+<div id='player' class="container align-content-lg-center"></div>
+
+@section Scripts{
+
+    <script>
+
+
+
+    </script>
+
+    <script src="~/js/AudioPlayer.js" asp-append-version="true"></script>
+    <script src="~/js/Custom.js" asp-append-version="true"></script>
+
+}
