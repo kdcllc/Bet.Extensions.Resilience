@@ -13,8 +13,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{23BB98BA-5
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bet.Extensions.Resilience.Http", "src\Bet.Extensions.Resilience.Http\Bet.Extensions.Resilience.Http.csproj", "{4BA05CA6-9669-4014-8856-034B7229B835}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bet.Extensions.Resilience.SqlSever", "Bet.Extensions.Resilience.SqlSever\Bet.Extensions.Resilience.SqlSever.csproj", "{5C0FD67F-89DB-4C32-97B8-E4C0C0DC83E4}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{EDACF3E2-D1FD-4ACD-92DA-D7B2B0D1DCF4}"
 	ProjectSection(SolutionItems) = preProject
 		build\dependencies.props = build\dependencies.props
@@ -56,10 +54,6 @@ Global
 		{4BA05CA6-9669-4014-8856-034B7229B835}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4BA05CA6-9669-4014-8856-034B7229B835}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4BA05CA6-9669-4014-8856-034B7229B835}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5C0FD67F-89DB-4C32-97B8-E4C0C0DC83E4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5C0FD67F-89DB-4C32-97B8-E4C0C0DC83E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5C0FD67F-89DB-4C32-97B8-E4C0C0DC83E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5C0FD67F-89DB-4C32-97B8-E4C0C0DC83E4}.Release|Any CPU.Build.0 = Release|Any CPU
 		{EFA33EF3-60AC-41F9-AB21-722E54644C5A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{EFA33EF3-60AC-41F9-AB21-722E54644C5A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EFA33EF3-60AC-41F9-AB21-722E54644C5A}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -72,7 +66,6 @@ Global
 		{AA56D526-0777-40C6-8CAF-9DA96911941C} = {32C6BDF4-6EEB-4C13-B084-AB554A2ACDAC}
 		{A7C3FDE4-CA19-40C4-A58C-3CD3386D7A78} = {23BB98BA-5F4A-4220-BE4D-5604E58F56E5}
 		{4BA05CA6-9669-4014-8856-034B7229B835} = {32C6BDF4-6EEB-4C13-B084-AB554A2ACDAC}
-		{5C0FD67F-89DB-4C32-97B8-E4C0C0DC83E4} = {32C6BDF4-6EEB-4C13-B084-AB554A2ACDAC}
 		{EFA33EF3-60AC-41F9-AB21-722E54644C5A} = {32C6BDF4-6EEB-4C13-B084-AB554A2ACDAC}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
