@@ -21,6 +21,8 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static class ServiceCollectionExtensions
     {
+        private static readonly string _message = "The HttpClient factory with the name '{0}' is not registered.";
+
         private static readonly Func<IResilienceHttpClientBuilder, ResilienceHttpClientOptions>
           _findIntance = (builder) => builder.Services.SingleOrDefault(sd => sd.ServiceType == typeof(ResilienceHttpClientOptions))?.ImplementationInstance as ResilienceHttpClientOptions;
 
@@ -181,9 +183,11 @@ namespace Microsoft.Extensions.DependencyInjection
                 }
 
                 AddPollyPolicy(clientOptions, circuitBreakerPolicy);
+
+                return builder;
             }
 
-            return builder;
+            throw new InvalidOperationException(string.Format(_message, builder.Name));
         }
 
         /// <summary>
@@ -205,6 +209,8 @@ namespace Microsoft.Extensions.DependencyInjection
                     options.PrimaryHandler = (sp) => configure(sp);
                     options.HttpClientBuilder.ConfigurePrimaryHttpMessageHandler(options.PrimaryHandler);
                     options.IsPrimaryHanlderAdded = true;
+
+                    return builder;
                 }
                 else
                 {
@@ -212,7 +218,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 }
             }
 
-            return builder;
+            throw new InvalidOperationException(string.Format(_message, builder.Name));
         }
 
         /// <summary>
@@ -231,9 +237,11 @@ namespace Microsoft.Extensions.DependencyInjection
             {
                 options.HttpClientActions.Add(configureClient);
                 options.HttpClientBuilder.ConfigureHttpClient(configureClient);
+
+                return builder;
             }
 
-            return builder;
+            throw new InvalidOperationException(string.Format(_message, builder.Name));
         }
 
         /// <summary>
@@ -252,8 +260,10 @@ namespace Microsoft.Extensions.DependencyInjection
             {
                 options.AdditionalHandlers.Add(configureHandler);
                 options.HttpClientBuilder.ConfigurePrimaryHttpMessageHandler(configureHandler);
+
+                return builder;
             }
-            return builder;
+            throw new InvalidOperationException(string.Format(_message, builder.Name));
         }
 
         /// <summary>
@@ -266,14 +276,17 @@ namespace Microsoft.Extensions.DependencyInjection
             this IResilienceHttpClientBuilder builder,
             Func<IServiceProvider, HttpRequestMessage, IAsyncPolicy<HttpResponseMessage>> policySelector)
         {
-                    var instance = _findIntance(builder);
+            var instance = _findIntance(builder);
 
-                    if (instance.RegisteredBuilders.TryGetValue(builder.Name, out var options))
-                    {
-                        options.Policies.Add(policySelector);
-                        options.HttpClientBuilder.AddPolicyHandler(policySelector);
+            if (instance.RegisteredBuilders.TryGetValue(builder.Name, out var options))
+            {
+                options.Policies.Add(policySelector);
+                options.HttpClientBuilder.AddPolicyHandler(policySelector);
+
+                return builder;
             }
-            return builder;
+
+            throw new InvalidOperationException(string.Format(_message, builder.Name));
         }
 
         /// <summary>
@@ -320,8 +333,8 @@ namespace Microsoft.Extensions.DependencyInjection
                 return builder;
             }
 
-            var message = $"The HttpClient factory with the name '{builder.Name}' is not registered.";
-            throw new InvalidOperationException(message);
+            throw new InvalidOperationException(string.Format(_message, builder.Name));
+
         }
 
         /// <summary>
@@ -358,7 +371,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
         private static void AddPollyPolicy(
             HttpClientOptionsBuilder options,
-            Func<IServiceProvider, HttpRequestMessage, Polly.IAsyncPolicy<HttpResponseMessage>> policy)
+            Func<IServiceProvider, HttpRequestMessage, IAsyncPolicy<HttpResponseMessage>> policy)
         {
             if (options.EnableLogging)
             {
@@ -454,8 +467,8 @@ namespace Microsoft.Extensions.DependencyInjection
                 return;
             }
 
-            var message = $"The HttpClient factory already has a registered client with the name '{builder.Name}'";
-            throw new InvalidOperationException(message);
+            throw new InvalidOperationException(string.Format(_message, builder.Name));
+
         }
     }
 }

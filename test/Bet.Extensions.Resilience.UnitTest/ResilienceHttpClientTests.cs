@@ -4,7 +4,7 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 
-using Bet.Extensions.Resilience.Http.MessageHandlers;
+using Bet.Extensions.MessageHandlers;
 using Bet.Extensions.Resilience.Http.Options;
 
 using Microsoft.Extensions.Configuration;
