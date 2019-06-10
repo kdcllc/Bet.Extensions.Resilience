@@ -7,10 +7,13 @@ namespace Bet.Extensions.Resilience.Http.Setup
     /// </summary>
     public class PolicyKeys
     {
-        public const string HttpRetryAsyncPolicy = nameof(HttpRetryAsyncPolicy);
-        public const string HttpRetrySyncPolicy = nameof(HttpRetrySyncPolicy);
+        public const string HttpWaitAndRetryPolicyAsync = nameof(HttpWaitAndRetryPolicyAsync);
+        public const string HttpWaitAndRetryPolicy = nameof(HttpWaitAndRetryPolicy);
 
-        public const string HttpCircuitBreakerAsyncPolicy = nameof(HttpCircuitBreakerAsyncPolicy);
-        public const string HttpCircuitBreakerSyncPolicy = nameof(HttpCircuitBreakerSyncPolicy);
+        public const string HttpCircuitBreakerPolicyAsync = nameof(HttpCircuitBreakerPolicyAsync);
+        public const string HttpCircuitBreakerPolicy = nameof(HttpCircuitBreakerPolicy);
+
+        public const string HttpRequestTimeoutPolicyAsync = nameof(HttpRequestTimeoutPolicyAsync);
+        public const string HttpRequestTimeoutPolicy = nameof(HttpRequestTimeoutPolicy);
     }
 }

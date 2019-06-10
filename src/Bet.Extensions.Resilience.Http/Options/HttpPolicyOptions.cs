@@ -1,7 +1,7 @@
 ﻿namespace Bet.Extensions.Resilience.Http.Options
 {
     /// <summary>
-    /// The default policy option. The root configuration is ``.
+    /// The default policy option. The root configuration is 'Policies'.
     /// </summary>
     public class HttpPolicyOptions
     {
@@ -9,6 +9,7 @@
         {
             HttpCircuitBreaker = new CircuitBreakerPolicyOptions();
             HttpRetry = new RetryPolicyOptions();
+            HttpRequestTimeout = new RequestTimeoutOptions();
         }
 
         public HttpPolicyOptions(
@@ -22,5 +23,7 @@
         public CircuitBreakerPolicyOptions HttpCircuitBreaker { get; set; }
 
         public RetryPolicyOptions HttpRetry { get; set; }
+
+        public RequestTimeoutOptions HttpRequestTimeout { get; set; }
     }
 }

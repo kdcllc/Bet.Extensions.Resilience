@@ -14,9 +14,9 @@ namespace Bet.Extensions.Resilience.Http.Options
         public Uri BaseAddress { get; set; }
 
         /// <summary>
-        /// The timespan before the <see cref="HttpClient"/> timeouts.
+        /// The timespan before the <see cref="HttpClient"/> timeouts. The default value is 100 seconds or 1:40 min.
         /// </summary>
-        public TimeSpan Timeout { get; set; } = TimeSpan.FromMinutes(2);
+        public TimeSpan Timeout { get; set; } = TimeSpan.FromSeconds(100);
 
         /// <summary>
         /// The content type of the <see cref="HttpClient"/> request.

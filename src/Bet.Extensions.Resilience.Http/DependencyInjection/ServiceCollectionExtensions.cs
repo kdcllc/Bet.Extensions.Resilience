@@ -174,6 +174,14 @@ namespace Microsoft.Extensions.DependencyInjection
 
                 AddPollyPolicy(clientOptions, retryPolicy);
 
+                IAsyncPolicy<HttpResponseMessage> timeoutPolicy(IServiceProvider sp, HttpRequestMessage request)
+                {
+                    var httpTimeoutOptions = sp.GetRequiredService<IOptions<HttpPolicyOptions>>().Value;
+                    return Policies.GetTimeoutAsync(httpTimeoutOptions.HttpRequestTimeout.Timeout);
+                }
+
+                AddPollyPolicy(clientOptions, timeoutPolicy);
+
                 IAsyncPolicy<HttpResponseMessage> circuitBreakerPolicy(IServiceProvider sp, HttpRequestMessage request)
                 {
                     var httpPolicyOptions = sp.GetRequiredService<IOptions<HttpPolicyOptions>>().Value;
