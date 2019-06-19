@@ -1,10 +1,14 @@
-﻿namespace Bet.Extensions.Resilience.Http.Options
+﻿using System;
+
+namespace Bet.Extensions.Resilience.Http.Options
 {
     /// <summary>
     /// The default policy option. The root configuration is 'Policies'.
     /// </summary>
     public class HttpPolicyOptions
     {
+        public TimeSpan Timeout { get; set; }
+
         public HttpPolicyOptions()
         {
             HttpCircuitBreaker = new CircuitBreakerPolicyOptions();

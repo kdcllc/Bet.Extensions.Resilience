@@ -124,7 +124,7 @@ namespace Bet.Extensions.Resilience.Http.MessageHandlers.PollyHttp
             var context = request.GetPolicyExecutionContext();
             if (context == null)
             {
-                context = new Context();
+                context = new Context(request.RequestUri.PathAndQuery);
                 request.SetPolicyExecutionContext(context);
                 cleanUpContext = true;
 
