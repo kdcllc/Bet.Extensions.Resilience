@@ -6,12 +6,12 @@ using Xunit.Abstractions;
 
 namespace Bet.Extensions.Resilience.UnitTest
 {
-    public class TestLogger : ILogger
+    public class XunitLogger : ILogger
     {
         private readonly ITestOutputHelper _output;
         private readonly string _categoryName;
 
-        public TestLogger(ITestOutputHelper output, string categoryName)
+        public XunitLogger(ITestOutputHelper output, string categoryName)
         {
             _output = output ?? throw new ArgumentNullException(nameof(output));
             _categoryName = categoryName;

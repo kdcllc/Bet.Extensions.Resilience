@@ -28,7 +28,7 @@ namespace Bet.Extensions.Resilience.UnitTest
                 .ConfigureLogging(logger =>
                 {
                     logger.AddDebug();
-                    logger.AddProvider(new TestLoggerProvider(_output));
+                    logger.AddProvider(new XunitLoggerProvider(_output));
                 })
                 .Configure(app =>
                 {

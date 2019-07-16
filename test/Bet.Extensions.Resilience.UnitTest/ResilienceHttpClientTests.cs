@@ -304,7 +304,7 @@ namespace Bet.Extensions.Resilience.UnitTest
             var configurationBuilder = new ConfigurationBuilder().AddInMemoryCollection(dic1);
 
             serviceCollection.AddLogging(builder => {
-                builder.AddProvider(new TestLoggerProvider(Output));
+                builder.AddProvider(new XunitLoggerProvider(Output));
             });
 
             serviceCollection.AddSingleton<IConfiguration>(configurationBuilder.Build());
@@ -336,7 +336,7 @@ namespace Bet.Extensions.Resilience.UnitTest
             var serviceCollection = new ServiceCollection();
 
             serviceCollection.AddLogging(builder => {
-                builder.AddProvider(new TestLoggerProvider(Output));
+                builder.AddProvider(new XunitLoggerProvider(Output));
             });
 
             var server = new TestServerBuilder(Output).GetSimpleServer();

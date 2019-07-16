@@ -342,7 +342,6 @@ namespace Microsoft.Extensions.DependencyInjection
             }
 
             throw new InvalidOperationException(string.Format(_message, builder.Name));
-
         }
 
         /// <summary>
@@ -476,7 +475,6 @@ namespace Microsoft.Extensions.DependencyInjection
             }
 
             throw new InvalidOperationException(string.Format(_message, builder.Name));
-
         }
     }
 }
