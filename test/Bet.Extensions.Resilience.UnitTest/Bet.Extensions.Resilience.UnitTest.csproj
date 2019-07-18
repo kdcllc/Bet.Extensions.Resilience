@@ -22,7 +22,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Bet.Extensions.MessageHandlers\Bet.Extensions.MessageHandlers.csproj" />
     <ProjectReference Include="..\..\src\Bet.Extensions.Resilience.Http\Bet.Extensions.Resilience.Http.csproj" />
   </ItemGroup>
 

@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
-
+using Bet.Extensions.MessageHandlers;
 using Bet.Extensions.Resilience.Abstractions;
 using Bet.Extensions.Resilience.Http.MessageHandlers.PollyHttp;
 using Bet.Extensions.Resilience.Http.Options;

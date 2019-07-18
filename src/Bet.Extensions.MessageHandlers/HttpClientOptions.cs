@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Net.Http;
 
-namespace Bet.Extensions.Resilience.Http.Options
+namespace Bet.Extensions.MessageHandlers
 {
     /// <summary>
     /// The options for <see cref="HttpClient"/>.
