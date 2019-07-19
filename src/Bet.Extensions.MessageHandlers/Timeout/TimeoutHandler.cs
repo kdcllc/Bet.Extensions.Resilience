@@ -7,7 +7,7 @@ using Microsoft.Extensions.Options;
 
 namespace Bet.Extensions.MessageHandlers.Timeout
 {
-    public class TimeoutHandler : DelegatingHandler
+    public sealed class TimeoutHandler : DelegatingHandler
     {
         private readonly bool _ownsHandler;
         private readonly TimeSpan _defaultTimeout;

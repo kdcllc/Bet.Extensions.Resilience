@@ -6,7 +6,7 @@ namespace Bet.Extensions.MessageHandlers.Timeout
     /// <summary>
     /// The options to configure for <see cref="TimeoutHandler"/>.
     /// </summary>
-    public class TimeoutHandlerOptions
+    public sealed class TimeoutHandlerOptions
     {
         /// <summary>
         /// The default time out for <see cref="HttpClient"/>.

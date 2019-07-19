@@ -17,7 +17,7 @@ using Polly.Registry;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Bet.Extensions.Resilience.UnitTest
+namespace Bet.Extensions.Resilience.UnitTest.Resilience
 {
     public class ResilienceHttpClientTests
     {

@@ -25,4 +25,9 @@
     <ProjectReference Include="..\..\src\Bet.Extensions.Resilience.Http\Bet.Extensions.Resilience.Http.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="PolicyBuilders\" />
+    <Folder Include="Resilience\" />
+  </ItemGroup>
+
 </Project>

@@ -10,7 +10,7 @@ using Polly;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Bet.Extensions.Resilience.UnitTest
+namespace Bet.Extensions.Resilience.UnitTest.PolicyBuilders
 {
     public class RetryPolicyBuilderTests
     {

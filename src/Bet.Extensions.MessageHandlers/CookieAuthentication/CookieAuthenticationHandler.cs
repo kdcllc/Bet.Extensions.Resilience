@@ -1,0 +1,126 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Net;
+using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
+
+using Microsoft.Extensions.Logging;
+
+namespace Bet.Extensions.MessageHandlers.CookieAuthentication
+{
+    public sealed class CookieAuthenticationHandler : DelegatingHandler
+    {
+        private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
+        private readonly CookieAuthenticationHandlerOptions _options;
+        private readonly ILogger _logger;
+        private readonly bool _ownsHandler;
+        private readonly CookieGenerator _cookieGenerator;
+        private IEnumerable<string> _cookies;
+
+        public CookieAuthenticationHandler(CookieAuthenticationHandlerOptions options, ILogger logger)
+        {
+            _options = options ?? throw new ArgumentNullException(nameof(options));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+
+            InnerHandler = options.InnerHandler ?? new HttpClientHandler();
+            _ownsHandler = options.InnerHandler == null;
+
+            _cookieGenerator = new CookieGenerator(options.Options, () => new HttpClient(InnerHandler, false));
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+
+            if (disposing && _ownsHandler)
+            {
+                InnerHandler.Dispose();
+            }
+        }
+
+        protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        {
+            try
+            {
+                // this httpclient never requested cookies.
+                if (_cookies == null)
+                {
+                    var cookie = await GetCookieResponse(cancellationToken);
+                    if (!string.IsNullOrEmpty(cookie))
+                    {
+                        request.Headers.Add("Cookie", cookie);
+                    }
+
+                    _logger.LogDebug("{name} created cookie header", nameof(CookieAuthenticationHandler));
+                }
+
+                var response = await base.SendAsync(request, cancellationToken);
+
+                if (response.StatusCode != HttpStatusCode.Unauthorized)
+                {
+                    return response;
+                }
+
+                {
+                    var cookie = await RefreshCookieResponse(cancellationToken);
+                    if (!string.IsNullOrEmpty(cookie))
+                    {
+                        request.Headers.Add("Cookie", cookie);
+
+                        response = await base.SendAsync(request, cancellationToken);
+
+                        _logger.LogDebug("{name} created cookie header", nameof(CookieAuthenticationHandler));
+                    }
+                }
+
+                return response;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.ToString());
+                throw;
+            }
+        }
+
+        private async Task<string> GetCookieResponse(CancellationToken cancellationToken)
+        {
+            try
+            {
+                _semaphore.Wait(cancellationToken);
+                if (cancellationToken.IsCancellationRequested)
+                {
+                    return null;
+                }
+
+                _cookies = _cookies ?? await _cookieGenerator.GetCookies(cancellationToken);
+
+                return _cookies.Flatten(";");
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
+        }
+
+        private async Task<string> RefreshCookieResponse(CancellationToken cancellationToken)
+        {
+            try
+            {
+                _semaphore.Wait(cancellationToken);
+                if (cancellationToken.IsCancellationRequested)
+                {
+                    return null;
+                }
+
+                _cookies = await _cookieGenerator.GetCookies(cancellationToken);
+
+                return _cookies.Flatten(";");
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
+        }
+    }
+}

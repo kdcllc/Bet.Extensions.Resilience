@@ -1,6 +1,6 @@
 ﻿using Bet.Extensions.MessageHandlers;
 
-namespace Bet.Extensions.Resilience.UnitTest
+namespace Bet.Extensions.Resilience.UnitTest.Resilience
 {
     public class TestHttpClientOptions : HttpClientOptions
     {
