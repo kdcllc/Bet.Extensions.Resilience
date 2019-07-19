@@ -26,16 +26,16 @@ namespace Bet.Extensions.Resilience.UnitTest.MessageHandlers
             // arrange
             var services = new ServiceCollection();
 
-            //var dic = new Dictionary<string, string>
-            //{
-            //    { "OktaClientPolicy:RetryStrategy:MaxRetry", maxRetry.ToString() },
-            //    { "OktaClientPolicy:RetryStrategy:Timeout", timeout.ToString() },
-            //    { "OktaClientPolicy:RetryStrategy:UseFallBackPolicy", useFallBackPolicy.ToString() },
-            //    { "OktaClientPolicy:RetryStrategy:BackoffSecondsDelta", "2" }
-            //};
+            var dic = new Dictionary<string, string>
+            {
+                { "ChavahHttpClient:BaseAddress", "https://example" },
+                { "ChavahHttpClient:Timeout", "00:01:40" },
+                { "ChavahHttpClient:Username", "username" },
+                { "ChavahHttpClient:Password", "password" }
+            };
 
-            //var config = new ConfigurationBuilder().AddInMemoryCollection(dic).Build();
-            //services.AddSingleton<IConfiguration>(config);
+            var config = new ConfigurationBuilder().AddInMemoryCollection(dic).Build();
+            services.AddSingleton<IConfiguration>(config);
 
             services.AddLogging(builder => builder.AddProvider(new XunitLoggerProvider(Output)));
 
