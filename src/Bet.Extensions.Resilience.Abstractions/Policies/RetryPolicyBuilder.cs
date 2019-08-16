@@ -16,7 +16,7 @@ namespace Bet.Extensions.Resilience.Abstractions.Policies
         /// <param name="retryCount">The retry count for the policy.</param>
         /// <param name="backOffPower">The back off power to be used to calculate the next timeout.</param>
         /// <param name="policyName">The name of the policy.</param>
-        /// <returns><see cref="IAsyncPolicy"/></returns>
+        /// <returns><see cref="IAsyncPolicy"/>.</returns>
         public static IAsyncPolicy GetWaitAndRetryAsync<TException>(Func<TException, bool> condition, int retryCount, int backOffPower, string policyName)
             where TException : Exception
         {
@@ -36,8 +36,8 @@ namespace Bet.Extensions.Resilience.Abstractions.Policies
         /// <param name="retryCount">The retry count for the policy.</param>
         /// <param name="backOffPower">The back off power to be used to calculate the next timeout.</param>
         /// <param name="policyName">The name of the policy.</param>
-        /// <returns><see cref="ISyncPolicy"/></returns>
-        public static ISyncPolicy GetWaitAndRetry<TException>(Func<TException,bool> condition, int retryCount, int backOffPower, string policyName)
+        /// <returns><see cref="ISyncPolicy"/>.</returns>
+        public static ISyncPolicy GetWaitAndRetry<TException>(Func<TException, bool> condition, int retryCount, int backOffPower, string policyName)
               where TException : Exception
         {
             return Policy.Handle(condition)
@@ -55,14 +55,14 @@ namespace Bet.Extensions.Resilience.Abstractions.Policies
         /// <param name="condition">The condition for the policy handling the request.</param>
         /// <param name="retryCount">The retry count for the policy.</param>
         /// <param name="policyName">The name of the policy.</param>
-        /// <returns><see cref="IAsyncPolicy"/></returns>
+        /// <returns><see cref="IAsyncPolicy"/>.</returns>
         public static IAsyncPolicy GetRetryAsync<TException>(Func<TException, bool> condition, int retryCount, string policyName)
             where TException : Exception
         {
-           return Policy.Handle(condition).RetryAsync(
-                retryCount: retryCount,
-                onRetry: (result, retryAttempt, context) => OnRetryFunc(result, retryAttempt, context, retryCount))
-                .WithPolicyKey(policyName);
+            return Policy.Handle(condition).RetryAsync(
+                 retryCount: retryCount,
+                 onRetry: (result, retryAttempt, context) => OnRetryFunc(result, retryAttempt, context, retryCount))
+                 .WithPolicyKey(policyName);
         }
 
         /// <summary>
@@ -72,7 +72,7 @@ namespace Bet.Extensions.Resilience.Abstractions.Policies
         /// <param name="condition">The condition for the policy handling the request.</param>
         /// <param name="retryCount">The retry count for the policy.</param>
         /// <param name="policyName">The name of the policy.</param>
-        /// <returns><see cref="ISyncPolicy"/></returns>
+        /// <returns><see cref="ISyncPolicy"/>.</returns>
         public static ISyncPolicy GetRetry<TException>(Func<TException, bool> condition, int retryCount, string policyName)
             where TException : Exception
         {
@@ -93,7 +93,7 @@ namespace Bet.Extensions.Resilience.Abstractions.Policies
                             context.TryGetLogger(out var logger);
                             context.TryGetActionName(out var actionName);
 
-                            Logger.OnDurationSetInformation(logger,actionName,context.PolicyKey,attemptTimeout,retryAttempt,-1);
+                            Logger.OnDurationSetInformation(logger, actionName, context.PolicyKey, attemptTimeout, retryAttempt, -1);
                             return attemptTimeout;
                         },
                     onRetry: (exception, attempt, delay, context) => { })
@@ -134,7 +134,7 @@ namespace Bet.Extensions.Resilience.Abstractions.Policies
             Logger.OnRetryError(logger, context.PolicyKey, retryAttempt, retryCount, result?.GetBaseException());
         }
 
-        public static class EventIds
+        private static class EventIds
         {
             public static readonly EventId OnRetry = new EventId(100, nameof(OnRetry));
             public static readonly EventId OnDurationSet = new EventId(101, nameof(OnDurationSet));
@@ -148,7 +148,7 @@ namespace Bet.Extensions.Resilience.Abstractions.Policies
                 EventIds.OnRetry,
                 "#Polly #WaitAndRetryAsync executing OnRetry with Policy: {PolicyKey} and Retries: {retryAttempt} of {retryCount}");
 
-            private static readonly Action<ILogger, string, string, TimeSpan, int,int, Exception> OnRetryInformationInternal =
+            private static readonly Action<ILogger, string, string, TimeSpan, int, int, Exception> OnRetryInformationInternal =
                LoggerMessage.Define<string, string, TimeSpan, int, int>(
                LogLevel.Information,
                EventIds.OnRetry,
@@ -162,10 +162,10 @@ namespace Bet.Extensions.Resilience.Abstractions.Policies
 
             internal static void OnDurationSetInformation(ILogger logger, string actionName, string policyKey, TimeSpan timeSpan, int retryAttempt, int retryCount)
             {
-               if (logger != null)
-               {
+                if (logger != null)
+                {
                     OnDurationSetInformationInternal(logger, actionName, policyKey, timeSpan, retryAttempt, retryCount, null);
-               }
+                }
             }
 
             internal static void OnRetryError(ILogger logger, string policyKey, int retryAttempt, int retryCount, Exception exception)

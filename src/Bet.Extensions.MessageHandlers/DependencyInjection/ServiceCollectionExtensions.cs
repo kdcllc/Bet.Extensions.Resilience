@@ -12,10 +12,7 @@ namespace Microsoft.Extensions.DependencyInjection
             this IServiceCollection services,
             Action<TimeoutHandlerOptions> configure = null)
         {
-            services.Configure<TimeoutHandlerOptions>(opt =>
-            {
-                configure?.Invoke(opt);
-            });
+            services.Configure<TimeoutHandlerOptions>(opt => configure?.Invoke(opt));
 
             services.TryAddTransient<TimeoutHandler>();
 

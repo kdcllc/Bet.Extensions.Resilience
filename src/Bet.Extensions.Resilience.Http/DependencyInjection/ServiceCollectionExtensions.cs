@@ -21,7 +21,7 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static class ServiceCollectionExtensions
     {
-        private static readonly string _message = "The HttpClient factory with the name '{0}' is not registered.";
+        private const string _message = "The HttpClient factory with the name '{0}' is not registered.";
 
         private static readonly Func<IResilienceHttpClientBuilder, ResilienceHttpClientOptions>
           _findIntance = (builder) => builder.Services.SingleOrDefault(sd => sd.ServiceType == typeof(ResilienceHttpClientOptions))?.ImplementationInstance as ResilienceHttpClientOptions;
@@ -33,19 +33,19 @@ namespace Microsoft.Extensions.DependencyInjection
         /// Adds Resilience <see cref="HttpClient"/> with custom options that can be used to inject inside of the TypedClient.
         /// </summary>
         /// <typeparam name="TClient">The interface for the typed client.</typeparam>
-        /// <typeparam name="TImplementation">The implementation of the typed client./</typeparam>
+        /// <typeparam name="TImplementation">The implementation of the typed client./.</typeparam>
         /// <typeparam name="TOptions">The options type to be used to register with DI.</typeparam>
         /// <param name="services">The <see cref="IServiceCollection"/>.</param>
         /// <param name="sectionName">The default is null and resolves TOptions name as root.</param>
         /// <param name="optionsName">The default is TOptions name.</param>
-        /// <returns>IResilienceHttpClientBuilder</returns>
+        /// <returns>IResilienceHttpClientBuilder.</returns>
         public static IResilienceHttpClientBuilder AddResilienceTypedClient<TClient, TImplementation, TOptions>(
             this IServiceCollection services,
             string sectionName = null,
             string optionsName = null)
             where TClient : class
             where TImplementation : class, TClient
-            where TOptions: HttpClientOptions, new()
+            where TOptions : HttpClientOptions, new()
         {
             var builder = AddResilienceHttpClientBuilder<TClient>(services);
             optionsName = optionsName ?? typeof(TOptions).Name;
@@ -82,7 +82,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// Adds Resilience <see cref="HttpClient"/>.
         /// </summary>
         /// <typeparam name="TClient">The interface for the typed client.</typeparam>
-        /// <typeparam name="TImplementation">The implementation of the typed client./</typeparam>
+        /// <typeparam name="TImplementation">The implementation of the typed client./.</typeparam>
         /// <param name="services">The <see cref="IServiceCollection"/>.</param>
         /// <param name="sectionName">The default is null and resolves TOptions name as root.</param>
         /// <param name="optionsName">The default is TOptions name.</param>
@@ -109,40 +109,8 @@ namespace Microsoft.Extensions.DependencyInjection
         }
 
         /// <summary>
-        /// This is required by both registrations, in order to get the basic configurations passed to DI.
-        /// </summary>
-        /// <param name="sectionName"></param>
-        /// <param name="optionsName"></param>
-        /// <param name="builder"></param>
-        /// <param name="implName"></param>
-        private static void AddDefaultHttpClientOptions(
-            string sectionName,
-            string optionsName,
-            IResilienceHttpClientBuilder builder,
-            string implName)
-        {
-            builder.Services.AddTransient<IConfigureOptions<HttpClientOptions>>(sp =>
-            {
-                // this always must be associated with TImplementation
-                return new ConfigureNamedOptions<HttpClientOptions>(implName, (options) =>
-                {
-                    var configuration = sp.GetRequiredService<IConfiguration>();
-                    if (sectionName == null)
-                    {
-                        configuration.Bind(optionsName, options);
-                    }
-                    else
-                    {
-                        var section = configuration.GetSection(sectionName);
-                        section.Bind(optionsName, options);
-                    }
-                });
-            });
-        }
-
-        /// <summary>
         /// Adds Default Http Policies to be executed within the context of the request.
-        /// WaitAndRetry and CircuitBreaker
+        /// WaitAndRetry and CircuitBreaker.
         /// </summary>
         /// <param name="builder">The <see cref="IResilienceHttpClientBuilder"/> instance to configure.</param>
         /// <param name="enableLogging">The configuration of the default policies to log the output. The default is false.</param>
@@ -166,23 +134,23 @@ namespace Microsoft.Extensions.DependencyInjection
             {
                 clientOptions.EnableLogging = enableLogging;
 
-                IAsyncPolicy<HttpResponseMessage> retryPolicy(IServiceProvider sp, HttpRequestMessage request)
+                IAsyncPolicy<HttpResponseMessage> RetryPolicy(IServiceProvider sp, HttpRequestMessage request)
                 {
                     var httpPolicyOptions = sp.GetRequiredService<IOptions<HttpPolicyOptions>>().Value;
                     return Policies.GetRetryAsync(httpPolicyOptions.HttpRetry.Count, httpPolicyOptions.HttpRetry.BackoffPower);
                 }
 
-                AddPollyPolicy(clientOptions, retryPolicy);
+                AddPollyPolicy(clientOptions, RetryPolicy);
 
-                IAsyncPolicy<HttpResponseMessage> timeoutPolicy(IServiceProvider sp, HttpRequestMessage request)
+                IAsyncPolicy<HttpResponseMessage> TimeoutPolicy(IServiceProvider sp, HttpRequestMessage request)
                 {
                     var httpTimeoutOptions = sp.GetRequiredService<IOptions<HttpPolicyOptions>>().Value;
                     return Policies.GetTimeoutAsync(httpTimeoutOptions.HttpRequestTimeout.Timeout);
                 }
 
-                AddPollyPolicy(clientOptions, timeoutPolicy);
+                AddPollyPolicy(clientOptions, TimeoutPolicy);
 
-                IAsyncPolicy<HttpResponseMessage> circuitBreakerPolicy(IServiceProvider sp, HttpRequestMessage request)
+                IAsyncPolicy<HttpResponseMessage> CircuitBreakerPolicy(IServiceProvider sp, HttpRequestMessage request)
                 {
                     var httpPolicyOptions = sp.GetRequiredService<IOptions<HttpPolicyOptions>>().Value;
                     return Policies.GetCircuitBreakerAsync(
@@ -190,7 +158,7 @@ namespace Microsoft.Extensions.DependencyInjection
                         httpPolicyOptions.HttpCircuitBreaker.DurationOfBreak);
                 }
 
-                AddPollyPolicy(clientOptions, circuitBreakerPolicy);
+                AddPollyPolicy(clientOptions, CircuitBreakerPolicy);
 
                 return builder;
             }
@@ -271,6 +239,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
                 return builder;
             }
+
             throw new InvalidOperationException(string.Format(_message, builder.Name));
         }
 
@@ -301,7 +270,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// Adds all of the <see cref="HttpClient"/> configurations at once.
         /// </summary>
         /// <param name="builder">The <see cref="IResilienceHttpClientBuilder"/> instance to configure.</param>
-        /// <param name="configure">The delegate to configure <see cref="HttpClient"/></param>
+        /// <param name="configure">The delegate to configure <see cref="HttpClient"/>.</param>
         /// <returns></returns>
         public static IResilienceHttpClientBuilder AddAllConfigurations(
             this IResilienceHttpClientBuilder builder,
@@ -361,8 +330,8 @@ namespace Microsoft.Extensions.DependencyInjection
                 throw new ArgumentNullException(nameof(services));
             }
 
-            if (!services.Any(d=> d.ServiceType == typeof(IReadOnlyPolicyRegistry<string>))
-                || !services.Any(d=> d.ServiceType == typeof(IPolicyRegistry<string>)))
+            if (!services.Any(d => d.ServiceType == typeof(IReadOnlyPolicyRegistry<string>))
+                || !services.Any(d => d.ServiceType == typeof(IPolicyRegistry<string>)))
             {
                 if (registry == null)
                 {
@@ -376,6 +345,38 @@ namespace Microsoft.Extensions.DependencyInjection
             return registry;
         }
 
+        /// <summary>
+        /// This is required by both registrations, in order to get the basic configurations passed to DI.
+        /// </summary>
+        /// <param name="sectionName"></param>
+        /// <param name="optionsName"></param>
+        /// <param name="builder"></param>
+        /// <param name="implName"></param>
+        private static void AddDefaultHttpClientOptions(
+            string sectionName,
+            string optionsName,
+            IResilienceHttpClientBuilder builder,
+            string implName)
+        {
+            builder.Services.AddTransient<IConfigureOptions<HttpClientOptions>>(sp =>
+            {
+                // this always must be associated with TImplementation
+                return new ConfigureNamedOptions<HttpClientOptions>(implName, (options) =>
+                {
+                    var configuration = sp.GetRequiredService<IConfiguration>();
+                    if (sectionName == null)
+                    {
+                        configuration.Bind(optionsName, options);
+                    }
+                    else
+                    {
+                        var section = configuration.GetSection(sectionName);
+                        section.Bind(optionsName, options);
+                    }
+                });
+            });
+        }
+
         private static void AddPollyPolicy(
             HttpClientOptionsBuilder options,
             Func<IServiceProvider, HttpRequestMessage, IAsyncPolicy<HttpResponseMessage>> policy)
@@ -385,7 +386,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 options.HttpClientBuilder.AddHttpMessageHandler((sp) =>
                 {
                     var logger = sp.GetRequiredService<ILoggerFactory>().CreateLogger($"System.Net.Http.HttpClient.{options.Name}");
-                    return new PolicyWithLoggingHttpMessageHandler((request) => policy(sp, request), logger,options.Name);
+                    return new PolicyWithLoggingHttpMessageHandler((request) => policy(sp, request), logger, options.Name);
                 });
             }
             else

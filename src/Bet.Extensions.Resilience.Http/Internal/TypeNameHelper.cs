@@ -2,12 +2,12 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 // ORIGIN: https://github.com/aspnet/Extensions/blob/2f53c3619543bb2b7a166c1926ea462b8521d2fc/src/Shared/src/TypeNameHelper/TypeNameHelper.cs
 using System;
-using System.Text;
 using System.Collections.Generic;
+using System.Text;
 
 namespace Microsoft.Extensions.Internal
 {
-    internal class TypeNameHelper
+    internal sealed class TypeNameHelper
     {
         private const char DefaultNestedTypeDelimiter = '+';
 
@@ -43,7 +43,7 @@ namespace Microsoft.Extensions.Internal
         /// <param name="fullName"><c>true</c> to print a fully qualified name.</param>
         /// <param name="includeGenericParameterNames"><c>true</c> to include generic parameter names.</param>
         /// <param name="includeGenericParameters"><c>true</c> to include generic parameters.</param>
-        /// <param name="nestedTypeDelimiter">Character to use as a delimiter in nested type names</param>
+        /// <param name="nestedTypeDelimiter">Character to use as a delimiter in nested type names.</param>
         /// <returns>The pretty printed type name.</returns>
         public static string GetTypeDisplayName(Type type, bool fullName = true, bool includeGenericParameterNames = false, bool includeGenericParameters = true, char nestedTypeDelimiter = DefaultNestedTypeDelimiter)
         {

@@ -37,6 +37,16 @@ namespace Bet.Extensions.MessageHandlers.Timeout
             }
         }
 
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+
+            if (disposing && _ownsHandler)
+            {
+                InnerHandler?.Dispose();
+            }
+        }
+
         private CancellationTokenSource GetCancellationTokenSource(HttpRequestMessage request, CancellationToken cancellationToken)
         {
             var timeout = request.GetTimeout() ?? _defaultTimeout;
@@ -50,16 +60,6 @@ namespace Bet.Extensions.MessageHandlers.Timeout
                 var cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
                 cts.CancelAfter(timeout);
                 return cts;
-            }
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            base.Dispose(disposing);
-
-            if (disposing && _ownsHandler)
-            {
-                InnerHandler?.Dispose();
             }
         }
     }

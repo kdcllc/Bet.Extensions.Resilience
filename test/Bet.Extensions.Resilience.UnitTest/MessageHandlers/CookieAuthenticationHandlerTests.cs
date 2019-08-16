@@ -1,14 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Xunit.Abstractions;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
-using Bet.Extensions.MessageHandlers.CookieAuthentication;
+﻿using System.Collections.Generic;
 using System.Net.Http;
+
+using Bet.Extensions.MessageHandlers.CookieAuthentication;
+
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+
+using Xunit.Abstractions;
 
 namespace Bet.Extensions.Resilience.UnitTest.MessageHandlers
 {
@@ -21,7 +20,7 @@ namespace Bet.Extensions.Resilience.UnitTest.MessageHandlers
 
         public ITestOutputHelper Output { get; }
 
-        public async Task Authenticate_Successful()
+        public void Authenticate_Successful()
         {
             // arrange
             var services = new ServiceCollection();

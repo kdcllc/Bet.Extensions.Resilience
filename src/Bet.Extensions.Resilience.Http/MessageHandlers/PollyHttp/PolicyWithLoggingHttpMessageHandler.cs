@@ -23,16 +23,16 @@ namespace Bet.Extensions.Resilience.Http.MessageHandlers.PollyHttp
     /// See the Polly project and its documentation (https://github.com/app-vnext/Polly) for authoritative information on Polly.
     /// </para>
     /// <para>
-    /// The extension methods on <see cref="PollyHttpClientBuilderExtensions"/> are designed as a convenient and correct
-    /// way to create a <see cref="PolicyHttpMessageHandler"/>.
+    /// The extension methods on <see cref="T:PollyHttpClientBuilderExtensions"/> are designed as a convenient and correct
+    /// way to create a <see cref="T:PolicyHttpMessageHandler"/>.
     /// </para>
     /// <para>
-    /// The <see cref="PollyHttpClientBuilderExtensions.AddPolicyHandler(IHttpClientBuilder, IAsyncPolicy{HttpResponseMessage})"/>
-    /// method supports the creation of a <see cref="PolicyHttpMessageHandler"/> for any kind of policy. This includes
+    /// The <see cref="T:PollyHttpClientBuilderExtensions.AddPolicyHandler(IHttpClientBuilder, IAsyncPolicy{HttpResponseMessage})"/>
+    /// method supports the creation of a <see cref="T:PolicyHttpMessageHandler"/> for any kind of policy. This includes
     /// non-reactive policies, such as Timeout or Cache, which don't require the underlying request to fail first.
     /// </para>
     /// <para>
-    /// <see cref="PolicyHttpMessageHandler"/> and the <see cref="PollyHttpClientBuilderExtensions"/> convenience methods
+    /// <see cref="T:PolicyHttpMessageHandler"/> and the <see cref="T:PollyHttpClientBuilderExtensions"/> convenience methods
     /// only accept the generic <see cref="IAsyncPolicy{HttpResponseMessage}"/>. Generic policy instances can be created
     /// by using the generic methods on <see cref="Policy"/> such as <see cref="Policy.TimeoutAsync{TResult}(int)"/>.
     /// </para>
@@ -46,7 +46,7 @@ namespace Bet.Extensions.Resilience.Http.MessageHandlers.PollyHttp
     /// </example>
     /// </para>
     /// <para>
-    /// The <see cref="PollyHttpClientBuilderExtensions.AddTransientHttpErrorPolicy(IHttpClientBuilder, Func{PolicyBuilder{HttpResponseMessage}, IAsyncPolicy{HttpResponseMessage}})"/>
+    /// The <see cref="T:PollyHttpClientBuilderExtensions.AddTransientHttpErrorPolicy(IHttpClientBuilder, Func{PolicyBuilder{HttpResponseMessage}, IAsyncPolicy{HttpResponseMessage}})"/>
     /// method is an opinionated convenience method that supports the application of a policy for requests that fail due
     /// to a connection failure or server error (5XX HTTP status code). This kind of method supports only reactive policies
     /// such as Retry, Circuit-Breaker or Fallback. This method is only provided for convenience; we recommend creating
@@ -62,11 +62,11 @@ namespace Bet.Extensions.Resilience.Http.MessageHandlers.PollyHttp
     /// All policies provided by Polly are designed to be efficient when used in a long-lived way. Certain policies such as the
     /// Bulkhead and Circuit-Breaker maintain state and should be scoped across calls you wish to share the Bulkhead or Circuit-Breaker state.
     /// Take care to ensure the correct lifetimes when using policies and message handlers together in custom scenarios. The extension
-    /// methods provided by <see cref="PollyHttpClientBuilderExtensions"/> are designed to assign a long lifetime to policies
+    /// methods provided by <see cref="T:PollyHttpClientBuilderExtensions"/> are designed to assign a long lifetime to policies
     /// and ensure that they can be used when the handler rotation feature is active.
     /// </para>
     /// <para>
-    /// The <see cref="PolicyHttpMessageHandler"/> will attach a context to the <see cref="HttpRequestMessage"/> prior
+    /// The <see cref="T:PolicyHttpMessageHandler"/> will attach a context to the <see cref="HttpRequestMessage"/> prior
     /// to executing a <see cref="Policy"/>, if one does not already exist. The <see cref="Context"/> will be provided
     /// to the policy for use inside the <see cref="Policy"/> and in other message handlers.
     /// </para>
@@ -79,6 +79,7 @@ namespace Bet.Extensions.Resilience.Http.MessageHandlers.PollyHttp
         private readonly Func<HttpRequestMessage, IAsyncPolicy<HttpResponseMessage>> _policySelector;
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="PolicyWithLoggingHttpMessageHandler"/> class.
         /// Creates a new <see cref="PolicyWithLoggingHttpMessageHandler"/>.
         /// </summary>
         /// <param name="policy">The policy.</param>
@@ -95,6 +96,7 @@ namespace Bet.Extensions.Resilience.Http.MessageHandlers.PollyHttp
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="PolicyWithLoggingHttpMessageHandler"/> class.
         /// Creates a new <see cref="PolicyWithLoggingHttpMessageHandler"/>.
         /// </summary>
         /// <param name="policySelector">A function which can select the desired policy for a given <see cref="HttpRequestMessage"/>.</param>

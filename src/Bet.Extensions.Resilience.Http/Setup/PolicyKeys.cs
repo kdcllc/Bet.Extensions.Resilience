@@ -5,7 +5,7 @@ namespace Bet.Extensions.Resilience.Http.Setup
     /// <summary>
     /// The default list of the Polly policies for <see cref="HttpClient"/>.
     /// </summary>
-    public class PolicyKeys
+    public sealed class PolicyKeys
     {
         public const string HttpWaitAndRetryPolicyAsync = nameof(HttpWaitAndRetryPolicyAsync);
         public const string HttpWaitAndRetryPolicy = nameof(HttpWaitAndRetryPolicy);

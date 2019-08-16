@@ -11,6 +11,18 @@ namespace Bet.Extensions.MessageHandlers
             StatusCode = statusCode;
         }
 
-        public HttpStatusCode StatusCode { get; private set; }
+        public HttpException() : base()
+        {
+        }
+
+        public HttpException(string message) : base(message)
+        {
+        }
+
+        public HttpException(string message, Exception innerException) : base(message, innerException)
+        {
+        }
+
+        public HttpStatusCode StatusCode { get; }
     }
 }

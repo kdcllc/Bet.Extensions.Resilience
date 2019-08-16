@@ -12,7 +12,7 @@ namespace Bet.Extensions.Resilience.Abstractions
         /// </summary>
         /// <typeparam name="T">The type pf the task to be executed.</typeparam>
         /// <param name="action">The function to be executed.</param>
-        /// <returns>type of the result</returns>
+        /// <returns>type of the result.</returns>
         T Execute<T>(Func<T> action);
 
         /// <summary>

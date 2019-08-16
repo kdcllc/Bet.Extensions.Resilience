@@ -36,6 +36,7 @@ namespace Bet.Extensions.MessageHandlers.CookieAuthentication
             if (disposing && _ownsHandler)
             {
                 InnerHandler.Dispose();
+                _semaphore?.Dispose();
             }
         }
 

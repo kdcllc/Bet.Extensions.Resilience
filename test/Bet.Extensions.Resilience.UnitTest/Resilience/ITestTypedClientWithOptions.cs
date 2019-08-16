@@ -7,7 +7,7 @@ namespace Bet.Extensions.Resilience.UnitTest.Resilience
     {
         HttpClient HttpClient { get; }
 
-        string Id { get;  }
+        string Id { get; }
 
         Task<HttpResponseMessage> SendRequestAsync();
     }

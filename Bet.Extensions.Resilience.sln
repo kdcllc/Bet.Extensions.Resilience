@@ -36,7 +36,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bet.Extensions.MessageHandlers", "src\Bet.Extensions.MessageHandlers\Bet.Extensions.MessageHandlers.csproj", "{199EAEAC-9EE7-4324-A26D-F4CCF34BD971}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bet.Extensions.MessageHandlers", "src\Bet.Extensions.MessageHandlers\Bet.Extensions.MessageHandlers.csproj", "{199EAEAC-9EE7-4324-A26D-F4CCF34BD971}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

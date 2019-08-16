@@ -30,7 +30,7 @@ namespace Bet.Extensions.Resilience.UnitTest.MessageHandlers
                     builder.AddDebug();
                     builder.AddConsole();
                 })
-                .Configure(app=>
+                .Configure(app =>
                 {
                     app.Map("/delayed", (appBuilder) =>
                     {
@@ -77,14 +77,14 @@ namespace Bet.Extensions.Resilience.UnitTest.MessageHandlers
             using (var cts = new CancellationTokenSource())
             using (var client = new HttpClient(timeoutHandler))
             {
-                async Task<HttpResponseMessage>  delayedAsync() => await client.GetAsync("https://testserver:1000/delayed", cts.Token) ;
+                async Task<HttpResponseMessage> DelayedAsync() => await client.GetAsync("https://testserver:1000/delayed", cts.Token);
 
-                await Assert.ThrowsAsync<TimeoutException>(delayedAsync);
+                await Assert.ThrowsAsync<TimeoutException>(DelayedAsync);
 
                 cts.CancelAfter(TimeSpan.FromSeconds(1));
-                async Task<HttpResponseMessage> canceledAsync() => await client.GetAsync("https://testserver:1000/delayed", cts.Token);
+                async Task<HttpResponseMessage> CanceledAsync() => await client.GetAsync("https://testserver:1000/delayed", cts.Token);
 
-                await Assert.ThrowsAsync<OperationCanceledException>(canceledAsync);
+                await Assert.ThrowsAsync<OperationCanceledException>(CanceledAsync);
             }
         }
     }

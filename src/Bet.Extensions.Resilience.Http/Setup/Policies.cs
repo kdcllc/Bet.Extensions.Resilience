@@ -13,7 +13,7 @@ using Polly.Timeout;
 
 namespace Bet.Extensions.Resilience.Http.Setup
 {
-    internal class Policies
+    internal sealed class Policies
     {
         public static void AddDefaultPolicies(IPolicyRegistry<string> policyRegistry, HttpPolicyOptions options)
         {
@@ -64,7 +64,7 @@ namespace Bet.Extensions.Resilience.Http.Setup
 
         public static ISyncPolicy<HttpResponseMessage> GetTimeout(TimeSpan span)
         {
-            return Policy.Timeout<HttpResponseMessage>(span,TimeoutStrategy.Pessimistic);
+            return Policy.Timeout<HttpResponseMessage>(span, TimeoutStrategy.Pessimistic);
         }
 
         public static IAsyncPolicy<HttpResponseMessage> GetTimeoutAsync(TimeSpan span)

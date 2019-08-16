@@ -11,6 +11,7 @@ namespace Bet.Extensions.MessageHandlers
             {
                 AutomaticDecompression = DecompressionMethods.Deflate | DecompressionMethods.GZip;
             }
+
             UseCookies = false;
         }
     }

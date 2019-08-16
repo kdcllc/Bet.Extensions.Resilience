@@ -13,7 +13,7 @@ namespace Bet.Extensions.Resilience.Abstractions
         private readonly PolicyWrap _policyWrap;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PolicyAsyncExecutor"/> class.
+        /// Initializes a new instance of the <see cref="PolicySyncExecutor"/> class.
         /// </summary>
         /// <param name="policies"></param>
         public PolicySyncExecutor(IEnumerable<ISyncPolicy> policies)
@@ -22,13 +22,13 @@ namespace Bet.Extensions.Resilience.Abstractions
             _policyWrap = Policy.Wrap(_syncPolicies.ToArray());
         }
 
-        ///<inheritdoc/>
+        /// <inheritdoc/>
         public T Execute<T>(Func<T> action)
         {
             return _policyWrap.Execute(action);
         }
 
-        ///<inheritdoc/>
+        /// <inheritdoc/>
         public void Execute(Action action)
         {
             _policyWrap.Execute(action);
