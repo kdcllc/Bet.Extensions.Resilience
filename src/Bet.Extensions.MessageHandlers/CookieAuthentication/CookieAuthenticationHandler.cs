@@ -12,7 +12,6 @@ namespace Bet.Extensions.MessageHandlers.CookieAuthentication
     public sealed class CookieAuthenticationHandler : DelegatingHandler
     {
         private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
-        private readonly CookieAuthenticationHandlerOptions _options;
         private readonly ILogger _logger;
         private readonly bool _ownsHandler;
         private readonly CookieGenerator _cookieGenerator;
@@ -20,7 +19,6 @@ namespace Bet.Extensions.MessageHandlers.CookieAuthentication
 
         public CookieAuthenticationHandler(CookieAuthenticationHandlerOptions options, ILogger logger)
         {
-            _options = options ?? throw new ArgumentNullException(nameof(options));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
             InnerHandler = options.InnerHandler ?? new HttpClientHandler();
@@ -35,7 +33,7 @@ namespace Bet.Extensions.MessageHandlers.CookieAuthentication
 
             if (disposing && _ownsHandler)
             {
-                InnerHandler.Dispose();
+                InnerHandler?.Dispose();
                 _semaphore?.Dispose();
             }
         }

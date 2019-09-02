@@ -19,12 +19,12 @@ namespace Bet.Extensions.MessageHandlers
         {
             if (string.IsNullOrEmpty(Username))
             {
-                throw new ArgumentNullException(nameof(Username));
+                throw new ArgumentNullException("IsNullOrEmpty", nameof(Username));
             }
 
             if (string.IsNullOrEmpty(Password))
             {
-                throw new ArgumentNullException(nameof(Password));
+                throw new ArgumentNullException("IsNullOrEmpty", nameof(Password));
             }
 
             return Convert.ToBase64String(Encoding.UTF8.GetBytes($"{Username}:{Password}"));

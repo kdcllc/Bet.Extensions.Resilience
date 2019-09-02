@@ -41,7 +41,8 @@ namespace Bet.Extensions.Resilience.UnitTest
             public static NoopDisposable Instance = new NoopDisposable();
 
             public void Dispose()
-            { }
+            {
+            }
         }
     }
 }

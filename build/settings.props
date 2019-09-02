@@ -1,7 +1,7 @@
 <Project>
 
   <PropertyGroup Label="Basic Settings">
-    <VersionPrefix>1.0.0-pre</VersionPrefix>
+    <VersionPrefix>1.2.0-pre</VersionPrefix>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <SuppressNETCoreSdkPreviewMessage>true</SuppressNETCoreSdkPreviewMessage>
     <NoWarn>$(NoWarn);CS1591;</NoWarn>
@@ -25,7 +25,7 @@
     <RepositoryType>git</RepositoryType>
     <PackageLicense>https://github.com/kdcllc/Bet.Extensions.Resilience/master/LICENSE</PackageLicense>
     <PackageIconUrl>https://raw.githubusercontent.com/kdcllc/Bet.Extensions.Resilience/master/img/logo64x64.png</PackageIconUrl>
-    <PackageTags>AspNetCore, DotNet, Resilience, Kubernetes</PackageTags>
+    <PackageTags>AspNetCore, DotNet, Resilience, Pollly, Docker, Web Api, Kubernetes</PackageTags>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 

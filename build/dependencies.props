@@ -2,7 +2,7 @@
   <PropertyGroup>
     <RunCodeAnalysis>true</RunCodeAnalysis>
     <NetCoreCommonVersion>2.2.*</NetCoreCommonVersion>
-    <BetCommon>3.1.2-pre</BetCommon>
+    <BetCommon>1.3.0</BetCommon>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp2.2' Or '$(TargetFramework)' == 'netstandard2.0'">
@@ -81,6 +81,6 @@
   </ItemGroup>
 
   <ItemGroup Label="Analyzers">
-    <PackageReference Include="Bet.CodeAnalyzers" Version="1.0.1" PrivateAssets="All" />
+    <PackageReference Include="Bet.CodeAnalyzers" Version="1.0.6" PrivateAssets="All" />
   </ItemGroup>
 </Project>

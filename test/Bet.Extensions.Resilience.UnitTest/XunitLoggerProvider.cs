@@ -21,6 +21,7 @@ namespace Bet.Extensions.Resilience.UnitTest
         }
 
         public void Dispose()
-        { }
+        {
+        }
     }
 }
