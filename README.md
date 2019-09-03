@@ -1,54 +1,26 @@
 # Bet.Extensions.Resilience
-This library allows for Resilience configuration and logging for HttpClients.
 
-- `PolicyWithLoggingHttpMessageHandler` allows to add logger to Polly's context.
+[![Build status](https://ci.appveyor.com/api/projects/status/tmqs7xbq1aqee3md/branch/master?svg=true)](https://ci.appveyor.com/project/kdcllc/bet-extensions-resilience/branch/master)
+[![NuGet](https://img.shields.io/nuget/v/Bet.Extensions.Resilience.Http.svg)](https://www.nuget.org/packages?q=Bet.Extensions.Resilience.Http)
+[![MyGet](https://img.shields.io/myget/kdcllc/v/Bet.Extensions.Resilience.Http.svg?label=myget)](https://www.myget.org/F/kdcllc/api/v2)
 
+This library allows for Resilience configuration and logging for HttpClients and SQL in the future.
 
-## Usage
+The Resilience is based on `Polly` standard library.
 
-1. Add Typed Client `ChavahClient`
+- [`Bet.Extensions.Resilience.Abstractions`](./src/Bet.Extensions.Resilience.Abstractions/README.md)
+- [`Bet.Extensions.MessageHandlers`](./src/Bet.Extensions.MessageHandlers/README.md)
+- [`Bet.Extensions.Resilience.Http`](./src/Bet.Extensions.Resilience.Http/README.md)
+     `PolicyWithLoggingHttpMessageHandler` allows to add logger to Polly's context.
 
-```csharp
-public class ChavahClient : IChavahClient
-{
-    private readonly HttpClient _httpClient;
+## Sampe Application
 
-    public ChavahClient(HttpClient httpClient)
-    {
-        _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
-    }
+- [`Bet.Extensions.Resilience.SampleWebApp`](./src/Bet.Extensions.Resilience.SampleWebApp/README.md)
 
-    public async Task<IEnumerable<Song>> GetPopular(int count)
-    {
-        var response = await _httpClient.GetAsync($"api/songs/getpopular?count={count}");
+## Development Environment
 
-        response.EnsureSuccessStatusCode();
+This project supports:
 
-        var json = await response.Content.ReadAsStringAsync();
+- VSCode Remote Development in Dev Docker Container
 
-        return JsonConvert.DeserializeObject<List<Song>>(json);
-    }
-}
-```
-
-
-2. Add Typed Client Configuration in `appsetting.json`
-
-```json
-
-"ChavahClient": {
-    "BaseAddress": "https://messianicradio.com",
-    "Timeout": "00:05:00",
-    "ContentType": "application/json"
-  }
-
-```
-
-3. Add Typed Client Registration in `Startup.cs`
-
-```csharp
-
-  services.AddResilienceTypedClient<IChavahClient, ChavahClient>()
-          .AddDefaultPolicies();
-
-```
+- Visual Studio.NET Docker

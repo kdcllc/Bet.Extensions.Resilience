@@ -1,54 +1,75 @@
 ﻿using System;
 using System.Net;
 using System.Net.Http;
+
 using Bet.Extensions.Resilience.Http.Options;
+
 using Microsoft.Extensions.Logging;
 
 using Polly;
 using Polly.Extensions.Http;
 using Polly.Registry;
+using Polly.Timeout;
 
 namespace Bet.Extensions.Resilience.Http.Setup
 {
-    internal class Policies
+    internal sealed class Policies
     {
         public static void AddDefaultPolicies(IPolicyRegistry<string> policyRegistry, HttpPolicyOptions options)
         {
-            if (policyRegistry.ContainsKey(PolicyKeys.HttpRetryAsyncPolicy)
-                && policyRegistry.ContainsKey(PolicyKeys.HttpRetrySyncPolicy)
-                && policyRegistry.ContainsKey(PolicyKeys.HttpCircuitBreakerAsyncPolicy)
-                && policyRegistry.ContainsKey(PolicyKeys.HttpCircuitBreakerSyncPolicy))
+            if (policyRegistry.ContainsKey(PolicyKeys.HttpWaitAndRetryPolicyAsync)
+                && policyRegistry.ContainsKey(PolicyKeys.HttpWaitAndRetryPolicy)
+                && policyRegistry.ContainsKey(PolicyKeys.HttpCircuitBreakerPolicyAsync)
+                && policyRegistry.ContainsKey(PolicyKeys.HttpCircuitBreakerPolicy)
+                && policyRegistry.ContainsKey(PolicyKeys.HttpRequestTimeoutPolicyAsync)
+                && policyRegistry.ContainsKey(PolicyKeys.HttpRequestTimeoutPolicy))
             {
                 return;
             }
 
+            // timeout async
+            policyRegistry.Add(PolicyKeys.HttpRequestTimeoutPolicyAsync, GetTimeoutAsync(options.HttpRequestTimeout.Timeout));
+
+            // timeout sync
+            policyRegistry.Add(PolicyKeys.HttpRequestTimeoutPolicy, GetTimeout(options.HttpRequestTimeout.Timeout));
+
             // retry async
             policyRegistry.Add(
-                PolicyKeys.HttpRetryAsyncPolicy,
+                PolicyKeys.HttpWaitAndRetryPolicyAsync,
                 GetRetryAsync(
                     options.HttpRetry.Count,
                     options.HttpRetry.BackoffPower));
 
             // retry sync
             policyRegistry.Add(
-                PolicyKeys.HttpRetrySyncPolicy,
+                PolicyKeys.HttpWaitAndRetryPolicy,
                 GetRetry(
                     options.HttpRetry.Count,
                     options.HttpRetry.BackoffPower));
 
             // circuit breaker async
             policyRegistry.Add(
-                PolicyKeys.HttpCircuitBreakerAsyncPolicy,
+                PolicyKeys.HttpCircuitBreakerPolicyAsync,
                 GetCircuitBreakerAsync(
                     options.HttpCircuitBreaker.ExceptionsAllowedBeforeBreaking,
                     options.HttpCircuitBreaker.DurationOfBreak));
 
             // circuit breaker async
             policyRegistry.Add(
-                    PolicyKeys.HttpCircuitBreakerSyncPolicy,
+                    PolicyKeys.HttpCircuitBreakerPolicy,
                     GetCircuitBreaker(
                         options.HttpCircuitBreaker.ExceptionsAllowedBeforeBreaking,
                         options.HttpCircuitBreaker.DurationOfBreak));
+        }
+
+        public static ISyncPolicy<HttpResponseMessage> GetTimeout(TimeSpan span)
+        {
+            return Policy.Timeout<HttpResponseMessage>(span, TimeoutStrategy.Pessimistic);
+        }
+
+        public static IAsyncPolicy<HttpResponseMessage> GetTimeoutAsync(TimeSpan span)
+        {
+            return Policy.TimeoutAsync<HttpResponseMessage>(span, TimeoutStrategy.Pessimistic);
         }
 
         public static ISyncPolicy<HttpResponseMessage> GetCircuitBreaker(
@@ -63,7 +84,7 @@ namespace Bet.Extensions.Resilience.Http.Setup
                     durationOfBreak: durationOfBreak,
                     onBreak: (result, breakDelay, context) => OnBreakFunc(result, breakDelay, context, numberOfExceptionsBeforeBreaking),
                     onReset: (context) => OnResetFunc(context, durationOfBreak))
-                .WithPolicyKey(PolicyKeys.HttpCircuitBreakerSyncPolicy);
+                .WithPolicyKey(PolicyKeys.HttpCircuitBreakerPolicy);
         }
 
         public static IAsyncPolicy<HttpResponseMessage> GetCircuitBreakerAsync(
@@ -78,7 +99,7 @@ namespace Bet.Extensions.Resilience.Http.Setup
                     durationOfBreak: durationOfBreak,
                     onBreak: (result, breakDelay, context) => OnBreakFunc(result, breakDelay, context, numberOfExceptionsBeforeBreaking),
                     onReset: (context) => OnResetFunc(context, durationOfBreak))
-                .WithPolicyKey(PolicyKeys.HttpCircuitBreakerAsyncPolicy);
+                .WithPolicyKey(PolicyKeys.HttpCircuitBreakerPolicyAsync);
         }
 
         public static ISyncPolicy<HttpResponseMessage> GetRetry(
@@ -92,7 +113,7 @@ namespace Bet.Extensions.Resilience.Http.Setup
                     retryCount: retryCount,
                     sleepDurationProvider: (retryAttempt, context) => OnDurationSetFunc(retryAttempt, context, backOffPower, retryCount),
                     onRetry: (result, timeSpan, retryAttempt, context) => OnRetryFunc(result, timeSpan, retryAttempt, context, retryCount))
-                .WithPolicyKey(PolicyKeys.HttpRetrySyncPolicy);
+                .WithPolicyKey(PolicyKeys.HttpWaitAndRetryPolicy);
         }
 
         public static IAsyncPolicy<HttpResponseMessage> GetRetryAsync(
@@ -106,7 +127,7 @@ namespace Bet.Extensions.Resilience.Http.Setup
                     retryCount: retryCount,
                     sleepDurationProvider: (retryAttempt, context) => OnDurationSetFunc(retryAttempt, context, backOffPower, retryCount),
                     onRetry: (result, timeSpan, retryAttempt, context) => OnRetryFunc(result, timeSpan, retryAttempt, context, retryCount))
-                .WithPolicyKey(PolicyKeys.HttpRetryAsyncPolicy);
+                .WithPolicyKey(PolicyKeys.HttpWaitAndRetryPolicyAsync);
         }
 
         private static void OnBreakFunc(

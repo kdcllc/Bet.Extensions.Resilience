@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net.Http;
-
+using Bet.Extensions.MessageHandlers;
 using Bet.Extensions.Resilience.Http.Options;
 
 using Polly;

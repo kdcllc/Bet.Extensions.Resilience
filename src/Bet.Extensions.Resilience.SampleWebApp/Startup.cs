@@ -1,11 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Bet.Extensions.Resilience.SampleWebApp.Clients;
+
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -30,10 +26,9 @@ namespace Bet.Extensions.Resilience.SampleWebApp
                 options.CheckConsentNeeded = context => true;
             });
 
-            // services.AddControllers().AddNewtonsoftJson();
+            services.AddControllers().AddNewtonsoftJson();
 
-            services.AddControllersWithViews()
-                .AddNewtonsoftJson();
+            services.AddControllersWithViews().AddNewtonsoftJson();
 
             // https://docs.microsoft.com/sr-latn-rs/aspnet/core/mvc/views/view-compilation?view=aspnetcore-3.0
             // https://github.com/aspnet/Announcements/issues/343
@@ -53,6 +48,7 @@ namespace Bet.Extensions.Resilience.SampleWebApp
             else
             {
                 app.UseExceptionHandler("/Home/Error");
+
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }

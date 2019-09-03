@@ -11,11 +11,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Bet.Extensions.MessageHandlers\Bet.Extensions.MessageHandlers.csproj" />
     <ProjectReference Include="..\Bet.Extensions.Resilience.Abstractions\Bet.Extensions.Resilience.Abstractions.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Internal\" />
-  </ItemGroup>
 </Project>
 

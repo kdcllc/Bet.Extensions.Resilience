@@ -9,7 +9,7 @@ using Polly.Wrap;
 
 namespace Bet.Extensions.Resilience.Abstractions
 {
-    ///<inheritdoc/>
+    /// <inheritdoc/>
     public sealed class PolicyAsyncExecutor : IPolicyAsyncExecutor
     {
         private readonly IEnumerable<IAsyncPolicy> _asyncPolicies;
@@ -25,13 +25,13 @@ namespace Bet.Extensions.Resilience.Abstractions
             _policyWrap = Policy.WrapAsync(_asyncPolicies.ToArray());
         }
 
-        ///<inheritdoc/>
+        /// <inheritdoc/>
         public async Task<T> ExecuteAsync<T>(Func<Task<T>> action)
         {
-           return await _policyWrap.ExecuteAsync(action);
+            return await _policyWrap.ExecuteAsync(action);
         }
 
-        ///<inheritdoc/>
+        /// <inheritdoc/>
         public async Task ExecuteAsync(Func<Task> action)
         {
             await _policyWrap.ExecuteAsync(action);

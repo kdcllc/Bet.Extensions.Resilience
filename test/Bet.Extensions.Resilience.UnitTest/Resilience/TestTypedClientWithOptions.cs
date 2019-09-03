@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace Bet.Extensions.Resilience.UnitTest
+namespace Bet.Extensions.Resilience.UnitTest.Resilience
 {
     public class TestTypedClientWithOptions : ITestTypedClientWithOptions
     {
@@ -29,7 +29,7 @@ namespace Bet.Extensions.Resilience.UnitTest
         {
             _logger.LogInformation("Sending Test Request");
 
-            return await HttpClient.GetAsync("");
+            return await HttpClient.GetAsync(string.Empty);
         }
     }
 }

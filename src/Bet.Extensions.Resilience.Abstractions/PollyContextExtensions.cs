@@ -56,7 +56,7 @@ namespace Polly
         /// </summary>
         /// <param name="context">The Polly execution context.</param>
         /// <param name="logger">The logger to be used by Polly's execution.</param>
-        /// <returns>bool</returns>
+        /// <returns>bool.</returns>
         public static bool TryGetLogger(this Context context, out ILogger logger)
         {
             if (context.TryGetValue(PolicyContextItems.Logger, out var loggerObject)
@@ -75,7 +75,7 @@ namespace Polly
         /// </summary>
         /// <param name="context">The Polly execution context.</param>
         /// <param name="typedHttpClientName">The name of the typed client.</param>
-        /// <returns>bool</returns>
+        /// <returns>bool.</returns>
         public static bool TryGetTypedHttpClientName(this Context context, out string typedHttpClientName)
         {
             if (context.TryGetValue(PolicyContextItems.HttpClientName, out var name)

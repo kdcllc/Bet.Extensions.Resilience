@@ -36,6 +36,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bet.Extensions.MessageHandlers", "src\Bet.Extensions.MessageHandlers\Bet.Extensions.MessageHandlers.csproj", "{199EAEAC-9EE7-4324-A26D-F4CCF34BD971}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -58,6 +60,10 @@ Global
 		{EFA33EF3-60AC-41F9-AB21-722E54644C5A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EFA33EF3-60AC-41F9-AB21-722E54644C5A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EFA33EF3-60AC-41F9-AB21-722E54644C5A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{199EAEAC-9EE7-4324-A26D-F4CCF34BD971}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{199EAEAC-9EE7-4324-A26D-F4CCF34BD971}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{199EAEAC-9EE7-4324-A26D-F4CCF34BD971}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{199EAEAC-9EE7-4324-A26D-F4CCF34BD971}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -67,6 +73,7 @@ Global
 		{A7C3FDE4-CA19-40C4-A58C-3CD3386D7A78} = {23BB98BA-5F4A-4220-BE4D-5604E58F56E5}
 		{4BA05CA6-9669-4014-8856-034B7229B835} = {32C6BDF4-6EEB-4C13-B084-AB554A2ACDAC}
 		{EFA33EF3-60AC-41F9-AB21-722E54644C5A} = {32C6BDF4-6EEB-4C13-B084-AB554A2ACDAC}
+		{199EAEAC-9EE7-4324-A26D-F4CCF34BD971} = {32C6BDF4-6EEB-4C13-B084-AB554A2ACDAC}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {23EAFD8A-DAB7-43F6-86D1-9F6C6A81F6D0}

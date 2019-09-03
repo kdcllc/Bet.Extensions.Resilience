@@ -4,8 +4,7 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 
-using Bet.Extensions.Resilience.Http.MessageHandlers;
-using Bet.Extensions.Resilience.Http.Options;
+using Bet.Extensions.MessageHandlers;
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,16 +16,16 @@ using Polly.Registry;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Bet.Extensions.Resilience.UnitTest
+namespace Bet.Extensions.Resilience.UnitTest.Resilience
 {
     public class ResilienceHttpClientTests
     {
-        public ITestOutputHelper Output { get; }
-
         public ResilienceHttpClientTests(ITestOutputHelper output)
         {
             Output = output;
         }
+
+        public ITestOutputHelper Output { get; }
 
         [Fact]
         public void Test_ResilienceHttpClientBuilder()
@@ -64,9 +63,9 @@ namespace Bet.Extensions.Resilience.UnitTest
 
             var dic1 = new Dictionary<string, string>()
             {
-                {"TestTypedClient:BaseAddress", "http://localhost"},
-                {"TestTypedClient:Timeout", "00:05:00"},
-                {"TestTypedClient:ContentType", "application/json"}
+                { "TestTypedClient:BaseAddress", "http://localhost" },
+                { "TestTypedClient:Timeout", "00:05:00" },
+                { "TestTypedClient:ContentType", "application/json" }
             };
 
             var configurationBuilder = new ConfigurationBuilder().AddInMemoryCollection(dic1);
@@ -76,19 +75,21 @@ namespace Bet.Extensions.Resilience.UnitTest
             var client = serviceCollection.AddResilienceTypedClient<ITestTypedClient, TestTypedClient>()
                 .AddAllConfigurations(options =>
                 {
-                    options.HttpClientActions.Add((sp, client) => client.Timeout = TimeSpan.FromSeconds(5) );
+                    options.HttpClientActions.Add((sp, cl) => cl.Timeout = TimeSpan.FromSeconds(5));
                 })
                 .AddAllConfigurations(options =>
                 {
-                    options.HttpClientActions.Add((sp, client) => client.Timeout = TimeSpan.FromSeconds(15));
+                    options.HttpClientActions.Add((sp, cl) => cl.Timeout = TimeSpan.FromSeconds(15));
                 });
 
             Assert.Equal(nameof(ITestTypedClient), client.Name);
 
             var services = serviceCollection.BuildServiceProvider();
             var factory = services.GetRequiredService<IHttpMessageHandlerFactory>();
+
             // Act2
             var handler = factory.CreateHandler();
+
             // Assert
             Assert.NotNull(handler);
         }
@@ -101,9 +102,9 @@ namespace Bet.Extensions.Resilience.UnitTest
 
             var dic1 = new Dictionary<string, string>()
             {
-                {"TestTypedClient:BaseAddress", "http://localhost"},
-                {"TestTypedClient:Timeout", "00:05:00"},
-                {"TestTypedClient:ContentType", "application/json"}
+                { "TestTypedClient:BaseAddress", "http://localhost" },
+                { "TestTypedClient:Timeout", "00:05:00" },
+                { "TestTypedClient:ContentType", "application/json" }
             };
 
             var configurationBuilder = new ConfigurationBuilder().AddInMemoryCollection(dic1);
@@ -116,8 +117,10 @@ namespace Bet.Extensions.Resilience.UnitTest
 
             var services = serviceCollection.BuildServiceProvider();
             var factory = services.GetRequiredService<IHttpMessageHandlerFactory>();
+
             // Act2
             var handler = factory.CreateHandler();
+
             // Assert
             Assert.NotNull(handler);
         }
@@ -130,9 +133,9 @@ namespace Bet.Extensions.Resilience.UnitTest
 
             var dic1 = new Dictionary<string, string>()
             {
-                {"Clients:TestTypedClient:BaseAddress", "http://localhost"},
-                {"Clients:TestTypedClient:Timeout", "00:05:00"},
-                {"Clients:TestTypedClient:ContentType", "application/json"}
+                { "Clients:TestTypedClient:BaseAddress", "http://localhost" },
+                { "Clients:TestTypedClient:Timeout", "00:05:00" },
+                { "Clients:TestTypedClient:ContentType", "application/json" }
             };
 
             var configurationBuilder = new ConfigurationBuilder().AddInMemoryCollection(dic1);
@@ -144,12 +147,13 @@ namespace Bet.Extensions.Resilience.UnitTest
                  {
                      return new DefaultHttpClientHandler();
                  })
-                .AddAllConfigurations(options => {
-                        options.HttpClientActions.Add((sp, client) =>
-                        {
+                .AddAllConfigurations(opt =>
+                {
+                    opt.HttpClientActions.Add((sp, cl) =>
+                    {
                             // checks if the options have been already configured via configuration.
-                            client.BaseAddress = options.HttpClientOptions.BaseAddress;
-                        });
+                            cl.BaseAddress = opt.HttpClientOptions.BaseAddress;
+                    });
                 });
 
             var services = serviceCollection.BuildServiceProvider();
@@ -173,9 +177,9 @@ namespace Bet.Extensions.Resilience.UnitTest
 
             var dic1 = new Dictionary<string, string>()
             {
-                {"Clients:TestTypedClient2:BaseAddress", "http://localhost"},
-                {"Clients:TestTypedClient2:Timeout", "00:05:00"},
-                {"Clients:TestTypedClient2:ContentType", "application/json"}
+                { "Clients:TestTypedClient2:BaseAddress", "http://localhost" },
+                { "Clients:TestTypedClient2:Timeout", "00:05:00" },
+                { "Clients:TestTypedClient2:ContentType", "application/json" }
             };
 
             var configurationBuilder = new ConfigurationBuilder().AddInMemoryCollection(dic1);
@@ -187,11 +191,12 @@ namespace Bet.Extensions.Resilience.UnitTest
                  {
                      return new DefaultHttpClientHandler();
                  })
-                .AddAllConfigurations(options => {
-                    options.HttpClientActions.Add((sp, client) =>
+                .AddAllConfigurations(opt =>
+                {
+                    opt.HttpClientActions.Add((sp, cl) =>
                     {
                         // checks if the options have been already configured via configuration.
-                        client.BaseAddress = options.HttpClientOptions.BaseAddress;
+                        cl.BaseAddress = opt.HttpClientOptions.BaseAddress;
                     });
                 });
 
@@ -213,9 +218,9 @@ namespace Bet.Extensions.Resilience.UnitTest
 
             var dic1 = new Dictionary<string, string>()
             {
-                {"TestTypedClient:BaseAddress", "http://localhost"},
-                {"TestTypedClient:Timeout", "00:05:00"},
-                {"TestTypedClient:ContentType", "application/json"}
+                { "TestTypedClient:BaseAddress", "http://localhost" },
+                { "TestTypedClient:Timeout", "00:05:00" },
+                { "TestTypedClient:ContentType", "application/json" }
             };
 
             var configurationBuilder = new ConfigurationBuilder().AddInMemoryCollection(dic1);
@@ -225,7 +230,7 @@ namespace Bet.Extensions.Resilience.UnitTest
             var clientBuilder = serviceCollection.AddResilienceTypedClient<ITestTypedClient, TestTypedClient>()
                 .AddPrimaryHttpMessageHandler((sp) =>
                 {
-                   return new DefaultHttpClientHandler();
+                    return new DefaultHttpClientHandler();
                 });
 
             var services = serviceCollection.BuildServiceProvider();
@@ -249,10 +254,10 @@ namespace Bet.Extensions.Resilience.UnitTest
 
             var dic1 = new Dictionary<string, string>()
             {
-                {"TestHttpClientOptions:BaseAddress", "http://localhost"},
-                {"TestHttpClientOptions:Timeout", "00:05:00"},
-                {"TestHttpClientOptions:ContentType", "application/json"},
-                {"TestHttpClientOptions:Id", id}
+                { "TestHttpClientOptions:BaseAddress", "http://localhost" },
+                { "TestHttpClientOptions:Timeout", "00:05:00" },
+                { "TestHttpClientOptions:ContentType", "application/json" },
+                { "TestHttpClientOptions:Id", id }
             };
 
             var configurationBuilder = new ConfigurationBuilder().AddInMemoryCollection(dic1);
@@ -264,11 +269,12 @@ namespace Bet.Extensions.Resilience.UnitTest
                {
                    return new DefaultHttpClientHandler();
                })
-                .AddAllConfigurations(options => {
-                    options.HttpClientActions.Add((sp, client) =>
+                .AddAllConfigurations(opt =>
+                {
+                    opt.HttpClientActions.Add((sp, cl) =>
                     {
                         // checks if the options have been already configured via configuration.
-                        client.BaseAddress = options.HttpClientOptions.BaseAddress;
+                        cl.BaseAddress = opt.HttpClientOptions.BaseAddress;
                     });
                 });
 
@@ -295,16 +301,17 @@ namespace Bet.Extensions.Resilience.UnitTest
 
             var dic1 = new Dictionary<string, string>()
             {
-                {"TestHttpClient:BaseAddress", "http://testserver:5000"},
-                {"TestHttpClient:Timeout", "00:05:00"},
-                {"TestHttpClient:ContentType", "application/json"},
-                {"TestHttpClient:Id", id}
+                { "TestHttpClient:BaseAddress", "http://testserver:5000" },
+                { "TestHttpClient:Timeout", "00:05:00" },
+                { "TestHttpClient:ContentType", "application/json" },
+                { "TestHttpClient:Id", id }
             };
 
             var configurationBuilder = new ConfigurationBuilder().AddInMemoryCollection(dic1);
 
-            serviceCollection.AddLogging(builder => {
-                builder.AddProvider(new TestLoggerProvider(Output));
+            serviceCollection.AddLogging(builder =>
+            {
+                builder.AddProvider(new XunitLoggerProvider(Output));
             });
 
             serviceCollection.AddSingleton<IConfiguration>(configurationBuilder.Build());
@@ -313,12 +320,12 @@ namespace Bet.Extensions.Resilience.UnitTest
             var handler = server.CreateHandler();
 
             var clientBuilder = serviceCollection
-                .AddResilienceTypedClient<ITestTypedClientWithOptions, TestTypedClientWithOptions, TestHttpClientOptions>(optionsName:"TestHttpClient")
+                .AddResilienceTypedClient<ITestTypedClientWithOptions, TestTypedClientWithOptions, TestHttpClientOptions>(optionsName: "TestHttpClient")
                 .AddPrimaryHttpMessageHandler((sp) =>
                 {
                     return handler;
                 })
-                .AddDefaultPolicies(enableLogging:true);
+                .AddDefaultPolicies(enableLogging: true);
 
             var services = serviceCollection.BuildServiceProvider();
 
@@ -335,8 +342,9 @@ namespace Bet.Extensions.Resilience.UnitTest
             // Assign
             var serviceCollection = new ServiceCollection();
 
-            serviceCollection.AddLogging(builder => {
-                builder.AddProvider(new TestLoggerProvider(Output));
+            serviceCollection.AddLogging(builder =>
+            {
+                builder.AddProvider(new XunitLoggerProvider(Output));
             });
 
             var server = new TestServerBuilder(Output).GetSimpleServer();

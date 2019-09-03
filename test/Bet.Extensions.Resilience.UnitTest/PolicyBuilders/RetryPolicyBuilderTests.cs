@@ -10,7 +10,7 @@ using Polly;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Bet.Extensions.Resilience.UnitTest
+namespace Bet.Extensions.Resilience.UnitTest.PolicyBuilders
 {
     public class RetryPolicyBuilderTests
     {
@@ -27,7 +27,7 @@ namespace Bet.Extensions.Resilience.UnitTest
             // Assign
             var serviceCollection = new ServiceCollection();
 
-            serviceCollection.AddLogging(builder => builder.AddProvider(new TestLoggerProvider(Output)));
+            serviceCollection.AddLogging(builder => builder.AddProvider(new XunitLoggerProvider(Output)));
             var logger = serviceCollection.BuildServiceProvider().GetRequiredService<ILoggerFactory>().CreateLogger("test");
             var pollyContext = new Context();
 
@@ -48,7 +48,7 @@ namespace Bet.Extensions.Resilience.UnitTest
             // Assign
             var serviceCollection = new ServiceCollection();
 
-            serviceCollection.AddLogging(builder => builder.AddProvider(new TestLoggerProvider(Output)));
+            serviceCollection.AddLogging(builder => builder.AddProvider(new XunitLoggerProvider(Output)));
             var logger = serviceCollection.BuildServiceProvider().GetRequiredService<ILoggerFactory>().CreateLogger("test");
             var pollyContext = new Context();
 

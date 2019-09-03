@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
@@ -28,7 +27,7 @@ namespace Bet.Extensions.Resilience.UnitTest
                 .ConfigureLogging(logger =>
                 {
                     logger.AddDebug();
-                    logger.AddProvider(new TestLoggerProvider(_output));
+                    logger.AddProvider(new XunitLoggerProvider(_output));
                 })
                 .Configure(app =>
                 {

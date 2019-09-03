@@ -1,6 +1,6 @@
 ﻿namespace Microsoft.Extensions.DependencyInjection
 {
-    ///<inheritdoc/>
+    /// <inheritdoc/>
     public class ResilienceHttpClientBuilder : IResilienceHttpClientBuilder
     {
         /// <summary>
@@ -14,10 +14,10 @@
             Name = name;
         }
 
-        ///<inheritdoc/>
+        /// <inheritdoc/>
         public string Name { get; }
 
-        ///<inheritdoc/>
+        /// <inheritdoc/>
         public IServiceCollection Services { get; }
     }
 }
