@@ -29,7 +29,7 @@ namespace Bet.Extensions.Resilience.UnitTest.Resilience
         {
             _logger.LogInformation("Sending Test Request");
 
-            return await HttpClient.GetAsync("");
+            return await HttpClient.GetAsync(string.Empty);
         }
     }
 }

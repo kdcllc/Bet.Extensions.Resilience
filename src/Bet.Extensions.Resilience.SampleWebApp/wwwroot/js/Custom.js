@@ -1,5 +1,5 @@
 
-$.getJSON('https://localhost:5001/api/songs?count=100', function (data) {
+$.getJSON(host + '/api/songs?count=100', function (data) {
 
     var list = [];
     data.forEach(function (item) {

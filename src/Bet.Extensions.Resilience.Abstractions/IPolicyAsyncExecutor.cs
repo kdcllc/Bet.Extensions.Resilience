@@ -32,6 +32,13 @@ namespace Bet.Extensions.Resilience.Abstractions
         /// <returns>task.</returns>
         Task ExecuteAsync(Func<Task> action);
 
+        /// <summary>
+        /// Executes Async the function delegate with cancellation token.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="action"></param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
         Task<T> ExecuteAsync<T>(Func<CancellationToken, Task<T>> action, CancellationToken cancellationToken);
     }
 }
