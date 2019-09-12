@@ -1,5 +1,5 @@
 ﻿using System;
-
+using System.Threading.Tasks;
 using Bet.Extensions.Resilience.Abstractions.Policies;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
@@ -43,7 +43,7 @@ namespace Bet.Extensions.Resilience.UnitTest.PolicyBuilders
         }
 
         [Fact]
-        public void Should_not_throw_exception()
+        public async Task Should_not_throw_exception()
         {
             // Assign
             var serviceCollection = new ServiceCollection();
@@ -54,13 +54,25 @@ namespace Bet.Extensions.Resilience.UnitTest.PolicyBuilders
 
             pollyContext.AddLogger(logger);
 
+            var count = 0;
+
             var policy = RetryPolicyBuilder
                 .GetWaitAndRetryForeverAsync<DivideByZeroException>(
-                    ex => ex?.Message != null,
+                    ex =>
+                    {
+                        if (count == 1)
+                        {
+                            return false;
+                        }
+
+                        count++;
+                        return ex?.Message != null;
+                    },
                     TimeSpan.FromSeconds(10),
                     $"{nameof(DivideByZeroException)}Policy");
 
-            policy.Invoking(x => x.ExecuteAsync((context) => throw new DivideByZeroException(), pollyContext)).Should().NotThrow<DivideByZeroException>();
+            // it throws the exception because we get out of the endless loop
+            await policy.Invoking(async x => await x.ExecuteAsync((context) => throw new DivideByZeroException(), pollyContext)).Should().ThrowAsync<DivideByZeroException>();
         }
     }
 }

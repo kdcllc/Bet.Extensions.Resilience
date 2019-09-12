@@ -139,9 +139,11 @@ namespace Bet.Extensions.Resilience.UnitTest.Resilience
             };
 
             var configurationBuilder = new ConfigurationBuilder().AddInMemoryCollection(dic1);
-
+#if NETCOREAPP2_2
             serviceCollection.AddSingleton<IConfiguration>(configurationBuilder.Build());
-
+#elif NETCOREAPP3_0
+            serviceCollection.AddSingleton(_ => configurationBuilder.Build() as IConfiguration);
+#endif
             var clientBuilder = serviceCollection.AddResilienceTypedClient<ITestTypedClient, TestTypedClient>(sectionName: "Clients")
                  .AddPrimaryHttpMessageHandler((sp) =>
                  {
@@ -183,9 +185,11 @@ namespace Bet.Extensions.Resilience.UnitTest.Resilience
             };
 
             var configurationBuilder = new ConfigurationBuilder().AddInMemoryCollection(dic1);
-
+#if NETCOREAPP2_2
             serviceCollection.AddSingleton<IConfiguration>(configurationBuilder.Build());
-
+#elif NETCOREAPP3_0
+            serviceCollection.AddSingleton(_ => configurationBuilder.Build() as IConfiguration);
+#endif
             var clientBuilder = serviceCollection.AddResilienceTypedClient<ITestTypedClient, TestTypedClient>(sectionName: "Clients", "TestTypedClient2")
                  .AddPrimaryHttpMessageHandler((sp) =>
                  {
