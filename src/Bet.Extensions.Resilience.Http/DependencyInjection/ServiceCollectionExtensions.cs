@@ -27,8 +27,7 @@ namespace Microsoft.Extensions.DependencyInjection
         private static readonly Func<IResilienceHttpClientBuilder, ResilienceHttpClientOptions>
           _findIntance = (builder) => builder.Services.SingleOrDefault(sd => sd.ServiceType == typeof(ResilienceHttpClientOptions))?.ImplementationInstance as ResilienceHttpClientOptions;
 
-        private static readonly Func<IResilienceHttpClientBuilder, IConfiguration>
-            _configuration = (builder) => builder.Services.SingleOrDefault(sd => sd.ServiceType == typeof(IConfiguration))?.ImplementationInstance as IConfiguration;
+        private static readonly Func<IResilienceHttpClientBuilder, IConfiguration> _configuration = GetConfiguration;
 
         /// <summary>
         /// Adds Resilience <see cref="HttpClient"/> with custom options that can be used to inject inside of the TypedClient.
@@ -478,5 +477,22 @@ namespace Microsoft.Extensions.DependencyInjection
 
             throw new InvalidOperationException(string.Format(_message, builder.Name));
         }
+
+#if NETSTANDARD2_0
+        private static IConfiguration GetConfiguration(IResilienceHttpClientBuilder builder)
+        {
+            return builder.Services.SingleOrDefault(sd => sd.ServiceType == typeof(IConfiguration))?.ImplementationInstance as IConfiguration;
+        }
+#elif NETSTANDARD2_1
+        private static IConfiguration GetConfiguration(IResilienceHttpClientBuilder builder)
+        {
+            // builder.Services.BuildServiceProvider() is not the best implementation but required for getting configurations at this point.
+            return builder
+                .Services
+                .SingleOrDefault(sd => sd.ServiceType == typeof(IConfiguration))?
+                .ImplementationFactory?
+                .Invoke(builder.Services.BuildServiceProvider()) as IConfiguration;
+        }
+#endif
     }
 }

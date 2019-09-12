@@ -34,7 +34,8 @@ namespace Bet.Extensions.Resilience.SampleWebApp
             // https://github.com/aspnet/Announcements/issues/343
             services.AddRazorPages().AddRazorRuntimeCompilation();
 
-            services.AddResilienceTypedClient<IChavahClient, ChavahClient>()
+            services
+                .AddResilienceTypedClient<IChavahClient, ChavahClient>()
                 .AddDefaultPolicies();
         }
 
@@ -65,8 +66,9 @@ namespace Bet.Extensions.Resilience.SampleWebApp
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
-                    name: "default",
-                    pattern: "{controller=Home}/{action=Index}/{id?}");
+                   name: "default",
+                   pattern: "{controller=Home}/{action=Index}/{id?}");
+
                 endpoints.MapRazorPages();
             });
         }
