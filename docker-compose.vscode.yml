@@ -1,7 +1,7 @@
 version: '3'
 
 services:
-  bet.extensions.resilience.vscode:
+  resilience.webapp.vscode:
     image: kdcllc/dotnet:3.0-sdk-vscode-bionic
     # Azure Key Vault Authentication global tool
     # dotnet tool install --global appauthentication --version 1.2.2
@@ -12,7 +12,7 @@ services:
       - MSI_SECRET=${MSI_SECRET}
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=https://+:443;http://+:80
-      - ASPNETCORE_HTTPS_PORT=7001
+      - ASPNETCORE_HTTPS_PORT=8001
     volumes:
       - ..:/workspace
       - ~/.ssh:/root/.ssh-localhost
@@ -24,8 +24,8 @@ services:
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
     ports:
-      - "7000:80"
-      - "7002:443"
+      - "8000:80"
+      - "8001:443"
     # Overrides default command so things don't shut down after the process ends.
     command: sleep infinity
 

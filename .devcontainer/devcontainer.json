@@ -4,11 +4,11 @@
 	"name": "Bet.Extensions.Resilience",
 
 	"dockerComposeFile": "../docker-compose.vscode.yml",
-	"service": "webapp.vscode",
+	"service": "resilience.webapp.vscode",
 	"workspaceFolder": "/workspace/Bet.Extensions.Resilience",
     // "shutdownAction": "stopCompose",
 	"shutdownAction": "none",
-	"appPort": [7002],
+	"appPort": [8000,8001],
 
 	// "postCreateCommand": "dotnet restore",
 
