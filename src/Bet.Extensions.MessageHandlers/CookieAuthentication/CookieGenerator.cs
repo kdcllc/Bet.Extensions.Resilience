@@ -39,7 +39,7 @@ namespace Bet.Extensions.MessageHandlers.CookieAuthentication
                 }
 
                 if (response.IsSuccessStatusCode
-                    && response.Headers.TryGetValues(Microsoft.Net.Http.Headers.HeaderNames.SetCookie, out var responseHeaderCookies))
+                    && response.Headers.TryGetValues("Set-Cookie", out var responseHeaderCookies))
                 {
                     return responseHeaderCookies;
                 }

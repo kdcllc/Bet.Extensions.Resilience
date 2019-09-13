@@ -21,6 +21,13 @@ The Resilience is based on `Polly` standard library.
 
 This project supports:
 
-- VSCode Remote Development in Dev Docker Container
+- VSCode Remote Development in Dev Docker Container (Make sure that debugging of the app is used to run the application.)
 
 - Visual Studio.NET Docker
+
+## Reference
+
+Get ip address of the docker container
+```bash
+ hostname -I
+```

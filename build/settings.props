@@ -1,7 +1,7 @@
 <Project>
 
   <PropertyGroup Label="Basic Settings">
-    <VersionPrefix>1.2.0-pre</VersionPrefix>
+    <VersionPrefix>1.2.1-preview1</VersionPrefix>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <SuppressNETCoreSdkPreviewMessage>true</SuppressNETCoreSdkPreviewMessage>
     <NoWarn>$(NoWarn);CS1591;</NoWarn>
@@ -12,7 +12,7 @@
     <LangVersion>7.3</LangVersion>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp3.0' AND '$(LangVersion)' == '8.0'">
+  <PropertyGroup Condition="('$(TargetFramework)' == 'netcoreapp3.0' AND '$(LangVersion)' == '8.0') Or ('$(TargetFramework)' == 'netstandard2.1' AND '$(LangVersion)' == '8.0')">
     <LangVersion>latest</LangVersion>
     <NullableReferenceTypes>true</NullableReferenceTypes>
     <NullableContextOptions>enable</NullableContextOptions>

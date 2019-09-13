@@ -139,9 +139,11 @@ namespace Bet.Extensions.Resilience.UnitTest.Resilience
             };
 
             var configurationBuilder = new ConfigurationBuilder().AddInMemoryCollection(dic1);
-
+#if NETCOREAPP2_2
             serviceCollection.AddSingleton<IConfiguration>(configurationBuilder.Build());
-
+#elif NETCOREAPP3_0
+            serviceCollection.AddSingleton(_ => configurationBuilder.Build() as IConfiguration);
+#endif
             var clientBuilder = serviceCollection.AddResilienceTypedClient<ITestTypedClient, TestTypedClient>(sectionName: "Clients")
                  .AddPrimaryHttpMessageHandler((sp) =>
                  {
@@ -183,9 +185,11 @@ namespace Bet.Extensions.Resilience.UnitTest.Resilience
             };
 
             var configurationBuilder = new ConfigurationBuilder().AddInMemoryCollection(dic1);
-
+#if NETCOREAPP2_2
             serviceCollection.AddSingleton<IConfiguration>(configurationBuilder.Build());
-
+#elif NETCOREAPP3_0
+            serviceCollection.AddSingleton(_ => configurationBuilder.Build() as IConfiguration);
+#endif
             var clientBuilder = serviceCollection.AddResilienceTypedClient<ITestTypedClient, TestTypedClient>(sectionName: "Clients", "TestTypedClient2")
                  .AddPrimaryHttpMessageHandler((sp) =>
                  {
@@ -316,24 +320,23 @@ namespace Bet.Extensions.Resilience.UnitTest.Resilience
 
             serviceCollection.AddSingleton<IConfiguration>(configurationBuilder.Build());
 
-            var server = new TestServerBuilder(Output).GetSimpleServer();
-            var handler = server.CreateHandler();
+            using (var server = new TestServerBuilder(Output).GetSimpleServer())
+            {
+                var handler = server.CreateHandler();
 
-            var clientBuilder = serviceCollection
-                .AddResilienceTypedClient<ITestTypedClientWithOptions, TestTypedClientWithOptions, TestHttpClientOptions>(optionsName: "TestHttpClient")
-                .AddPrimaryHttpMessageHandler((sp) =>
-                {
-                    return handler;
-                })
-                .AddDefaultPolicies(enableLogging: true);
+                var clientBuilder = serviceCollection
+                    .AddResilienceTypedClient<ITestTypedClientWithOptions, TestTypedClientWithOptions, TestHttpClientOptions>(optionsName: "TestHttpClient")
+                    .AddPrimaryHttpMessageHandler((sp) => handler)
+                    .AddDefaultPolicies(enableLogging: true);
 
-            var services = serviceCollection.BuildServiceProvider();
+                var services = serviceCollection.BuildServiceProvider();
 
-            var client = services.GetRequiredService<ITestTypedClientWithOptions>();
+                var client = services.GetRequiredService<ITestTypedClientWithOptions>();
 
-            var result = await client.SendRequestAsync();
+                var result = await client.SendRequestAsync();
 
-            Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+                Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+            }
         }
 
         [Fact]
@@ -347,20 +350,15 @@ namespace Bet.Extensions.Resilience.UnitTest.Resilience
                 builder.AddProvider(new XunitLoggerProvider(Output));
             });
 
-            var server = new TestServerBuilder(Output).GetSimpleServer();
-            var handler = server.CreateHandler();
+            using (var server = new TestServerBuilder(Output).GetSimpleServer())
+            {
+                var handler = server.CreateHandler();
 
-            Assert.Throws<InvalidOperationException>(() => serviceCollection
-                .AddResilienceTypedClient<ITestTypedClient, TestTypedClient>()
-                .AddPrimaryHttpMessageHandler((sp) =>
-                {
-                    return new DefaultHttpClientHandler();
-                })
-
-                .AddPrimaryHttpMessageHandler((sp) =>
-                {
-                    return new DefaultHttpClientHandler();
-                }));
+                Assert.Throws<InvalidOperationException>(() => serviceCollection
+                    .AddResilienceTypedClient<ITestTypedClient, TestTypedClient>()
+                    .AddPrimaryHttpMessageHandler((sp) => new DefaultHttpClientHandler())
+                    .AddPrimaryHttpMessageHandler((sp) => new DefaultHttpClientHandler()));
+            }
         }
     }
 }
