@@ -338,7 +338,7 @@ namespace Microsoft.Extensions.DependencyInjection
                     registry = new PolicyRegistry();
                 }
 
-                services.AddSingleton<IPolicyRegistry<string>>(registry);
+                services.AddSingleton(registry);
                 services.AddSingleton<IReadOnlyPolicyRegistry<string>>(registry);
             }
 

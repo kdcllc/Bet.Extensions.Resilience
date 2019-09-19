@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Net.Http;
 
+using Bet.Extensions.Resilience.Abstractions.Options;
+
 namespace Bet.Extensions.Resilience.Http.Options
 {
     /// <summary>

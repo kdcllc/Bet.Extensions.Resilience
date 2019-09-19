@@ -14,7 +14,7 @@ namespace Bet.Extensions.MessageHandlers.CookieAuthentication
 
         public CookieGenerator(CookieGeneratorOptions options, Func<HttpClient> createHttpClient)
         {
-            _options = options ?? throw new System.ArgumentNullException(nameof(options));
+            _options = options ?? throw new ArgumentNullException(nameof(options));
             _createHttpClient = createHttpClient ?? throw new ArgumentNullException(nameof(createHttpClient));
         }
 
@@ -26,8 +26,8 @@ namespace Bet.Extensions.MessageHandlers.CookieAuthentication
         {
             using (var client = _createHttpClient())
             {
-                client.DefaultRequestHeaders.Add("accept", _options.HttpOptions.ContentType);
-                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(_options.HttpOptions.ContentType));
+                client.DefaultRequestHeaders.Add("accept", _options.HttpOptions?.ContentType ?? "application/json");
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(_options.HttpOptions?.ContentType ?? "application/json"));
 
                 var request = _options.AuthenticationRequest(_options.HttpOptions);
 

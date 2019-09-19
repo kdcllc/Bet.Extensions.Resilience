@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Bet.Extensions.Resilience.Http.Options
+namespace Bet.Extensions.Resilience.Abstractions.Options
 {
     /// <summary>
     /// The options for Circuit Breaker Polly Policy.
