@@ -1,33 +1,36 @@
 ﻿using System;
+using System.Net.Http;
 
 namespace Bet.Extensions.Resilience.Http.Options
 {
     /// <summary>
-    /// The default policy option. The root configuration is 'Policies'.
+    /// The default policy option.
+    /// The default configuration section name is 'Policies'.
     /// </summary>
     public class HttpPolicyOptions
     {
-        public HttpPolicyOptions()
-        {
-            HttpCircuitBreaker = new CircuitBreakerPolicyOptions();
-            HttpRetry = new RetryPolicyOptions();
-            HttpRequestTimeout = new RequestTimeoutOptions();
-        }
+        /// <summary>
+        /// The timeout policy options. The default is 100 seconds or 00:01:40.
+        /// This value matches the default of <see cref="HttpClient"/>.
+        /// </summary>
+        public TimeSpan Timeout { get; set; } = TimeSpan.FromSeconds(100);
 
-        public HttpPolicyOptions(
-            CircuitBreakerPolicyOptions circuitBreakerPolicyOptions,
-            RetryPolicyOptions retryPolicyOptions)
-        {
-            HttpCircuitBreaker = circuitBreakerPolicyOptions ?? throw new System.ArgumentNullException(nameof(circuitBreakerPolicyOptions));
-            HttpRetry = retryPolicyOptions ?? throw new System.ArgumentNullException(nameof(retryPolicyOptions));
-        }
+        /// <summary>
+        /// The Circuit Breaker Policy Options for <see cref="HttpResponseMessage"/>.
+        /// </summary>
+        public CircuitBreakerPolicyOptions HttpCircuitBreaker { get; set; } = new CircuitBreakerPolicyOptions();
 
-        public TimeSpan Timeout { get; set; }
+        /// <summary>
+        /// The Retry Policy for Options for <see cref="HttpResponseMessage"/>.
+        /// </summary>
+        public RetryPolicyOptions HttpRetry { get; set; } = new RetryPolicyOptions();
 
-        public CircuitBreakerPolicyOptions HttpCircuitBreaker { get; set; }
+        // TODO: check this later
+        public RequestTimeoutOptions HttpRequestTimeout { get; set; } = new RequestTimeoutOptions();
 
-        public RetryPolicyOptions HttpRetry { get; set; }
-
-        public RequestTimeoutOptions HttpRequestTimeout { get; set; }
+        /// <summary>
+        /// This is used for DI mapping.
+        /// </summary>
+        internal string PolicyName { get; set; }
     }
 }
