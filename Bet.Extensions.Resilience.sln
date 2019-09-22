@@ -38,6 +38,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bet.Extensions.Http.MessageHandlers", "src\Bet.Extensions.Http.MessageHandlers\Bet.Extensions.Http.MessageHandlers.csproj", "{199EAEAC-9EE7-4324-A26D-F4CCF34BD971}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bet.Extensions.Http.MessageHandlers.Abstractions", "src\Bet.Extensions.Http.MessageHandlers.Abstractions\Bet.Extensions.Http.MessageHandlers.Abstractions.csproj", "{843F4541-DA4E-4F42-BD45-BAA72F1F49FB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -64,6 +66,10 @@ Global
 		{199EAEAC-9EE7-4324-A26D-F4CCF34BD971}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{199EAEAC-9EE7-4324-A26D-F4CCF34BD971}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{199EAEAC-9EE7-4324-A26D-F4CCF34BD971}.Release|Any CPU.Build.0 = Release|Any CPU
+		{843F4541-DA4E-4F42-BD45-BAA72F1F49FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{843F4541-DA4E-4F42-BD45-BAA72F1F49FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{843F4541-DA4E-4F42-BD45-BAA72F1F49FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{843F4541-DA4E-4F42-BD45-BAA72F1F49FB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -74,6 +80,7 @@ Global
 		{4BA05CA6-9669-4014-8856-034B7229B835} = {32C6BDF4-6EEB-4C13-B084-AB554A2ACDAC}
 		{EFA33EF3-60AC-41F9-AB21-722E54644C5A} = {32C6BDF4-6EEB-4C13-B084-AB554A2ACDAC}
 		{199EAEAC-9EE7-4324-A26D-F4CCF34BD971} = {32C6BDF4-6EEB-4C13-B084-AB554A2ACDAC}
+		{843F4541-DA4E-4F42-BD45-BAA72F1F49FB} = {32C6BDF4-6EEB-4C13-B084-AB554A2ACDAC}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {23EAFD8A-DAB7-43F6-86D1-9F6C6A81F6D0}

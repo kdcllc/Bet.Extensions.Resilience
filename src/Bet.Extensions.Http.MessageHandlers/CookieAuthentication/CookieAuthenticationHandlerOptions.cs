@@ -1,5 +1,7 @@
 ﻿using System.Net.Http;
 
+using Bet.Extensions.Http.MessageHandlers.Abstractions.Options;
+
 namespace Bet.Extensions.Http.MessageHandlers.CookieAuthentication
 {
     public sealed class CookieAuthenticationHandlerOptions

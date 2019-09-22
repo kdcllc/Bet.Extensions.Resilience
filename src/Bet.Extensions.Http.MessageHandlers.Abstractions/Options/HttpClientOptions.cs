@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Net.Http;
 
-namespace Bet.Extensions.Http.MessageHandlers
+namespace Bet.Extensions.Http.MessageHandlers.Abstractions.Options
 {
     /// <summary>
     /// The options for <see cref="HttpClient"/>.

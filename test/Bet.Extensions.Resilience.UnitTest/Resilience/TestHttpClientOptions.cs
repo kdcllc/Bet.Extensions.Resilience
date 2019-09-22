@@ -1,4 +1,4 @@
-﻿using Bet.Extensions.Http.MessageHandlers;
+﻿using Bet.Extensions.Http.MessageHandlers.Abstractions.Options;
 
 namespace Bet.Extensions.Resilience.UnitTest.Resilience
 {

@@ -3,7 +3,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 
-using Bet.Extensions.Http.MessageHandlers;
+using Bet.Extensions.Http.MessageHandlers.Abstractions.Options;
 using Bet.Extensions.Resilience.Abstractions;
 using Bet.Extensions.Resilience.Http.Options;
 using Bet.Extensions.Resilience.Http.Setup;

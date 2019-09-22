@@ -12,4 +12,8 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Bet.Extensions.Http.MessageHandlers.Abstractions\Bet.Extensions.Http.MessageHandlers.Abstractions.csproj" />
+  </ItemGroup>
+
 </Project>

@@ -3,6 +3,8 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 
+using Bet.Extensions.Http.MessageHandlers.Abstractions.Options;
+
 namespace Bet.Extensions.Http.MessageHandlers.CookieAuthentication
 {
     public sealed class CookieGeneratorOptions

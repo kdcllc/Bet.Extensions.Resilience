@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Net.Http;
 
-using Bet.Extensions.Http.MessageHandlers;
+using Bet.Extensions.Http.MessageHandlers.Abstractions.Options;
 
 using Polly;
 
