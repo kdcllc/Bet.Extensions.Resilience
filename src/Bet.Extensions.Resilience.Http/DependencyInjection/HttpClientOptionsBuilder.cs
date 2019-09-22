@@ -37,7 +37,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <summary>
         /// The delegates that will be used to configure a named <see cref="HttpClient"/>.
         /// </summary>
-        public IList<Action<IServiceProvider, HttpClient>> HttpClientActions { get; } = new List<Action<IServiceProvider, HttpClient>>();
+        public IList<Action<IServiceProvider, HttpClient>> ConfigureHttpClient { get; } = new List<Action<IServiceProvider, HttpClient>>();
 
         /// <summary>
         /// An additional message handlers.
@@ -49,7 +49,10 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         public IList<Func<IServiceProvider, HttpRequestMessage, IAsyncPolicy<HttpResponseMessage>>> Policies { get; } = new List<Func<IServiceProvider, HttpRequestMessage, IAsyncPolicy<HttpResponseMessage>>>();
 
-        public HttpClientOptions HttpClientOptions { get; set; } = new HttpClientOptions();
+        /// <summary>
+        /// <see cref="HttpClient"/> options for this client.
+        /// </summary>
+        public HttpClientOptions Options { get; set; } = new HttpClientOptions();
 
         /// <summary>
         /// The name of the registered <see cref="HttpClient"/>.

@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 
 using Polly;
 
-namespace Bet.Extensions.Resilience.Http.MessageHandlers.PollyHttp
+namespace Microsoft.Extensions.Http.MessageHandlers
 {
     /// <summary>
     /// Based on https://github.com/aspnet/Extensions/blob/e190dcd860fd16af2403190c480b112744fa5a9d/src/HttpClientFactory/Polly/src/PolicyHttpMessageHandler.cs

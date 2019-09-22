@@ -1,9 +1,9 @@
 ﻿namespace Microsoft.Extensions.DependencyInjection
 {
     /// <summary>
-    /// Resilience HttpClient Builder for Dependency Injection registration.
+    /// Resilience Builder for Dependency Injection registration.
     /// </summary>
-    public interface IResilienceHttpClientBuilder
+    public interface IResilienceBuilder
     {
         /// <summary>
         /// Gets the name of the client configured by this builder.

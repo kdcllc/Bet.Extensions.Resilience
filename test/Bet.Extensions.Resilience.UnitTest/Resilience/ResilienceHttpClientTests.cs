@@ -75,11 +75,11 @@ namespace Bet.Extensions.Resilience.UnitTest.Resilience
             var client = serviceCollection.AddResilienceTypedClient<ITestTypedClient, TestTypedClient>()
                 .AddAllConfigurations(options =>
                 {
-                    options.HttpClientActions.Add((sp, cl) => cl.Timeout = TimeSpan.FromSeconds(5));
+                    options.ConfigureHttpClient.Add((sp, cl) => cl.Timeout = TimeSpan.FromSeconds(5));
                 })
                 .AddAllConfigurations(options =>
                 {
-                    options.HttpClientActions.Add((sp, cl) => cl.Timeout = TimeSpan.FromSeconds(15));
+                    options.ConfigureHttpClient.Add((sp, cl) => cl.Timeout = TimeSpan.FromSeconds(15));
                 });
 
             Assert.Equal(nameof(ITestTypedClient), client.Name);
@@ -151,10 +151,10 @@ namespace Bet.Extensions.Resilience.UnitTest.Resilience
                  })
                 .AddAllConfigurations(opt =>
                 {
-                    opt.HttpClientActions.Add((sp, cl) =>
+                    opt.ConfigureHttpClient.Add((sp, cl) =>
                     {
                             // checks if the options have been already configured via configuration.
-                            cl.BaseAddress = opt.HttpClientOptions.BaseAddress;
+                            cl.BaseAddress = opt.Options.BaseAddress;
                     });
                 });
 
@@ -197,10 +197,10 @@ namespace Bet.Extensions.Resilience.UnitTest.Resilience
                  })
                 .AddAllConfigurations(opt =>
                 {
-                    opt.HttpClientActions.Add((sp, cl) =>
+                    opt.ConfigureHttpClient.Add((sp, cl) =>
                     {
                         // checks if the options have been already configured via configuration.
-                        cl.BaseAddress = opt.HttpClientOptions.BaseAddress;
+                        cl.BaseAddress = opt.Options.BaseAddress;
                     });
                 });
 
@@ -275,10 +275,10 @@ namespace Bet.Extensions.Resilience.UnitTest.Resilience
                })
                 .AddAllConfigurations(opt =>
                 {
-                    opt.HttpClientActions.Add((sp, cl) =>
+                    opt.ConfigureHttpClient.Add((sp, cl) =>
                     {
                         // checks if the options have been already configured via configuration.
-                        cl.BaseAddress = opt.HttpClientOptions.BaseAddress;
+                        cl.BaseAddress = opt.Options.BaseAddress;
                     });
                 });
 

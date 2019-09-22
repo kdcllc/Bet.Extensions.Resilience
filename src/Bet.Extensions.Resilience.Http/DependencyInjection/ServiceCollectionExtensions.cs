@@ -5,12 +5,12 @@ using System.Net.Http.Headers;
 
 using Bet.Extensions.MessageHandlers;
 using Bet.Extensions.Resilience.Abstractions;
-using Bet.Extensions.Resilience.Http.MessageHandlers.PollyHttp;
 using Bet.Extensions.Resilience.Http.Options;
 using Bet.Extensions.Resilience.Http.Setup;
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Http.MessageHandlers;
 using Microsoft.Extensions.Internal;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -24,10 +24,10 @@ namespace Microsoft.Extensions.DependencyInjection
     {
         private const string _message = "The HttpClient factory with the name '{0}' is not registered.";
 
-        private static readonly Func<IResilienceHttpClientBuilder, ResilienceHttpClientOptions>
-          _findIntance = (builder) => builder.Services.SingleOrDefault(sd => sd.ServiceType == typeof(ResilienceHttpClientOptions))?.ImplementationInstance as ResilienceHttpClientOptions;
+        private static readonly Func<IResilienceBuilder, HttpClientOptionsBuilderRegistrant>
+          _findIntance = (builder) => builder.Services.SingleOrDefault(sd => sd.ServiceType == typeof(HttpClientOptionsBuilderRegistrant))?.ImplementationInstance as HttpClientOptionsBuilderRegistrant;
 
-        private static readonly Func<IResilienceHttpClientBuilder, IConfiguration> _configuration = GetConfiguration;
+        private static readonly Func<IResilienceBuilder, IConfiguration> _configuration = GetConfiguration;
 
         /// <summary>
         /// Adds Resilience <see cref="HttpClient"/> with custom options that can be used to inject inside of the TypedClient.
@@ -39,20 +39,17 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="sectionName">The default is null and resolves TOptions name as root.</param>
         /// <param name="optionsName">The default is TOptions name.</param>
         /// <returns>IResilienceHttpClientBuilder.</returns>
-        public static IResilienceHttpClientBuilder AddResilienceTypedClient<TClient, TImplementation, TOptions>(
+        public static IResilienceBuilder AddResilienceTypedClient<TClient, TImplementation, TOptions>(
             this IServiceCollection services,
             string sectionName = null,
-            string optionsName = null)
-            where TClient : class
-            where TImplementation : class, TClient
-            where TOptions : HttpClientOptions, new()
+            string optionsName = null) where TClient : class where TImplementation : class, TClient where TOptions : HttpClientOptions, new()
         {
             var builder = AddResilienceHttpClientBuilder<TClient>(services);
             optionsName = optionsName ?? typeof(TOptions).Name;
 
             // adds default HttpOptionsConfiguration
             var implName = typeof(TImplementation).Name;
-            AddDefaultHttpClientOptions(sectionName, optionsName, builder, implName);
+            AddNamedHttpClientOptions(sectionName, optionsName, builder, implName);
 
             // create options instance from the configuration
             services.AddTransient<IConfigureOptions<TOptions>>(sp =>
@@ -87,7 +84,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="sectionName">The default is null and resolves TOptions name as root.</param>
         /// <param name="optionsName">The default is TOptions name.</param>
         /// <returns></returns>
-        public static IResilienceHttpClientBuilder AddResilienceTypedClient<TClient, TImplementation>(
+        public static IResilienceBuilder AddResilienceTypedClient<TClient, TImplementation>(
             this IServiceCollection services,
             string sectionName = null,
             string optionsName = null)
@@ -101,7 +98,7 @@ namespace Microsoft.Extensions.DependencyInjection
             // if not optionName present then Implementation name is used.
             optionsName = optionsName ?? implName;
 
-            AddDefaultHttpClientOptions(sectionName, optionsName, builder, implName);
+            AddNamedHttpClientOptions(sectionName, optionsName, builder, implName);
 
             Configure<TClient, TImplementation>(builder, sectionName, optionsName);
 
@@ -112,11 +109,11 @@ namespace Microsoft.Extensions.DependencyInjection
         /// Adds Default Http Policies to be executed within the context of the request.
         /// WaitAndRetry and CircuitBreaker.
         /// </summary>
-        /// <param name="builder">The <see cref="IResilienceHttpClientBuilder"/> instance to configure.</param>
+        /// <param name="builder">The <see cref="IResilienceBuilder"/> instance to configure.</param>
         /// <param name="enableLogging">The configuration of the default policies to log the output. The default is false.</param>
         /// <returns></returns>
-        public static IResilienceHttpClientBuilder AddDefaultPolicies(
-            this IResilienceHttpClientBuilder builder,
+        public static IResilienceBuilder AddDefaultPolicies(
+            this IResilienceBuilder builder,
             bool enableLogging = false)
         {
             builder.Services.AddTransient<IConfigureOptions<HttpPolicyOptions>>(sp =>
@@ -169,11 +166,11 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <summary>
         /// Adds <see cref="HttpClient"/> primary message handler.
         /// </summary>
-        /// <param name="builder">The <see cref="IResilienceHttpClientBuilder"/> instance to configure.</param>
+        /// <param name="builder">The <see cref="IResilienceBuilder"/> instance to configure.</param>
         /// <param name="configure">The delegate to configure Primary Http MessageHandler for the <see cref="HttpClient"/> client.</param>
         /// <returns></returns>
-        public static IResilienceHttpClientBuilder AddPrimaryHttpMessageHandler(
-            this IResilienceHttpClientBuilder builder,
+        public static IResilienceBuilder AddPrimaryHttpMessageHandler(
+            this IResilienceBuilder builder,
             Func<IServiceProvider, HttpMessageHandler> configure)
         {
             var instance = _findIntance(builder);
@@ -200,18 +197,18 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <summary>
         /// Adds <see cref="HttpClient"/> configuration for the client.
         /// </summary>
-        /// <param name="builder">The <see cref="IResilienceHttpClientBuilder"/> instance to configure.</param>
+        /// <param name="builder">The <see cref="IResilienceBuilder"/> instance to configure.</param>
         /// <param name="configureClient">The delegate to configure <see cref="HttpClient"/> properties.</param>
         /// <returns></returns>
-        public static IResilienceHttpClientBuilder AddHttpClientConfiguration(
-            this IResilienceHttpClientBuilder builder,
+        public static IResilienceBuilder AddHttpClientConfiguration(
+            this IResilienceBuilder builder,
             Action<IServiceProvider, HttpClient> configureClient)
         {
             var instance = _findIntance(builder);
 
             if (instance.RegisteredBuilders.TryGetValue(builder.Name, out var options))
             {
-                options.HttpClientActions.Add(configureClient);
+                options.ConfigureHttpClient.Add(configureClient);
                 options.HttpClientBuilder.ConfigureHttpClient(configureClient);
 
                 return builder;
@@ -223,11 +220,11 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <summary>
         /// Adds Http Message Handler, will be executed in the order that added.
         /// </summary>
-        /// <param name="builder">The <see cref="IResilienceHttpClientBuilder"/> instance to configure.</param>
+        /// <param name="builder">The <see cref="IResilienceBuilder"/> instance to configure.</param>
         /// <param name="configureHandler">The delegate to configure additional http message handler.</param>
         /// <returns></returns>
-        public static IResilienceHttpClientBuilder AddHttpMessageHandler(
-            this IResilienceHttpClientBuilder builder,
+        public static IResilienceBuilder AddHttpMessageHandler(
+            this IResilienceBuilder builder,
             Func<IServiceProvider, DelegatingHandler> configureHandler)
         {
             var instance = _findIntance(builder);
@@ -246,11 +243,11 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <summary>
         /// Adds Polly policy to be executed.
         /// </summary>
-        /// <param name="builder">The <see cref="IResilienceHttpClientBuilder"/> instance to configure.</param>
+        /// <param name="builder">The <see cref="IResilienceBuilder"/> instance to configure.</param>
         /// <param name="policySelector">The delegate to configure Polly policy for the handlers.</param>
         /// <returns></returns>
-        public static IResilienceHttpClientBuilder AddPolicy(
-            this IResilienceHttpClientBuilder builder,
+        public static IResilienceBuilder AddPolicy(
+            this IResilienceBuilder builder,
             Func<IServiceProvider, HttpRequestMessage, IAsyncPolicy<HttpResponseMessage>> policySelector)
         {
             var instance = _findIntance(builder);
@@ -269,11 +266,11 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <summary>
         /// Adds all of the <see cref="HttpClient"/> configurations at once.
         /// </summary>
-        /// <param name="builder">The <see cref="IResilienceHttpClientBuilder"/> instance to configure.</param>
+        /// <param name="builder">The <see cref="IResilienceBuilder"/> instance to configure.</param>
         /// <param name="configure">The delegate to configure <see cref="HttpClient"/>.</param>
         /// <returns></returns>
-        public static IResilienceHttpClientBuilder AddAllConfigurations(
-            this IResilienceHttpClientBuilder builder,
+        public static IResilienceBuilder AddAllConfigurations(
+            this IResilienceBuilder builder,
             Action<HttpClientOptionsBuilder> configure)
         {
             var instance = _findIntance(builder);
@@ -285,14 +282,14 @@ namespace Microsoft.Extensions.DependencyInjection
                 var httpBuilder = options.HttpClientBuilder;
 
                 // the default is 2 min.
-                httpBuilder.SetHandlerLifetime(options.HttpClientOptions.Timeout);
+                httpBuilder.SetHandlerLifetime(options.Options.Timeout);
 
                 // allows to register new primary handler.
                 httpBuilder.ConfigurePrimaryHttpMessageHandler(options.PrimaryHandler);
                 options.IsPrimaryHanlderAdded = true;
 
                 // allows for multiple configurations to be registered.
-                foreach (var httpClientAction in options.HttpClientActions)
+                foreach (var httpClientAction in options.ConfigureHttpClient)
                 {
                     httpBuilder.ConfigureHttpClient(httpClientAction);
                 }
@@ -346,16 +343,17 @@ namespace Microsoft.Extensions.DependencyInjection
         }
 
         /// <summary>
-        /// This is required by both registrations, in order to get the basic configurations passed to DI.
+        /// This is required by both registrations,
+        /// in order to get the basic configurations passed to DI.
         /// </summary>
         /// <param name="sectionName"></param>
         /// <param name="optionsName"></param>
         /// <param name="builder"></param>
         /// <param name="implName"></param>
-        private static void AddDefaultHttpClientOptions(
+        private static void AddNamedHttpClientOptions(
             string sectionName,
             string optionsName,
-            IResilienceHttpClientBuilder builder,
+            IResilienceBuilder builder,
             string implName)
         {
             builder.Services.AddTransient<IConfigureOptions<HttpClientOptions>>(sp =>
@@ -401,10 +399,10 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <typeparam name="TClient"></typeparam>
         /// <param name="services"></param>
         /// <returns></returns>
-        private static IResilienceHttpClientBuilder AddResilienceHttpClientBuilder<TClient>(IServiceCollection services) where TClient : class
+        private static IResilienceBuilder AddResilienceHttpClientBuilder<TClient>(IServiceCollection services) where TClient : class
         {
-            // register default services
-            services.TryAddSingleton(new ResilienceHttpClientOptions());
+            // register the default service.
+            services.TryAddSingleton(new HttpClientOptionsBuilderRegistrant());
 
             // create builder based on the name of the type
             // this matches the HttpFactoryClient logic https://github.com/aspnet/Extensions/blob/11cf90103841c35cbefe9afb8e5bf9fee696dd17/src/HttpClientFactory/Http/src/DependencyInjection/HttpClientFactoryServiceCollectionExtensions.cs#L517
@@ -413,7 +411,7 @@ namespace Microsoft.Extensions.DependencyInjection
         }
 
         private static void Configure<TClient, TImplementation>(
-            IResilienceHttpClientBuilder builder,
+            IResilienceBuilder builder,
             string sectionName = null,
             string optionsName = null)
             where TClient : class
@@ -429,7 +427,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
                 var newOptions = new HttpClientOptionsBuilder(builder.Name, httpClientBuilder);
 
-                newOptions.HttpClientActions.Add((sp, client) =>
+                newOptions.ConfigureHttpClient.Add((sp, client) =>
                 {
                     var config = sp.GetRequiredService<IOptionsMonitor<HttpClientOptions>>().Get(typeof(TImplementation).Name);
 
@@ -455,17 +453,17 @@ namespace Microsoft.Extensions.DependencyInjection
                 {
                     if (sectionName == null)
                     {
-                        configuration.Bind(optionsName, newOptions.HttpClientOptions);
+                        configuration.Bind(optionsName, newOptions.Options);
                     }
                     else
                     {
                         var section = configuration.GetSection(sectionName);
-                        section.Bind(optionsName, newOptions.HttpClientOptions);
+                        section.Bind(optionsName, newOptions.Options);
                     }
                 }
 
                 // configure default actions
-                foreach (var httpClientAction in newOptions.HttpClientActions)
+                foreach (var httpClientAction in newOptions.ConfigureHttpClient)
                 {
                     httpClientBuilder.ConfigureHttpClient(httpClientAction);
                 }
@@ -479,12 +477,12 @@ namespace Microsoft.Extensions.DependencyInjection
         }
 
 #if NETSTANDARD2_0
-        private static IConfiguration GetConfiguration(IResilienceHttpClientBuilder builder)
+        private static IConfiguration GetConfiguration(IResilienceBuilder builder)
         {
             return builder.Services.SingleOrDefault(sd => sd.ServiceType == typeof(IConfiguration))?.ImplementationInstance as IConfiguration;
         }
 #elif NETSTANDARD2_1
-        private static IConfiguration GetConfiguration(IResilienceHttpClientBuilder builder)
+        private static IConfiguration GetConfiguration(IResilienceBuilder builder)
         {
             // builder.Services.BuildServiceProvider() is not the best implementation but required for getting configurations at this point.
             return builder

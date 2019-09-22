@@ -23,9 +23,14 @@ namespace Bet.Extensions.Resilience.Http.Options
         public CircuitBreakerPolicyOptions HttpCircuitBreaker { get; set; } = new CircuitBreakerPolicyOptions();
 
         /// <summary>
-        /// The Retry Policy for Options for <see cref="HttpResponseMessage"/>.
+        /// The Retry Policy Options for <see cref="HttpResponseMessage"/>.
         /// </summary>
         public RetryPolicyOptions HttpRetry { get; set; } = new RetryPolicyOptions();
+
+        /// <summary>
+        /// The Retry Policy with Jitter Options for <see cref="HttpResponseMessage"/>.
+        /// </summary>
+        public RetryJitterOptions HttpJitterRetry { get; set; } = new RetryJitterOptions();
 
         // TODO: check this later
         public RequestTimeoutOptions HttpRequestTimeout { get; set; } = new RequestTimeoutOptions();

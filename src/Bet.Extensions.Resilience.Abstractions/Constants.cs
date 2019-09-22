@@ -3,7 +3,7 @@
     public static class Constants
     {
         /// <summary>
-        /// Root of the options configurations.
+        /// The Configuration root section name for the options.
         /// </summary>
         public const string Policies = nameof(Policies);
     }
