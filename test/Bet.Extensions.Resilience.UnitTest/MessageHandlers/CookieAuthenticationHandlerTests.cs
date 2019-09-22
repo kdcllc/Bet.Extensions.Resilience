@@ -4,8 +4,8 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-using Bet.Extensions.MessageHandlers;
-using Bet.Extensions.MessageHandlers.CookieAuthentication;
+using Bet.Extensions.Http.MessageHandlers;
+using Bet.Extensions.Http.MessageHandlers.CookieAuthentication;
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;

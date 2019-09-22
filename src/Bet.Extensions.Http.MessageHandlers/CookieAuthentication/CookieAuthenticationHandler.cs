@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 using Microsoft.Extensions.Logging;
 
-namespace Bet.Extensions.MessageHandlers.CookieAuthentication
+namespace Bet.Extensions.Http.MessageHandlers.CookieAuthentication
 {
     public sealed class CookieAuthenticationHandler : DelegatingHandler
     {

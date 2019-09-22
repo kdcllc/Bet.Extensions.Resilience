@@ -1,6 +1,6 @@
 ﻿using System.Net.Http;
 
-namespace Bet.Extensions.MessageHandlers.CookieAuthentication
+namespace Bet.Extensions.Http.MessageHandlers.CookieAuthentication
 {
     public sealed class CookieAuthenticationHandlerOptions
     {

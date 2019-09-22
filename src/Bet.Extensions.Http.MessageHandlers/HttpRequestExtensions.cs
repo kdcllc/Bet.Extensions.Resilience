@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Net.Http;
 
-namespace Bet.Extensions.MessageHandlers
+namespace Bet.Extensions.Http.MessageHandlers
 {
     internal static class HttpRequestExtensions
     {

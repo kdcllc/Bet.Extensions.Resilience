@@ -9,7 +9,7 @@ This library allows for Resilience configuration and logging for HttpClients and
 The Resilience is based on `Polly` standard library.
 
 - [`Bet.Extensions.Resilience.Abstractions`](./src/Bet.Extensions.Resilience.Abstractions/README.md)
-- [`Bet.Extensions.MessageHandlers`](./src/Bet.Extensions.MessageHandlers/README.md)
+- [`Bet.Extensions.Http.MessageHandlers`](./src/Bet.Extensions.Http.MessageHandlers/README.md)
 - [`Bet.Extensions.Resilience.Http`](./src/Bet.Extensions.Resilience.Http/README.md)
      `PolicyWithLoggingHttpMessageHandler` allows to add logger to Polly's context.
 

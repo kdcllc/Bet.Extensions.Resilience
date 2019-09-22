@@ -1,4 +1,4 @@
-﻿using Bet.Extensions.MessageHandlers;
+﻿using Bet.Extensions.Http.MessageHandlers;
 
 namespace Bet.Extensions.Resilience.UnitTest.Resilience
 {

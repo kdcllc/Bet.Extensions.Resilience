@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text;
 
-namespace Bet.Extensions.MessageHandlers
+namespace Bet.Extensions.Http.MessageHandlers
 {
     public class HttpBasicAuthClientOptions : HttpClientOptions
     {

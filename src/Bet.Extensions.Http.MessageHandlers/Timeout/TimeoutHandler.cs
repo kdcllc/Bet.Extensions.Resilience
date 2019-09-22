@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 using Microsoft.Extensions.Options;
 
-namespace Bet.Extensions.MessageHandlers.Timeout
+namespace Bet.Extensions.Http.MessageHandlers.Timeout
 {
     public sealed class TimeoutHandler : DelegatingHandler
     {

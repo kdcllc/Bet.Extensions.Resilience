@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Net;
 
-namespace Bet.Extensions.MessageHandlers
+namespace Bet.Extensions.Http.MessageHandlers
 {
     public class HttpException : Exception
     {

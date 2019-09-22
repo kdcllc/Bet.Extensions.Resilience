@@ -1,7 +1,7 @@
 ﻿using System.Net;
 using System.Net.Http;
 
-namespace Bet.Extensions.MessageHandlers
+namespace Bet.Extensions.Http.MessageHandlers
 {
     public class DefaultHttpClientHandler : HttpClientHandler
     {

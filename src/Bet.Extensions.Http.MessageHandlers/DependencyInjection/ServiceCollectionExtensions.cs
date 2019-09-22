@@ -1,6 +1,6 @@
 ﻿using System;
 
-using Bet.Extensions.MessageHandlers.Timeout;
+using Bet.Extensions.Http.MessageHandlers.Timeout;
 
 using Microsoft.Extensions.DependencyInjection.Extensions;
 

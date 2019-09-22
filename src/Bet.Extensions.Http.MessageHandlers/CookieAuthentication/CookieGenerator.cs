@@ -5,7 +5,7 @@ using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Bet.Extensions.MessageHandlers.CookieAuthentication
+namespace Bet.Extensions.Http.MessageHandlers.CookieAuthentication
 {
     internal class CookieGenerator
     {
