@@ -31,3 +31,10 @@ Get ip address of the docker container
 ```bash
  hostname -I
 ```
+
+### HttpClient Diagnostics events order
+
+System.Net.Http.HttpRequestOut.Start
+System.Net.Http.Request
+System.Net.Http.HttpRequestOut.Stop
+System.Net.Http.Response

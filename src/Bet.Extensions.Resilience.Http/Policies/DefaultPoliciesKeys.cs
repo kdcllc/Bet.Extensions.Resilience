@@ -1,11 +1,11 @@
 ﻿using System.Net.Http;
 
-namespace Bet.Extensions.Resilience.Http.Setup
+namespace Bet.Extensions.Resilience.Http.Policies
 {
     /// <summary>
     /// The default list of the Polly policies for <see cref="HttpClient"/>.
     /// </summary>
-    public sealed class PolicyKeys
+    public sealed class DefaultPoliciesKeys
     {
         public const string HttpWaitAndRetryPolicyAsync = nameof(HttpWaitAndRetryPolicyAsync);
         public const string HttpWaitAndRetryPolicy = nameof(HttpWaitAndRetryPolicy);
@@ -15,5 +15,7 @@ namespace Bet.Extensions.Resilience.Http.Setup
 
         public const string HttpRequestTimeoutPolicyAsync = nameof(HttpRequestTimeoutPolicyAsync);
         public const string HttpRequestTimeoutPolicy = nameof(HttpRequestTimeoutPolicy);
+
+        public const string DefaultPolicies = nameof(DefaultPolicies);
     }
 }

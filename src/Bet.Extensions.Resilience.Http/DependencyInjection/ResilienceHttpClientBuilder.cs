@@ -1,7 +1,7 @@
 ﻿namespace Microsoft.Extensions.DependencyInjection
 {
     /// <inheritdoc/>
-    public class ResilienceHttpClientBuilder : IResilienceBuilder
+    public class ResilienceHttpClientBuilder : IResilienceHttpClientBuilder
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ResilienceHttpClientBuilder"/> class.
