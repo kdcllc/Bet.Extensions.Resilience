@@ -39,5 +39,10 @@ namespace Bet.Extensions.Resilience.Http.Options
         /// This is used for DI mapping.
         /// </summary>
         internal string PolicyName { get; set; }
+
+        /// <summary>
+        /// Configuration section name associated with this configuration.
+        /// </summary>
+        internal string SectionName { get; set; }
     }
 }

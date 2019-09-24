@@ -13,24 +13,26 @@ namespace Bet.Extensions.Resilience.Http.Policies
     /// <summary>
     /// The default circuit breaker policy.
     /// </summary>
-    public class CircuitBreakerPolicy : IHttpPolicyRegistration<HttpPolicyOptions>
+    /// <typeparam name="TOptions"></typeparam>
+    public class CircuitBreakerPolicy<TOptions> : IHttpPolicyRegistration<TOptions> where TOptions : HttpPolicyOptions
     {
-        private readonly IResilienceHttpPolicyBuilder<HttpPolicyOptions> _policyBuilder;
-        private readonly ILogger<CircuitBreakerPolicy> _logger;
-        private readonly HttpPolicyOptions _options;
-        private readonly string _policyName;
+        private readonly IResilienceHttpPolicyBuilder<TOptions> _policyBuilder;
+        private readonly ILogger<CircuitBreakerPolicy<TOptions>> _logger;
+        private readonly TOptions _options;
 
         public CircuitBreakerPolicy(
             string policyName,
-            IResilienceHttpPolicyBuilder<HttpPolicyOptions> policyBuilder,
-            ILogger<CircuitBreakerPolicy> logger)
+            IResilienceHttpPolicyBuilder<TOptions> policyBuilder,
+            ILogger<CircuitBreakerPolicy<TOptions>> logger)
         {
             _policyBuilder = policyBuilder ?? throw new ArgumentNullException(nameof(policyBuilder));
             _logger = logger;
 
             _options = policyBuilder.GetOptions(policyName);
-            _policyName = policyName;
+            Name = policyName;
         }
+
+        public string Name { get; private set; }
 
         public IAsyncPolicy<HttpResponseMessage> CreateAsyncPolicy()
         {
@@ -56,8 +58,8 @@ namespace Bet.Extensions.Resilience.Http.Policies
 
         public void RegisterPolicy()
         {
-            _policyBuilder.AddPolicy($"{_policyName}Async", CreateAsyncPolicy);
-            _policyBuilder.AddPolicy($"{_policyName}", CreateAsyncPolicy);
+            _policyBuilder.AddPolicy($"{Name}Async", CreateAsyncPolicy, true);
+            _policyBuilder.AddPolicy($"{Name}", CreateSyncPolicy, true);
         }
 
         private void OnBreak(DelegateResult<HttpResponseMessage> delegateResult, TimeSpan breakSpan, Context context)

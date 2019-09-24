@@ -2,7 +2,7 @@
   <PropertyGroup>
     <RunCodeAnalysis>true</RunCodeAnalysis>
     <NetCoreCommon>2.2.*</NetCoreCommon>
-    <BetCommon>1.4.0</BetCommon>
+    <BetCommon>1.4.1</BetCommon>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp2.2' Or '$(TargetFramework)' == 'netstandard2.0'">
@@ -10,7 +10,7 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp3.0' Or '$(TargetFramework)' == 'netstandard2.1'">
-    <NetCoreCommon>3.0.0-preview9.*</NetCoreCommon>
+    <NetCoreCommon>3.0.0</NetCoreCommon>
   </PropertyGroup>
 
   <ItemGroup Label="NetCore">

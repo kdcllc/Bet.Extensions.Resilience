@@ -54,7 +54,7 @@ namespace Microsoft.Extensions.Configuration
                 return new NamedConfigureFromConfigurationOptions<TOptions>(optionName, config);
             }));
 
-            // Registers an IConfigureOptions<TOptions> action configurator. Being last it will bind from config source first
+            // Registers an IConfigureOptions<TOptions> action configuration. Being last it will bind from config source first
             // and run the customization afterwards
             services.Configure<TOptions>(optionName, options => configureAction?.Invoke(options));
 

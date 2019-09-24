@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Net.Http;
 
 using Bet.Extensions.Resilience.Http.Options;
-
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
 using Polly;
@@ -12,6 +12,7 @@ using Polly.Registry;
 
 namespace Bet.Extensions.Resilience.Http.Policies
 {
+
     /// <inheritdoc/>
     public class ResilienceHttpPolicyBuilder<TOptions> : IResilienceHttpPolicyBuilder<TOptions> where TOptions : HttpPolicyOptions
     {
@@ -21,11 +22,27 @@ namespace Bet.Extensions.Resilience.Http.Policies
 
         private readonly IOptionsMonitor<TOptions> _optionsMonitor;
         private readonly IPolicyRegistry<string> _policyRegistry;
+        private readonly IServiceProvider _provider;
 
-        public ResilienceHttpPolicyBuilder(IOptionsMonitor<TOptions> optionsMonitor, IPolicyRegistry<string> policyRegistry)
+        public ResilienceHttpPolicyBuilder(
+            IServiceProvider provider,
+            string parentPolicyName,
+            string[] childrenPolicyNames = null)
         {
-            _optionsMonitor = optionsMonitor;
-            _policyRegistry = policyRegistry;
+            _provider = provider;
+
+            _optionsMonitor = provider.GetRequiredService<IOptionsMonitor<TOptions>>();
+            _policyRegistry = provider.GetRequiredService<IPolicyRegistry<string>>();
+
+            _optionsCollection.Add(parentPolicyName, _optionsMonitor.Get(parentPolicyName));
+
+            if (childrenPolicyNames != null)
+            {
+                foreach (var child in childrenPolicyNames)
+                {
+                    _optionsCollection.Add(child, _optionsMonitor.Get(parentPolicyName));
+                }
+            }
 
             _optionsMonitor.OnChange(newOptions =>
             {
@@ -97,6 +114,17 @@ namespace Bet.Extensions.Resilience.Http.Policies
         /// <inheritdoc/>
         public void RegisterPolicies()
         {
+            var registrations = _provider.GetServices(typeof(IHttpPolicyRegistration<>).MakeGenericType(new Type[] { typeof(TOptions) }));
+
+            foreach (var registration in registrations)
+            {
+                if (registration != null)
+                {
+                    var method = registration.GetType().GetMethod("RegisterPolicy");
+                    method.Invoke(registration, Array.Empty<object>());
+                }
+            }
+
             // Recreate added policies. Those policies will utilize the updated setting value stored in _settings
             foreach (var asyncPolicy in _asyncPolicies)
             {
@@ -113,7 +141,15 @@ namespace Bet.Extensions.Resilience.Http.Policies
         public TOptions GetOptions(string settingsName)
         {
             settingsName = settingsName ?? throw new ArgumentNullException(nameof(settingsName));
-            return _optionsCollection[settingsName];
+
+            if (_optionsCollection.ContainsKey(settingsName))
+            {
+                return _optionsCollection[settingsName];
+            }
+            else
+            {
+                return null;
+            }
         }
 
         /// <summary>

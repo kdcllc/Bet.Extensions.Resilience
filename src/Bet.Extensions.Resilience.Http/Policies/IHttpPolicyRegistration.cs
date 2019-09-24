@@ -8,6 +8,8 @@ namespace Bet.Extensions.Resilience.Http.Policies
 {
     public interface IHttpPolicyRegistration<TOptions> where TOptions : HttpPolicyOptions
     {
+        string Name { get; }
+
         void RegisterPolicy();
 
         IAsyncPolicy<HttpResponseMessage> CreateAsyncPolicy();

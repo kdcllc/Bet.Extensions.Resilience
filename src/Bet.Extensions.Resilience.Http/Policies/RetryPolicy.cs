@@ -11,23 +11,24 @@ using Polly;
 
 namespace Bet.Extensions.Resilience.Http.Policies
 {
-    public class RetryPolicy : IHttpPolicyRegistration<HttpPolicyOptions>
+    public class RetryPolicy<TOptions> : IHttpPolicyRegistration<TOptions> where TOptions : HttpPolicyOptions
     {
-        private readonly string _policyName;
-        private readonly IResilienceHttpPolicyBuilder<HttpPolicyOptions> _policyBuilder;
-        private readonly ILogger<RetryPolicy> _logger;
-        private readonly HttpPolicyOptions _options;
+        private readonly IResilienceHttpPolicyBuilder<TOptions> _policyBuilder;
+        private readonly ILogger<RetryPolicy<TOptions>> _logger;
+        private readonly TOptions _options;
 
         public RetryPolicy(
             string policyName,
-            IResilienceHttpPolicyBuilder<HttpPolicyOptions> policyBuilder,
-            ILogger<RetryPolicy> logger)
+            IResilienceHttpPolicyBuilder<TOptions> policyBuilder,
+            ILogger<RetryPolicy<TOptions>> logger)
         {
-            _policyName = policyName;
+            Name = policyName;
             _policyBuilder = policyBuilder ?? throw new ArgumentNullException(nameof(policyBuilder));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _options = _policyBuilder.GetOptions(policyName);
         }
+
+        public string Name { get; }
 
         public IAsyncPolicy<HttpResponseMessage> CreateAsyncPolicy()
         {
@@ -53,8 +54,8 @@ namespace Bet.Extensions.Resilience.Http.Policies
 
         public void RegisterPolicy()
         {
-            _policyBuilder.AddPolicy($"{_policyName}Async", CreateAsyncPolicy);
-            _policyBuilder.AddPolicy($"{_policyName}", CreateAsyncPolicy);
+            _policyBuilder.AddPolicy($"{Name}Async", CreateAsyncPolicy, true);
+            _policyBuilder.AddPolicy($"{Name}", CreateSyncPolicy, true);
         }
 
         private bool TransientHttpStatusCodePredicate(HttpResponseMessage response)

@@ -375,20 +375,61 @@ namespace Microsoft.Extensions.DependencyInjection
             where T : class, IResilienceHttpPolicyBuilder<TOptions>
             where TOptions : HttpPolicyOptions, new()
         {
+            // adds Polly Policy registration
             var registry = services.TryAddPolicyRegistry();
+
+            // adds DI based marker object
             services.TryAddSingleton(new ResilienceHttpPolicyRegistrant());
 
-            services.Configure<TOptions>(policyName, options => options.PolicyName = policyName);
+            // return an instant of ResilienceHttpPolicyRegistrant
+            var registrant = _findPolicyBuilderIntance(services);
+
+            if (registrant != null)
+            {
+                // only unique policy names are allowed.
+                if (registrant.RegisteredPolicies.TryGetValue(policyName, out var type))
+                {
+                    throw new ArgumentException($"{policyName} already exists");
+                }
+
+                registrant.RegisteredPolicies.Add(policyName, typeof(TOptions));
+            }
+
+            services.Configure<TOptions>(policyName, options =>
+            {
+                options.PolicyName = policyName;
+                options.SectionName = policySectionName;
+            });
+
             services.AddChangeTokenOptions(policySectionName, policyName, configure);
 
-            services.TryAddSingleton<IResilienceHttpPolicyBuilder<TOptions>, T>();
-
-            var instance = _findPolicyBuilderIntance(services);
-
-            if (instance != null)
+            var defaultPolicies = new string[]
             {
-                instance.RegisteredPolicies.Add(typeof(TOptions));
-            }
+                DefaultPoliciesKeys.HttpCircuitBreakerPolicy,
+                DefaultPoliciesKeys.HttpWaitAndRetryPolicy
+            };
+
+            services.AddSingleton<IResilienceHttpPolicyBuilder<TOptions>>((sp) =>
+            {
+                var provider = sp.GetRequiredService<IServiceProvider>();
+                return new ResilienceHttpPolicyBuilder<TOptions>(provider, policyName, defaultPolicies);
+            });
+
+            services.AddSingleton<IHttpPolicyRegistration<TOptions>>(sp =>
+            {
+                var logger = sp.GetRequiredService<ILogger<RetryPolicy<TOptions>>>();
+                var options = sp.GetRequiredService<IResilienceHttpPolicyBuilder<TOptions>>();
+
+                return new RetryPolicy<TOptions>(DefaultPoliciesKeys.HttpCircuitBreakerPolicy, options, logger);
+            });
+
+            services.AddSingleton<IHttpPolicyRegistration<TOptions>>(sp =>
+            {
+                var logger = sp.GetRequiredService<ILogger<CircuitBreakerPolicy<TOptions>>>();
+                var options = sp.GetRequiredService<IResilienceHttpPolicyBuilder<TOptions>>();
+
+                return new CircuitBreakerPolicy<TOptions>(DefaultPoliciesKeys.HttpWaitAndRetryPolicy, options, logger);
+            });
 
             return services;
         }

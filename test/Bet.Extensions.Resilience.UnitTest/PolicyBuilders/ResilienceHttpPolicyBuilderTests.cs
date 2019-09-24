@@ -40,7 +40,7 @@ namespace Bet.Extensions.Resilience.UnitTest.PolicyBuilders
         }
 
         [Fact]
-        public void Should_Configure_Options()
+        public void Should_Throw_Argument_Exception()
         {
             var services = new ServiceCollection();
             var dic = new Dictionary<string, string>
@@ -56,7 +56,30 @@ namespace Bet.Extensions.Resilience.UnitTest.PolicyBuilders
             services.AddSingleton<IConfiguration>(config);
 
             services.AddResiliencePolicyConfiguration();
-            services.AddResiliencePolicyConfiguration<CustomResilientOptions>();
+
+            Assert.Throws<ArgumentException>(() => services.AddResiliencePolicyConfiguration<CustomResilientOptions>());
+        }
+
+        [Fact]
+        public void Should_Configure_Options()
+        {
+            var services = new ServiceCollection();
+            var dic = new Dictionary<string, string>
+            {
+                { "Policies:HttpCircuitBreaker:DurationOfBreak", "00:00:14" },
+                { "Policies:HttpCircuitBreaker:ExceptionsAllowedBeforeBreaking", "6" },
+                { "Policies:HttpRetry:BackOffPower", "1" },
+                { "Policies:HttpRetry:Count", "10" },
+                { "Policies:CustomCount", "100" }
+            };
+            var config = new ConfigurationBuilder().AddInMemoryCollection(dic).Build();
+            services.AddOptions();
+            services.AddSingleton<IConfiguration>(config);
+
+            services.AddLogging(builder => builder.AddProvider(new XunitLoggerProvider(Output)));
+
+            services.AddResiliencePolicyConfiguration();
+            services.AddResiliencePolicyConfiguration<CustomResilientOptions>(policyName: "CustomPolicy");
 
             services.AddSingleton<PolicyRegistration>();
 
@@ -69,9 +92,9 @@ namespace Bet.Extensions.Resilience.UnitTest.PolicyBuilders
             var policy = sp.GetRequiredService<IPolicyRegistry<string>>();
 
             // no policy added at this point to the registry
-            Assert.Equal(0, policy.Count);
+            Assert.Equal(4, policy.Count);
 
-            var options = sp.GetRequiredService<IOptionsMonitor<CustomResilientOptions>>().Get(DefaultPoliciesKeys.DefaultPolicies);
+            var options = sp.GetRequiredService<IOptionsMonitor<CustomResilientOptions>>().Get("CustomPolicy");
             Assert.Equal(TimeSpan.FromSeconds(14), options.HttpCircuitBreaker.DurationOfBreak);
             Assert.Equal(6, options.HttpCircuitBreaker.ExceptionsAllowedBeforeBreaking);
             Assert.Equal(1, options.HttpRetry.BackoffPower);

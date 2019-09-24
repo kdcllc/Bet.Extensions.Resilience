@@ -5,6 +5,6 @@ namespace Bet.Extensions.Resilience.Http.Policies
 {
     internal class ResilienceHttpPolicyRegistrant
     {
-        public List<Type> RegisteredPolicies { get; } = new List<Type>();
+        public Dictionary<string, Type> RegisteredPolicies { get; } = new Dictionary<string, Type>();
     }
 }

@@ -41,7 +41,6 @@ namespace Bet.Extensions.Resilience.Http.Policies
         /// <summary>
         /// Register the policies.
         /// </summary>
-        /// <returns></returns>
         void RegisterPolicies();
     }
 }

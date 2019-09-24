@@ -19,7 +19,7 @@ namespace Bet.Extensions.Resilience.Http.Policies
 
             foreach (var type in types.RegisteredPolicies)
             {
-                var builder = _provider.GetService(typeof(IResilienceHttpPolicyBuilder<>).MakeGenericType(new Type[] { type }));
+                var builder = _provider.GetService(typeof(IResilienceHttpPolicyBuilder<>).MakeGenericType(new Type[] { type.Value }));
 
                 if (builder != null)
                 {
