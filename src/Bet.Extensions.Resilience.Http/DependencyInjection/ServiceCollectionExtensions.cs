@@ -364,7 +364,7 @@ namespace Microsoft.Extensions.DependencyInjection
             string policyName = DefaultPoliciesKeys.DefaultPolicies)
             where TOptions : HttpPolicyOptions, new()
         {
-            return services.AddResiliencePolicyConfiguration<ResilienceHttpPolicyBuilder<TOptions>, TOptions>(configure, policySectionName, policyName);
+            return services.AddResiliencePolicyConfiguration<HttpPolicyBuilder<TOptions>, TOptions>(configure, policySectionName, policyName);
         }
 
         public static IServiceCollection AddResiliencePolicyConfiguration<T, TOptions>(
@@ -412,10 +412,10 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddSingleton<IResilienceHttpPolicyBuilder<TOptions>>((sp) =>
             {
                 var provider = sp.GetRequiredService<IServiceProvider>();
-                return new ResilienceHttpPolicyBuilder<TOptions>(provider, policyName, defaultPolicies);
+                return new HttpPolicyBuilder<TOptions>(provider, policyName, defaultPolicies);
             });
 
-            services.AddSingleton<IHttpPolicyRegistration<TOptions>>(sp =>
+            services.AddSingleton<IHttpPolicy<TOptions>>(sp =>
             {
                 var logger = sp.GetRequiredService<ILogger<RetryPolicy<TOptions>>>();
                 var options = sp.GetRequiredService<IResilienceHttpPolicyBuilder<TOptions>>();
@@ -423,16 +423,21 @@ namespace Microsoft.Extensions.DependencyInjection
                 return new RetryPolicy<TOptions>(DefaultPoliciesKeys.HttpCircuitBreakerPolicy, options, logger);
             });
 
-            services.AddSingleton<IHttpPolicyRegistration<TOptions>>(sp =>
+            services.AddSingleton<IHttpPolicy<TOptions>>(sp =>
             {
-                var logger = sp.GetRequiredService<ILogger<CircuitBreakerPolicy<TOptions>>>();
+                var logger = sp.GetRequiredService<ILogger<HttpCircuitBreakerPolicy<TOptions>>>();
                 var options = sp.GetRequiredService<IResilienceHttpPolicyBuilder<TOptions>>();
 
-                return new CircuitBreakerPolicy<TOptions>(DefaultPoliciesKeys.HttpWaitAndRetryPolicy, options, logger);
+                return new HttpCircuitBreakerPolicy<TOptions>(DefaultPoliciesKeys.HttpWaitAndRetryPolicy, options, logger);
             });
 
             return services;
         }
+
+        //public static IServiceCollection AddDefaultResiliencePolicies()
+        //{
+
+        //}
 
         /// <summary>
         /// This is required by both registrations,

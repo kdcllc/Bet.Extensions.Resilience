@@ -14,7 +14,7 @@ namespace Bet.Extensions.Resilience.Http.Policies
 {
 
     /// <inheritdoc/>
-    public class ResilienceHttpPolicyBuilder<TOptions> : IResilienceHttpPolicyBuilder<TOptions> where TOptions : HttpPolicyOptions
+    public class HttpPolicyBuilder<TOptions> : IResilienceHttpPolicyBuilder<TOptions> where TOptions : HttpPolicyOptions
     {
         private readonly IDictionary<string, TOptions> _optionsCollection = new ConcurrentDictionary<string, TOptions>();
         private readonly IDictionary<string, Func<IAsyncPolicy<HttpResponseMessage>>> _asyncPolicies = new ConcurrentDictionary<string, Func<IAsyncPolicy<HttpResponseMessage>>>();
@@ -24,7 +24,7 @@ namespace Bet.Extensions.Resilience.Http.Policies
         private readonly IPolicyRegistry<string> _policyRegistry;
         private readonly IServiceProvider _provider;
 
-        public ResilienceHttpPolicyBuilder(
+        public HttpPolicyBuilder(
             IServiceProvider provider,
             string parentPolicyName,
             string[] childrenPolicyNames = null)
@@ -114,7 +114,7 @@ namespace Bet.Extensions.Resilience.Http.Policies
         /// <inheritdoc/>
         public void RegisterPolicies()
         {
-            var registrations = _provider.GetServices(typeof(IHttpPolicyRegistration<>).MakeGenericType(new Type[] { typeof(TOptions) }));
+            var registrations = _provider.GetServices(typeof(IHttpPolicy<>).MakeGenericType(new Type[] { typeof(TOptions) }));
 
             foreach (var registration in registrations)
             {

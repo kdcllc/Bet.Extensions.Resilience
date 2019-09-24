@@ -11,7 +11,7 @@ using Polly;
 
 namespace Bet.Extensions.Resilience.Http.Policies
 {
-    public class RetryPolicy<TOptions> : IHttpPolicyRegistration<TOptions> where TOptions : HttpPolicyOptions
+    public class RetryPolicy<TOptions> : IHttpPolicy<TOptions> where TOptions : HttpPolicyOptions
     {
         private readonly IResilienceHttpPolicyBuilder<TOptions> _policyBuilder;
         private readonly ILogger<RetryPolicy<TOptions>> _logger;

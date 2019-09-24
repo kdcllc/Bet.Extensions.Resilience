@@ -14,27 +14,28 @@ namespace Bet.Extensions.Resilience.Http.Policies
     /// The default circuit breaker policy.
     /// </summary>
     /// <typeparam name="TOptions"></typeparam>
-    public class CircuitBreakerPolicy<TOptions> : IHttpPolicyRegistration<TOptions> where TOptions : HttpPolicyOptions
+    public class HttpCircuitBreakerPolicy<TOptions> : IHttpPolicy<TOptions> where TOptions : HttpPolicyOptions
     {
         private readonly IResilienceHttpPolicyBuilder<TOptions> _policyBuilder;
-        private readonly ILogger<CircuitBreakerPolicy<TOptions>> _logger;
+        private readonly ILogger<HttpCircuitBreakerPolicy<TOptions>> _logger;
         private readonly TOptions _options;
 
-        public CircuitBreakerPolicy(
+        public HttpCircuitBreakerPolicy(
             string policyName,
             IResilienceHttpPolicyBuilder<TOptions> policyBuilder,
-            ILogger<CircuitBreakerPolicy<TOptions>> logger)
+            ILogger<HttpCircuitBreakerPolicy<TOptions>> logger)
         {
+            Name = policyName;
+
             _policyBuilder = policyBuilder ?? throw new ArgumentNullException(nameof(policyBuilder));
-            _logger = logger;
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
             _options = policyBuilder.GetOptions(policyName);
-            Name = policyName;
         }
 
-        public string Name { get; private set; }
+        public virtual string Name { get; }
 
-        public IAsyncPolicy<HttpResponseMessage> CreateAsyncPolicy()
+        public virtual IAsyncPolicy<HttpResponseMessage> CreateAsyncPolicy()
         {
             return HttpPolicyExtensions
                 .HandleTransientHttpError()
@@ -45,7 +46,7 @@ namespace Bet.Extensions.Resilience.Http.Policies
                     OnReset);
         }
 
-        public ISyncPolicy<HttpResponseMessage> CreateSyncPolicy()
+        public virtual ISyncPolicy<HttpResponseMessage> CreateSyncPolicy()
         {
             return HttpPolicyExtensions
                 .HandleTransientHttpError()
@@ -56,7 +57,7 @@ namespace Bet.Extensions.Resilience.Http.Policies
                     OnReset);
         }
 
-        public void RegisterPolicy()
+        public virtual void RegisterPolicy()
         {
             _policyBuilder.AddPolicy($"{Name}Async", CreateAsyncPolicy, true);
             _policyBuilder.AddPolicy($"{Name}", CreateSyncPolicy, true);
