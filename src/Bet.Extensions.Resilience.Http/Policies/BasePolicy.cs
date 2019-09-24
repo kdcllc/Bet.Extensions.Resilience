@@ -44,8 +44,17 @@ namespace Bet.Extensions.Resilience.Http.Policies
         /// <inheritdoc/>
         public virtual void RegisterPolicy()
         {
-            _policyConfigurator.AddPolicy($"{Name}Async", CreateAsyncPolicy, true);
-            _policyConfigurator.AddPolicy($"{Name}", CreateSyncPolicy, true);
+            var syncPolicyName = Name;
+            var asyncPolicyName = $"{Name}Async";
+
+            _policyConfigurator.AddPolicy(asyncPolicyName, CreateAsyncPolicy, true);
+            _policyConfigurator.AddPolicy(syncPolicyName, CreateSyncPolicy, true);
+
+            if (Logger.IsEnabled(LogLevel.Debug))
+            {
+                Logger.LogDebug("[Add][Polly Policy] - {policyName}", syncPolicyName);
+                Logger.LogDebug("[Add][Polly Policy] - {policyName}", asyncPolicyName);
+            }
         }
     }
 }

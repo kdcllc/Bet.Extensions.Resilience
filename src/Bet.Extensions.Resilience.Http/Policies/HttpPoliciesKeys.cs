@@ -13,8 +13,8 @@ namespace Bet.Extensions.Resilience.Http.Policies
         public const string HttpCircuitBreakerPolicyAsync = nameof(HttpCircuitBreakerPolicyAsync);
         public const string HttpCircuitBreakerPolicy = nameof(HttpCircuitBreakerPolicy);
 
-        public const string HttpRequestTimeoutPolicyAsync = nameof(HttpRequestTimeoutPolicyAsync);
-        public const string HttpRequestTimeoutPolicy = nameof(HttpRequestTimeoutPolicy);
+        public const string HttpTimeoutPolicyAsync = nameof(HttpTimeoutPolicyAsync);
+        public const string HttpTimeoutPolicy = nameof(HttpTimeoutPolicy);
 
         public const string DefaultPolicies = nameof(DefaultPolicies);
     }

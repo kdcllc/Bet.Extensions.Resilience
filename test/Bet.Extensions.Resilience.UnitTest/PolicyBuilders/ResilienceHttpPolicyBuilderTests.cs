@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-
+using System.Linq;
 using Bet.Extensions.Resilience.Http.Options;
 using Bet.Extensions.Resilience.Http.Policies;
 
@@ -25,19 +25,6 @@ namespace Bet.Extensions.Resilience.UnitTest.PolicyBuilders
         }
 
         public ITestOutputHelper Output { get; }
-
-        [Fact]
-        public void Should_throw_exception_NullReferenceException()
-        {
-            // Assign
-            var serviceCollection = new ServiceCollection();
-
-            serviceCollection.AddLogging(builder => builder.AddProvider(new XunitLoggerProvider(Output)));
-            var logger = serviceCollection.BuildServiceProvider().GetRequiredService<ILoggerFactory>().CreateLogger("test");
-            var pollyContext = new Context();
-
-            pollyContext.AddLogger(logger);
-        }
 
         [Fact]
         public void Should_Not_Allow_Two_Policy_With_The_Same_Name_Throws_Argument_Exception()
@@ -104,7 +91,7 @@ namespace Bet.Extensions.Resilience.UnitTest.PolicyBuilders
 
             var sp = services.BuildServiceProvider();
 
-            // simulates the
+            // simulates the hosting service registration
             var registration = sp.GetService<IHttpPolicyRegistrator>();
             registration.ConfigurePolicies();
 
@@ -113,8 +100,8 @@ namespace Bet.Extensions.Resilience.UnitTest.PolicyBuilders
             // no policy added at this point to the registry
             Assert.Equal(6, policy.Count);
 
-            Assert.True(policy.ContainsKey(HttpPoliciesKeys.HttpRequestTimeoutPolicy));
-            Assert.True(policy.ContainsKey(HttpPoliciesKeys.HttpRequestTimeoutPolicyAsync));
+            Assert.True(policy.ContainsKey(HttpPoliciesKeys.HttpTimeoutPolicy));
+            Assert.True(policy.ContainsKey(HttpPoliciesKeys.HttpTimeoutPolicyAsync));
 
             Assert.True(policy.ContainsKey(HttpPoliciesKeys.HttpWaitAndRetryPolicy));
             Assert.True(policy.ContainsKey(HttpPoliciesKeys.HttpWaitAndRetryPolicyAsync));
@@ -125,7 +112,12 @@ namespace Bet.Extensions.Resilience.UnitTest.PolicyBuilders
             var options = sp.GetRequiredService<IHttpPolicyConfigurator<HttpPolicyOptions>>();
 
             Assert.Equal(7, options.OptionsCollection.Count);
+            Assert.Equal(3, options.AsyncPolicyCollection.Count);
+            Assert.Equal(3, options.SyncPolicyCollection.Count);
 
+            var individualPolicies = sp.GetServices<IHttpPolicy<HttpPolicyOptions>>();
+
+            Assert.Equal(3, individualPolicies.Count());
 
             //Assert.Equal(TimeSpan.FromSeconds(14), options.HttpCircuitBreaker.DurationOfBreak);
             //Assert.Equal(6, options.HttpCircuitBreaker.ExceptionsAllowedBeforeBreaking);

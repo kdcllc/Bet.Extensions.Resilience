@@ -101,33 +101,33 @@ namespace Microsoft.Extensions.DependencyInjection
         {
                 var defaultPolicies = new string[]
                 {
-                    HttpPoliciesKeys.HttpRequestTimeoutPolicy,
+                    HttpPoliciesKeys.HttpTimeoutPolicy,
                     HttpPoliciesKeys.HttpWaitAndRetryPolicy,
                     HttpPoliciesKeys.HttpCircuitBreakerPolicy
                 };
 
-                services.AddSingleton<IHttpPolicy<TOptions>>(sp =>
+                services.AddScoped<IHttpPolicy<TOptions>, HttpTimeoutPolicy<TOptions>>(sp =>
                 {
                     var logger = sp.GetRequiredService<ILogger<HttpTimeoutPolicy<TOptions>>>();
                     var options = sp.GetRequiredService<IHttpPolicyConfigurator<TOptions>>();
 
-                    return new HttpTimeoutPolicy<TOptions>(HttpPoliciesKeys.HttpRequestTimeoutPolicy, options, logger);
+                    return new HttpTimeoutPolicy<TOptions>(HttpPoliciesKeys.HttpTimeoutPolicy, options, logger);
                 });
 
-                services.AddSingleton<IHttpPolicy<TOptions>>(sp =>
+                services.AddScoped<IHttpPolicy<TOptions>, HttpWaitAndRetryPolicy<TOptions>>(sp =>
                 {
-                    var logger = sp.GetRequiredService<ILogger<HttpRetryPolicy<TOptions>>>();
+                    var logger = sp.GetRequiredService<ILogger<HttpWaitAndRetryPolicy<TOptions>>>();
                     var options = sp.GetRequiredService<IHttpPolicyConfigurator<TOptions>>();
 
-                    return new HttpRetryPolicy<TOptions>(HttpPoliciesKeys.HttpCircuitBreakerPolicy, options, logger);
+                    return new HttpWaitAndRetryPolicy<TOptions>(HttpPoliciesKeys.HttpWaitAndRetryPolicy, options, logger);
                 });
 
-                services.AddSingleton<IHttpPolicy<TOptions>>(sp =>
+                services.AddScoped<IHttpPolicy<TOptions>, HttpCircuitBreakerPolicy<TOptions>>(sp =>
                 {
                     var logger = sp.GetRequiredService<ILogger<HttpCircuitBreakerPolicy<TOptions>>>();
                     var options = sp.GetRequiredService<IHttpPolicyConfigurator<TOptions>>();
 
-                    return new HttpCircuitBreakerPolicy<TOptions>(HttpPoliciesKeys.HttpWaitAndRetryPolicy, options, logger);
+                    return new HttpCircuitBreakerPolicy<TOptions>(HttpPoliciesKeys.HttpCircuitBreakerPolicy, options, logger);
                 });
 
                 return services.AddHttpResiliencePolicy<HttpPolicyConfigurator<TOptions>, TOptions>(configure, policySectionName, policyName, defaultPolicies);

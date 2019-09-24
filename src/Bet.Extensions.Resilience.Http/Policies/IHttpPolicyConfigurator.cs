@@ -14,7 +14,20 @@ namespace Bet.Extensions.Resilience.Http.Policies
     /// <typeparam name="TOptions"></typeparam>
     public interface IHttpPolicyConfigurator<TOptions> where TOptions : HttpPolicyOptions
     {
+        /// <summary>
+        /// The collection of the options for the specific configuration section.
+        /// </summary>
         IReadOnlyDictionary<string, TOptions> OptionsCollection { get; }
+
+        /// <summary>
+        /// The collection o Async Policies.
+        /// </summary>
+        IReadOnlyDictionary<string, Func<IAsyncPolicy<HttpResponseMessage>>> AsyncPolicyCollection { get; }
+
+        /// <summary>
+        /// The collection of sync policies.
+        /// </summary>
+        IReadOnlyDictionary<string, Func<ISyncPolicy<HttpResponseMessage>>> SyncPolicyCollection { get; }
 
         /// <summary>
         /// Get the named policy option instance.

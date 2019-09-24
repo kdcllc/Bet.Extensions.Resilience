@@ -7,11 +7,9 @@ using Bet.Extensions.Http.MessageHandlers.Abstractions.Options;
 using Bet.Extensions.Resilience.Abstractions;
 using Bet.Extensions.Resilience.Http.Options;
 using Bet.Extensions.Resilience.Http.Policies;
-using Bet.Extensions.Resilience.Http.Setup;
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Http.MessageHandlers;
 using Microsoft.Extensions.Internal;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -119,14 +117,7 @@ namespace Microsoft.Extensions.DependencyInjection
             bool enableLogging = false,
             string sectionName = Constants.Policies)
         {
-            builder.Services.AddTransient<IConfigureOptions<HttpPolicyOptions>>(sp =>
-            {
-                return new ConfigureOptions<HttpPolicyOptions>((options) =>
-                {
-                    var configuration = sp.GetRequiredService<IConfiguration>();
-                    configuration.Bind(sectionName, options);
-                });
-            });
+            builder.Services.AddHttpDefaultResiliencePolicies(policySectionName: sectionName);
 
             var instance = _findHttpBuilderIntance(builder);
 
@@ -136,26 +127,24 @@ namespace Microsoft.Extensions.DependencyInjection
 
                 IAsyncPolicy<HttpResponseMessage> TimeoutPolicy(IServiceProvider sp, HttpRequestMessage request)
                 {
-                    var httpTimeoutOptions = sp.GetRequiredService<IOptions<HttpPolicyOptions>>().Value;
-                    return Policies.GetTimeoutAsync(httpTimeoutOptions.Timeout);
+                    var policy = sp.GetServices<IHttpPolicy<HttpPolicyOptions>>()?.FirstOrDefault(x => x.Name == HttpPoliciesKeys.HttpTimeoutPolicy);
+                    return policy.CreateAsyncPolicy();
                 }
 
                 AddPollyPolicy(clientOptions, TimeoutPolicy);
 
                 IAsyncPolicy<HttpResponseMessage> RetryPolicy(IServiceProvider sp, HttpRequestMessage request)
                 {
-                    var httpPolicyOptions = sp.GetRequiredService<IOptions<HttpPolicyOptions>>().Value;
-                    return Policies.GetRetryAsync(httpPolicyOptions.HttpRetry.Count, httpPolicyOptions.HttpRetry.BackoffPower);
+                    var policy = sp.GetServices<IHttpPolicy<HttpPolicyOptions>>()?.FirstOrDefault(x => x.Name == HttpPoliciesKeys.HttpWaitAndRetryPolicy);
+                    return policy?.CreateAsyncPolicy();
                 }
 
                 AddPollyPolicy(clientOptions, RetryPolicy);
 
                 IAsyncPolicy<HttpResponseMessage> CircuitBreakerPolicy(IServiceProvider sp, HttpRequestMessage request)
                 {
-                    var httpPolicyOptions = sp.GetRequiredService<IOptions<HttpPolicyOptions>>().Value;
-                    return Policies.GetCircuitBreakerAsync(
-                        httpPolicyOptions.HttpCircuitBreaker.ExceptionsAllowedBeforeBreaking,
-                        httpPolicyOptions.HttpCircuitBreaker.DurationOfBreak);
+                    var policy = sp.GetServices<IHttpPolicy<HttpPolicyOptions>>()?.FirstOrDefault(x => x.Name == HttpPoliciesKeys.HttpCircuitBreakerPolicy);
+                    return policy.CreateAsyncPolicy();
                 }
 
                 AddPollyPolicy(clientOptions, CircuitBreakerPolicy);
@@ -380,20 +369,10 @@ namespace Microsoft.Extensions.DependencyInjection
 
         private static void AddPollyPolicy(
             HttpClientOptionsBuilder options,
-            Func<IServiceProvider, HttpRequestMessage, IAsyncPolicy<HttpResponseMessage>> policy)
+            Func<IServiceProvider, HttpRequestMessage,
+            IAsyncPolicy<HttpResponseMessage>> policy)
         {
-            if (options.EnableLogging)
-            {
-                options.HttpClientBuilder.AddHttpMessageHandler((sp) =>
-                {
-                    var logger = sp.GetRequiredService<ILoggerFactory>().CreateLogger($"System.Net.Http.HttpClient.{options.Name}");
-                    return new PolicyWithLoggingHttpMessageHandler((request) => policy(sp, request), logger, options.Name);
-                });
-            }
-            else
-            {
-                options.HttpClientBuilder.AddPolicyHandler(policy);
-            }
+            options.HttpClientBuilder.AddPolicyHandler(policy);
         }
 
         /// <summary>

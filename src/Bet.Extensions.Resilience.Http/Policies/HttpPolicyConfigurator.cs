@@ -18,8 +18,8 @@ namespace Bet.Extensions.Resilience.Http.Policies
     public class HttpPolicyConfigurator<TOptions> : IHttpPolicyConfigurator<TOptions> where TOptions : HttpPolicyOptions
     {
         private readonly IDictionary<string, TOptions> _optionsCollection = new ConcurrentDictionary<string, TOptions>();
-        private readonly IDictionary<string, Func<IAsyncPolicy<HttpResponseMessage>>> _asyncPolicies = new ConcurrentDictionary<string, Func<IAsyncPolicy<HttpResponseMessage>>>();
-        private readonly IDictionary<string, Func<ISyncPolicy<HttpResponseMessage>>> _syncPolicies = new ConcurrentDictionary<string, Func<ISyncPolicy<HttpResponseMessage>>>();
+        private readonly IDictionary<string, Func<IAsyncPolicy<HttpResponseMessage>>> _asyncPolicyCollection = new ConcurrentDictionary<string, Func<IAsyncPolicy<HttpResponseMessage>>>();
+        private readonly IDictionary<string, Func<ISyncPolicy<HttpResponseMessage>>> _syncPolicyCollection = new ConcurrentDictionary<string, Func<ISyncPolicy<HttpResponseMessage>>>();
 
         private readonly IOptionsMonitor<TOptions> _optionsMonitor;
         private readonly IPolicyRegistry<string> _policyRegistry;
@@ -62,6 +62,10 @@ namespace Bet.Extensions.Resilience.Http.Policies
 
         public IReadOnlyDictionary<string, TOptions> OptionsCollection => _optionsCollection.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
 
+        public IReadOnlyDictionary<string, Func<IAsyncPolicy<HttpResponseMessage>>> AsyncPolicyCollection => _asyncPolicyCollection.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+
+        public IReadOnlyDictionary<string, Func<ISyncPolicy<HttpResponseMessage>>> SyncPolicyCollection => _syncPolicyCollection.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+
         /// <inheritdoc/>
         public IHttpPolicyConfigurator<TOptions> AddPolicy(string policyName, Func<IAsyncPolicy<HttpResponseMessage>> policyFunc, bool replaceIfExists = false)
         {
@@ -75,13 +79,13 @@ namespace Bet.Extensions.Resilience.Http.Policies
                 _policyRegistry[policyName] = policyFunc();
             }
 
-            if (!_asyncPolicies.ContainsKey(policyName))
+            if (!_asyncPolicyCollection.ContainsKey(policyName))
             {
-                _asyncPolicies.Add(policyName, policyFunc);
+                _asyncPolicyCollection.Add(policyName, policyFunc);
             }
             else if (replaceIfExists)
             {
-                _asyncPolicies[policyName] = policyFunc;
+                _asyncPolicyCollection[policyName] = policyFunc;
             }
 
             return this;
@@ -102,13 +106,13 @@ namespace Bet.Extensions.Resilience.Http.Policies
                 _policyRegistry[policyName] = policyFunc();
             }
 
-            if (!_syncPolicies.ContainsKey(policyName))
+            if (!_syncPolicyCollection.ContainsKey(policyName))
             {
-                _syncPolicies.Add(policyName, policyFunc);
+                _syncPolicyCollection.Add(policyName, policyFunc);
             }
             else if (replaceIfExists)
             {
-                _syncPolicies[policyName] = policyFunc;
+                _syncPolicyCollection[policyName] = policyFunc;
             }
 
             return this;
@@ -129,12 +133,12 @@ namespace Bet.Extensions.Resilience.Http.Policies
             }
 
             // Recreate added policies. Those policies will utilize the updated setting value stored in _settings
-            foreach (var asyncPolicy in _asyncPolicies)
+            foreach (var asyncPolicy in _asyncPolicyCollection)
             {
                 _policyRegistry[asyncPolicy.Key] = asyncPolicy.Value();
             }
 
-            foreach (var syncPolicy in _syncPolicies)
+            foreach (var syncPolicy in _syncPolicyCollection)
             {
                 _policyRegistry[syncPolicy.Key] = syncPolicy.Value();
             }

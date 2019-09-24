@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 using Bet.Extensions.Http.MessageHandlers;
 using Bet.Extensions.Http.MessageHandlers.Abstractions.Options;
+using Bet.Extensions.Resilience.Http.Policies;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -299,7 +300,7 @@ namespace Bet.Extensions.Resilience.UnitTest.Resilience
         public async Task Test_AddClientTyped_WithOptions_And_Default_Policies()
         {
             // Assign
-            var serviceCollection = new ServiceCollection();
+            var services = new ServiceCollection();
 
             var id = Guid.NewGuid().ToString();
 
@@ -313,25 +314,29 @@ namespace Bet.Extensions.Resilience.UnitTest.Resilience
 
             var configurationBuilder = new ConfigurationBuilder().AddInMemoryCollection(dic1);
 
-            serviceCollection.AddLogging(builder =>
+            services.AddLogging(builder =>
             {
                 builder.AddProvider(new XunitLoggerProvider(Output));
             });
 
-            serviceCollection.AddSingleton<IConfiguration>(configurationBuilder.Build());
+            services.AddSingleton<IConfiguration>(configurationBuilder.Build());
 
             using (var server = new TestServerBuilder(Output).GetSimpleServer())
             {
                 var handler = server.CreateHandler();
 
-                var clientBuilder = serviceCollection
+                var clientBuilder = services
                     .AddResilienceTypedClient<ITestTypedClientWithOptions, TestTypedClientWithOptions, TestHttpClientOptions>(optionsName: "TestHttpClient")
                     .AddPrimaryHttpMessageHandler((sp) => handler)
                     .AddDefaultPolicies(enableLogging: true);
 
-                var services = serviceCollection.BuildServiceProvider();
+                var provider = services.BuildServiceProvider();
 
-                var client = services.GetRequiredService<ITestTypedClientWithOptions>();
+                // simulates registrations for the policies.
+                var registration = provider.GetService<IHttpPolicyRegistrator>();
+                registration.ConfigurePolicies();
+
+                var client = provider.GetRequiredService<ITestTypedClientWithOptions>();
 
                 var result = await client.SendRequestAsync();
 
