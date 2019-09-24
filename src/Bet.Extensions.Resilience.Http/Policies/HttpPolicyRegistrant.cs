@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Bet.Extensions.Resilience.Http.Policies
 {
-    internal class ResilienceHttpPolicyRegistrant
+    internal class HttpPolicyRegistrant
     {
         public Dictionary<string, Type> RegisteredPolicies { get; } = new Dictionary<string, Type>();
     }

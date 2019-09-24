@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Net.Http;
 
 using Bet.Extensions.Resilience.Http.Options;
+
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
@@ -12,9 +13,8 @@ using Polly.Registry;
 
 namespace Bet.Extensions.Resilience.Http.Policies
 {
-
     /// <inheritdoc/>
-    public class HttpPolicyBuilder<TOptions> : IResilienceHttpPolicyBuilder<TOptions> where TOptions : HttpPolicyOptions
+    public class HttpPolicyConfigurator<TOptions> : IHttpPolicyConfigurator<TOptions> where TOptions : HttpPolicyOptions
     {
         private readonly IDictionary<string, TOptions> _optionsCollection = new ConcurrentDictionary<string, TOptions>();
         private readonly IDictionary<string, Func<IAsyncPolicy<HttpResponseMessage>>> _asyncPolicies = new ConcurrentDictionary<string, Func<IAsyncPolicy<HttpResponseMessage>>>();
@@ -24,7 +24,7 @@ namespace Bet.Extensions.Resilience.Http.Policies
         private readonly IPolicyRegistry<string> _policyRegistry;
         private readonly IServiceProvider _provider;
 
-        public HttpPolicyBuilder(
+        public HttpPolicyConfigurator(
             IServiceProvider provider,
             string parentPolicyName,
             string[] childrenPolicyNames = null)
@@ -55,12 +55,12 @@ namespace Bet.Extensions.Resilience.Http.Policies
                 // update options
                 _optionsCollection[newOptions.PolicyName] = newOptions;
 
-                RegisterPolicies();
+                ConfigurePolicies();
             });
         }
 
         /// <inheritdoc/>
-        public IResilienceHttpPolicyBuilder<TOptions> AddPolicy(string policyName, Func<IAsyncPolicy<HttpResponseMessage>> policyFunc, bool replaceIfExists = false)
+        public IHttpPolicyConfigurator<TOptions> AddPolicy(string policyName, Func<IAsyncPolicy<HttpResponseMessage>> policyFunc, bool replaceIfExists = false)
         {
             if (!_policyRegistry.ContainsKey(policyName))
             {
@@ -85,7 +85,7 @@ namespace Bet.Extensions.Resilience.Http.Policies
         }
 
         /// <inheritdoc/>
-        public IResilienceHttpPolicyBuilder<TOptions> AddPolicy(
+        public IHttpPolicyConfigurator<TOptions> AddPolicy(
             string policyName,
             Func<ISyncPolicy<HttpResponseMessage>> policyFunc,
             bool replaceIfExists = false)
@@ -112,7 +112,7 @@ namespace Bet.Extensions.Resilience.Http.Policies
         }
 
         /// <inheritdoc/>
-        public void RegisterPolicies()
+        public void ConfigurePolicies()
         {
             var registrations = _provider.GetServices(typeof(IHttpPolicy<>).MakeGenericType(new Type[] { typeof(TOptions) }));
 
@@ -138,13 +138,13 @@ namespace Bet.Extensions.Resilience.Http.Policies
         }
 
         /// <inheritdoc/>
-        public TOptions GetOptions(string settingsName)
+        public TOptions GetOptions(string optionsName)
         {
-            settingsName = settingsName ?? throw new ArgumentNullException(nameof(settingsName));
+            optionsName = optionsName ?? throw new ArgumentNullException(nameof(optionsName));
 
-            if (_optionsCollection.ContainsKey(settingsName))
+            if (_optionsCollection.ContainsKey(optionsName))
             {
-                return _optionsCollection[settingsName];
+                return _optionsCollection[optionsName];
             }
             else
             {

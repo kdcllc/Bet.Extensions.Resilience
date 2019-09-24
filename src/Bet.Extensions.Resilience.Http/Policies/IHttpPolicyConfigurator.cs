@@ -11,7 +11,7 @@ namespace Bet.Extensions.Resilience.Http.Policies
     /// The resilient Polly policy builder.
     /// </summary>
     /// <typeparam name="TOptions"></typeparam>
-    public interface IResilienceHttpPolicyBuilder<TOptions> where TOptions : HttpPolicyOptions
+    public interface IHttpPolicyConfigurator<TOptions> where TOptions : HttpPolicyOptions
     {
         /// <summary>
         /// Get the named policy option instance.
@@ -27,7 +27,7 @@ namespace Bet.Extensions.Resilience.Http.Policies
         /// <param name="policyFunc">The configuration function.</param>
         /// <param name="replaceIfExists">The flag to override existing values.</param>
         /// <returns></returns>
-        IResilienceHttpPolicyBuilder<TOptions> AddPolicy(string policyName, Func<IAsyncPolicy<HttpResponseMessage>> policyFunc, bool replaceIfExists = false);
+        IHttpPolicyConfigurator<TOptions> AddPolicy(string policyName, Func<IAsyncPolicy<HttpResponseMessage>> policyFunc, bool replaceIfExists = false);
 
         /// <summary>
         /// Register Sync <see cref="HttpRequestMessage"/> Policy.
@@ -36,11 +36,11 @@ namespace Bet.Extensions.Resilience.Http.Policies
         /// <param name="policyFunc">The configuration function.</param>
         /// <param name="replaceIfExists">The flag to override existing values.</param>
         /// <returns></returns>
-        IResilienceHttpPolicyBuilder<TOptions> AddPolicy(string policyName, Func<ISyncPolicy<HttpResponseMessage>> policyFunc, bool replaceIfExists = false);
+        IHttpPolicyConfigurator<TOptions> AddPolicy(string policyName, Func<ISyncPolicy<HttpResponseMessage>> policyFunc, bool replaceIfExists = false);
 
         /// <summary>
         /// Register the policies.
         /// </summary>
-        void RegisterPolicies();
+        void ConfigurePolicies();
     }
 }

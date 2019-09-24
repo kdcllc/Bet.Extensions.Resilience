@@ -81,11 +81,11 @@ namespace Bet.Extensions.Resilience.UnitTest.PolicyBuilders
             services.AddResiliencePolicyConfiguration();
             services.AddResiliencePolicyConfiguration<CustomResilientOptions>(policyName: "CustomPolicy");
 
-            services.AddSingleton<PolicyRegistration>();
+            services.AddSingleton<HttpPolicyRegistrator>();
 
             var sp = services.BuildServiceProvider();
 
-            var registration = sp.GetService<PolicyRegistration>();
+            var registration = sp.GetService<HttpPolicyRegistrator>();
 
             registration.Register();
 
@@ -100,7 +100,7 @@ namespace Bet.Extensions.Resilience.UnitTest.PolicyBuilders
             Assert.Equal(1, options.HttpRetry.BackoffPower);
             Assert.Equal(10, options.HttpRetry.Count);
             Assert.Equal(100, options.CustomCount);
-            Assert.Equal(DefaultPoliciesKeys.DefaultPolicies, options.PolicyName);
+            Assert.Equal(HttpPoliciesKeys.DefaultPolicies, options.PolicyName);
         }
 
         [Fact]
@@ -126,14 +126,14 @@ namespace Bet.Extensions.Resilience.UnitTest.PolicyBuilders
 
             // no policy added at this point to the registry
             Assert.Equal(0, policy.Count);
-            var options = sp.GetRequiredService<IOptionsMonitor<CustomResilientOptions>>().Get(DefaultPoliciesKeys.DefaultPolicies);
+            var options = sp.GetRequiredService<IOptionsMonitor<CustomResilientOptions>>().Get(HttpPoliciesKeys.DefaultPolicies);
 
             Assert.Equal(TimeSpan.FromSeconds(14), options.HttpCircuitBreaker.DurationOfBreak);
             Assert.Equal(6, options.HttpCircuitBreaker.ExceptionsAllowedBeforeBreaking);
             Assert.Equal(1, options.HttpRetry.BackoffPower);
             Assert.Equal(10, options.HttpRetry.Count);
             Assert.Equal(100, options.CustomCount);
-            Assert.Equal(DefaultPoliciesKeys.DefaultPolicies, options.PolicyName);
+            Assert.Equal(HttpPoliciesKeys.DefaultPolicies, options.PolicyName);
         }
 
         [Fact]
@@ -263,13 +263,13 @@ namespace Bet.Extensions.Resilience.UnitTest.PolicyBuilders
 
             // no policy added at this point to the registry
             Assert.Equal(0, policy.Count);
-            var options = sp.GetRequiredService<IOptionsMonitor<HttpPolicyOptions>>().Get(DefaultPoliciesKeys.DefaultPolicies);
+            var options = sp.GetRequiredService<IOptionsMonitor<HttpPolicyOptions>>().Get(HttpPoliciesKeys.DefaultPolicies);
 
             Assert.Equal(TimeSpan.FromSeconds(14), options.HttpCircuitBreaker.DurationOfBreak);
             Assert.Equal(83, options.HttpCircuitBreaker.ExceptionsAllowedBeforeBreaking);
             Assert.Equal(22, options.HttpRetry.BackoffPower);
             Assert.Equal(10, options.HttpRetry.Count);
-            Assert.Equal(DefaultPoliciesKeys.DefaultPolicies, options.PolicyName);
+            Assert.Equal(HttpPoliciesKeys.DefaultPolicies, options.PolicyName);
         }
     }
 }

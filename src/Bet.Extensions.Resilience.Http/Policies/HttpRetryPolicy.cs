@@ -11,16 +11,16 @@ using Polly;
 
 namespace Bet.Extensions.Resilience.Http.Policies
 {
-    public class RetryPolicy<TOptions> : IHttpPolicy<TOptions> where TOptions : HttpPolicyOptions
+    public class HttpRetryPolicy<TOptions> : IHttpPolicy<TOptions> where TOptions : HttpPolicyOptions
     {
-        private readonly IResilienceHttpPolicyBuilder<TOptions> _policyBuilder;
-        private readonly ILogger<RetryPolicy<TOptions>> _logger;
+        private readonly IHttpPolicyConfigurator<TOptions> _policyBuilder;
+        private readonly ILogger<HttpRetryPolicy<TOptions>> _logger;
         private readonly TOptions _options;
 
-        public RetryPolicy(
+        public HttpRetryPolicy(
             string policyName,
-            IResilienceHttpPolicyBuilder<TOptions> policyBuilder,
-            ILogger<RetryPolicy<TOptions>> logger)
+            IHttpPolicyConfigurator<TOptions> policyBuilder,
+            ILogger<HttpRetryPolicy<TOptions>> logger)
         {
             Name = policyName;
             _policyBuilder = policyBuilder ?? throw new ArgumentNullException(nameof(policyBuilder));
@@ -28,9 +28,9 @@ namespace Bet.Extensions.Resilience.Http.Policies
             _options = _policyBuilder.GetOptions(policyName);
         }
 
-        public string Name { get; }
+        public virtual string Name { get; }
 
-        public IAsyncPolicy<HttpResponseMessage> CreateAsyncPolicy()
+        public virtual IAsyncPolicy<HttpResponseMessage> CreateAsyncPolicy()
         {
             return Policy<HttpResponseMessage>
                .Handle<HttpRequestException>()
@@ -41,7 +41,7 @@ namespace Bet.Extensions.Resilience.Http.Policies
                        onRetryAsync: OnRetryAsync);
         }
 
-        public ISyncPolicy<HttpResponseMessage> CreateSyncPolicy()
+        public virtual ISyncPolicy<HttpResponseMessage> CreateSyncPolicy()
         {
             return Policy<HttpResponseMessage>
                .Handle<HttpRequestException>()
@@ -52,7 +52,7 @@ namespace Bet.Extensions.Resilience.Http.Policies
                     onRetry: (result, timeSpan, retryAttempt, context) => OnRetry(result, timeSpan, retryAttempt, context));
         }
 
-        public void RegisterPolicy()
+        public virtual void RegisterPolicy()
         {
             _policyBuilder.AddPolicy($"{Name}Async", CreateAsyncPolicy, true);
             _policyBuilder.AddPolicy($"{Name}", CreateSyncPolicy, true);

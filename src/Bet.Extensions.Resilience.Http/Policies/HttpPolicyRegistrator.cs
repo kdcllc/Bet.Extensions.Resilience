@@ -4,26 +4,26 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Bet.Extensions.Resilience.Http.Policies
 {
-    public class PolicyRegistration
+    public class HttpPolicyRegistrator
     {
         private readonly IServiceProvider _provider;
 
-        public PolicyRegistration(IServiceProvider provider)
+        public HttpPolicyRegistrator(IServiceProvider provider)
         {
             _provider = provider ?? throw new ArgumentNullException(nameof(provider));
         }
 
         public void Register()
         {
-            var types = _provider.GetService<ResilienceHttpPolicyRegistrant>();
+            var types = _provider.GetService<HttpPolicyRegistrant>();
 
             foreach (var type in types.RegisteredPolicies)
             {
-                var builder = _provider.GetService(typeof(IResilienceHttpPolicyBuilder<>).MakeGenericType(new Type[] { type.Value }));
+                var builder = _provider.GetService(typeof(IHttpPolicyConfigurator<>).MakeGenericType(new Type[] { type.Value }));
 
                 if (builder != null)
                 {
-                    var method = builder.GetType().GetMethod("RegisterPolicies");
+                    var method = builder.GetType().GetMethod("ConfigurePolicies");
                     method.Invoke(builder, Array.Empty<object>());
                 }
             }

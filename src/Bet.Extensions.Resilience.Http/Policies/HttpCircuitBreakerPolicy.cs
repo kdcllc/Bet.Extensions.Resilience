@@ -16,13 +16,13 @@ namespace Bet.Extensions.Resilience.Http.Policies
     /// <typeparam name="TOptions"></typeparam>
     public class HttpCircuitBreakerPolicy<TOptions> : IHttpPolicy<TOptions> where TOptions : HttpPolicyOptions
     {
-        private readonly IResilienceHttpPolicyBuilder<TOptions> _policyBuilder;
+        private readonly IHttpPolicyConfigurator<TOptions> _policyBuilder;
         private readonly ILogger<HttpCircuitBreakerPolicy<TOptions>> _logger;
         private readonly TOptions _options;
 
         public HttpCircuitBreakerPolicy(
             string policyName,
-            IResilienceHttpPolicyBuilder<TOptions> policyBuilder,
+            IHttpPolicyConfigurator<TOptions> policyBuilder,
             ILogger<HttpCircuitBreakerPolicy<TOptions>> logger)
         {
             Name = policyName;
