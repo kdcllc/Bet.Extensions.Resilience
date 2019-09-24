@@ -21,15 +21,12 @@ using Polly.Registry;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
-    public static class ServiceCollectionExtensions
+    public static class ResilienceHttpClientBuilderExtensions
     {
         private const string _message = "The HttpClient factory with the name '{0}' is not registered.";
 
         private static readonly Func<IResilienceHttpClientBuilder, HttpClientOptionsBuilderRegistrant>
           _findHttpBuilderIntance = (builder) => builder.Services.SingleOrDefault(sd => sd.ServiceType == typeof(HttpClientOptionsBuilderRegistrant))?.ImplementationInstance as HttpClientOptionsBuilderRegistrant;
-
-        private static readonly Func<IServiceCollection, HttpPolicyRegistrant>
-          _findPolicyBuilderIntance = (services) => services.SingleOrDefault(sd => sd.ServiceType == typeof(HttpPolicyRegistrant))?.ImplementationInstance as HttpPolicyRegistrant;
 
         private static readonly Func<IResilienceHttpClientBuilder, IConfiguration> _configuration = GetConfiguration;
 
@@ -140,7 +137,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 IAsyncPolicy<HttpResponseMessage> TimeoutPolicy(IServiceProvider sp, HttpRequestMessage request)
                 {
                     var httpTimeoutOptions = sp.GetRequiredService<IOptions<HttpPolicyOptions>>().Value;
-                    return Policies.GetTimeoutAsync(httpTimeoutOptions.HttpRequestTimeout.Timeout);
+                    return Policies.GetTimeoutAsync(httpTimeoutOptions.Timeout);
                 }
 
                 AddPollyPolicy(clientOptions, TimeoutPolicy);
@@ -347,97 +344,6 @@ namespace Microsoft.Extensions.DependencyInjection
 
             return registry;
         }
-
-        public static IServiceCollection AddResiliencePolicyConfiguration(
-            this IServiceCollection services,
-            Action<HttpPolicyOptions> configure = null,
-            string policySectionName = Constants.Policies,
-            string policyName = HttpPoliciesKeys.DefaultPolicies)
-        {
-            return services.AddResiliencePolicyConfiguration<HttpPolicyOptions>(configure, policySectionName, policyName);
-        }
-
-        public static IServiceCollection AddResiliencePolicyConfiguration<TOptions>(
-            this IServiceCollection services,
-            Action<TOptions> configure = null,
-            string policySectionName = Constants.Policies,
-            string policyName = HttpPoliciesKeys.DefaultPolicies)
-            where TOptions : HttpPolicyOptions, new()
-        {
-            return services.AddResiliencePolicyConfiguration<HttpPolicyConfigurator<TOptions>, TOptions>(configure, policySectionName, policyName);
-        }
-
-        public static IServiceCollection AddResiliencePolicyConfiguration<T, TOptions>(
-            this IServiceCollection services,
-            Action<TOptions> configure = null,
-            string policySectionName = Constants.Policies,
-            string policyName = HttpPoliciesKeys.DefaultPolicies)
-            where T : class, IHttpPolicyConfigurator<TOptions>
-            where TOptions : HttpPolicyOptions, new()
-        {
-            // adds Polly Policy registration
-            var registry = services.TryAddPolicyRegistry();
-
-            // adds DI based marker object
-            services.TryAddSingleton(new HttpPolicyRegistrant());
-
-            // return an instant of ResilienceHttpPolicyRegistrant
-            var registrant = _findPolicyBuilderIntance(services);
-
-            if (registrant != null)
-            {
-                // only unique policy names are allowed.
-                if (registrant.RegisteredPolicies.TryGetValue(policyName, out var type))
-                {
-                    throw new ArgumentException($"{policyName} already exists");
-                }
-
-                registrant.RegisteredPolicies.Add(policyName, typeof(TOptions));
-            }
-
-            services.Configure<TOptions>(policyName, options =>
-            {
-                options.PolicyName = policyName;
-                options.SectionName = policySectionName;
-            });
-
-            services.AddChangeTokenOptions(policySectionName, policyName, configure);
-
-            var defaultPolicies = new string[]
-            {
-                HttpPoliciesKeys.HttpCircuitBreakerPolicy,
-                HttpPoliciesKeys.HttpWaitAndRetryPolicy
-            };
-
-            services.AddSingleton<IHttpPolicyConfigurator<TOptions>>((sp) =>
-            {
-                var provider = sp.GetRequiredService<IServiceProvider>();
-                return new HttpPolicyConfigurator<TOptions>(provider, policyName, defaultPolicies);
-            });
-
-            services.AddSingleton<IHttpPolicy<TOptions>>(sp =>
-            {
-                var logger = sp.GetRequiredService<ILogger<HttpRetryPolicy<TOptions>>>();
-                var options = sp.GetRequiredService<IHttpPolicyConfigurator<TOptions>>();
-
-                return new HttpRetryPolicy<TOptions>(HttpPoliciesKeys.HttpCircuitBreakerPolicy, options, logger);
-            });
-
-            services.AddSingleton<IHttpPolicy<TOptions>>(sp =>
-            {
-                var logger = sp.GetRequiredService<ILogger<HttpCircuitBreakerPolicy<TOptions>>>();
-                var options = sp.GetRequiredService<IHttpPolicyConfigurator<TOptions>>();
-
-                return new HttpCircuitBreakerPolicy<TOptions>(HttpPoliciesKeys.HttpWaitAndRetryPolicy, options, logger);
-            });
-
-            return services;
-        }
-
-        //public static IServiceCollection AddDefaultResiliencePolicies()
-        //{
-
-        //}
 
         /// <summary>
         /// This is required by both registrations,

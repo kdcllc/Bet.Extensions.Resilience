@@ -40,7 +40,7 @@ namespace Bet.Extensions.Resilience.UnitTest.PolicyBuilders
         }
 
         [Fact]
-        public void Should_Throw_Argument_Exception()
+        public void Should_Not_Allow_Two_Policy_With_The_Same_Name_Throws_Argument_Exception()
         {
             var services = new ServiceCollection();
             var dic = new Dictionary<string, string>
@@ -55,13 +55,13 @@ namespace Bet.Extensions.Resilience.UnitTest.PolicyBuilders
             services.AddOptions();
             services.AddSingleton<IConfiguration>(config);
 
-            services.AddResiliencePolicyConfiguration();
+            services.AddHttpResiliencePolicy();
 
-            Assert.Throws<ArgumentException>(() => services.AddResiliencePolicyConfiguration<CustomResilientOptions>());
+            Assert.Throws<ArgumentException>(() => services.AddHttpResiliencePolicy<CustomResilientOptions>());
         }
 
         [Fact]
-        public void Should_Configure_Options()
+        public void Should_Not_Allow_Two_Default_Policy_With_The_Same_Name_Throws_Argument_Exception()
         {
             var services = new ServiceCollection();
             var dic = new Dictionary<string, string>
@@ -72,35 +72,67 @@ namespace Bet.Extensions.Resilience.UnitTest.PolicyBuilders
                 { "Policies:HttpRetry:Count", "10" },
                 { "Policies:CustomCount", "100" }
             };
+            var config = new ConfigurationBuilder().AddInMemoryCollection(dic).Build();
+            services.AddOptions();
+            services.AddSingleton<IConfiguration>(config);
+
+            services.AddHttpDefaultResiliencePolicies();
+
+            Assert.Throws<ArgumentException>(() => services.AddHttpDefaultResiliencePolicies<CustomResilientOptions>());
+        }
+
+        [Fact]
+        public void Should_Configure_Default_Policies_And_Options()
+        {
+            var services = new ServiceCollection();
+            var dic = new Dictionary<string, string>
+            {
+                { "Policies:Timeout", "100" },
+                { "Policies:HttpRetry:BackOffPower", "1" },
+                { "Policies:HttpRetry:Count", "10" },
+                { "Policies:HttpCircuitBreaker:DurationOfBreak", "00:00:14" },
+                { "Policies:HttpCircuitBreaker:ExceptionsAllowedBeforeBreaking", "6" }
+            };
+
             var config = new ConfigurationBuilder().AddInMemoryCollection(dic).Build();
             services.AddOptions();
             services.AddSingleton<IConfiguration>(config);
 
             services.AddLogging(builder => builder.AddProvider(new XunitLoggerProvider(Output)));
 
-            services.AddResiliencePolicyConfiguration();
-            services.AddResiliencePolicyConfiguration<CustomResilientOptions>(policyName: "CustomPolicy");
-
-            services.AddSingleton<HttpPolicyRegistrator>();
+            services.AddHttpDefaultResiliencePolicies<HttpPolicyOptions>();
 
             var sp = services.BuildServiceProvider();
 
-            var registration = sp.GetService<HttpPolicyRegistrator>();
-
-            registration.Register();
+            // simulates the
+            var registration = sp.GetService<IHttpPolicyRegistrator>();
+            registration.ConfigurePolicies();
 
             var policy = sp.GetRequiredService<IPolicyRegistry<string>>();
 
             // no policy added at this point to the registry
-            Assert.Equal(4, policy.Count);
+            Assert.Equal(6, policy.Count);
 
-            var options = sp.GetRequiredService<IOptionsMonitor<CustomResilientOptions>>().Get("CustomPolicy");
-            Assert.Equal(TimeSpan.FromSeconds(14), options.HttpCircuitBreaker.DurationOfBreak);
-            Assert.Equal(6, options.HttpCircuitBreaker.ExceptionsAllowedBeforeBreaking);
-            Assert.Equal(1, options.HttpRetry.BackoffPower);
-            Assert.Equal(10, options.HttpRetry.Count);
-            Assert.Equal(100, options.CustomCount);
-            Assert.Equal(HttpPoliciesKeys.DefaultPolicies, options.PolicyName);
+            Assert.True(policy.ContainsKey(HttpPoliciesKeys.HttpRequestTimeoutPolicy));
+            Assert.True(policy.ContainsKey(HttpPoliciesKeys.HttpRequestTimeoutPolicyAsync));
+
+            Assert.True(policy.ContainsKey(HttpPoliciesKeys.HttpWaitAndRetryPolicy));
+            Assert.True(policy.ContainsKey(HttpPoliciesKeys.HttpWaitAndRetryPolicyAsync));
+
+            Assert.True(policy.ContainsKey(HttpPoliciesKeys.HttpCircuitBreakerPolicy));
+            Assert.True(policy.ContainsKey(HttpPoliciesKeys.HttpCircuitBreakerPolicyAsync));
+
+            var options = sp.GetRequiredService<IHttpPolicyConfigurator<HttpPolicyOptions>>();
+
+            Assert.Equal(7, options.OptionsCollection.Count);
+
+
+            //Assert.Equal(TimeSpan.FromSeconds(14), options.HttpCircuitBreaker.DurationOfBreak);
+            //Assert.Equal(6, options.HttpCircuitBreaker.ExceptionsAllowedBeforeBreaking);
+            //Assert.Equal(1, options.HttpRetry.BackoffPower);
+            //Assert.Equal(10, options.HttpRetry.Count);
+            //Assert.Equal(100, options.CustomCount);
+            //Assert.Equal(HttpPoliciesKeys.DefaultPolicies, options.PolicyName);
         }
 
         [Fact]
@@ -119,7 +151,7 @@ namespace Bet.Extensions.Resilience.UnitTest.PolicyBuilders
 
             services.AddOptions();
             services.AddSingleton<IConfiguration>(config);
-            services.AddResiliencePolicyConfiguration<CustomResilientOptions>(policySectionName: "CustomPolicies");
+            services.AddHttpResiliencePolicy<CustomResilientOptions>(policySectionName: "CustomPolicies");
 
             var sp = services.BuildServiceProvider();
             var policy = sp.GetRequiredService<IPolicyRegistry<string>>();
@@ -151,7 +183,7 @@ namespace Bet.Extensions.Resilience.UnitTest.PolicyBuilders
             var config = new ConfigurationBuilder().AddInMemoryCollection(dic).Build();
             services.AddOptions();
             services.AddSingleton<IConfiguration>(config);
-            services.AddResiliencePolicyConfiguration<CustomResilientOptions>(policyName: "CustomName");
+            services.AddHttpResiliencePolicy<CustomResilientOptions>(policyName: "CustomName");
 
             var sp = services.BuildServiceProvider();
             var policy = sp.GetRequiredService<IPolicyRegistry<string>>();
@@ -184,7 +216,7 @@ namespace Bet.Extensions.Resilience.UnitTest.PolicyBuilders
             services.AddOptions();
             services.AddSingleton<IConfiguration>(config);
 
-            services.AddResiliencePolicyConfiguration(policySectionName: "Policy", policyName: "CustomName");
+            services.AddHttpResiliencePolicy(policySectionName: "Policy", policyName: "CustomName");
 
             var sp = services.BuildServiceProvider();
             var policy = sp.GetRequiredService<IPolicyRegistry<string>>();
@@ -216,7 +248,7 @@ namespace Bet.Extensions.Resilience.UnitTest.PolicyBuilders
             services.AddOptions();
             services.AddSingleton<IConfiguration>(config);
 
-            services.AddResiliencePolicyConfiguration<CustomResilientOptions>(policySectionName: "Policy", policyName: "CustomPolicy");
+            services.AddHttpResiliencePolicy<CustomResilientOptions>(policySectionName: "Policy", policyName: "CustomPolicy");
             var sp = services.BuildServiceProvider();
 
             var policy = sp.GetRequiredService<IPolicyRegistry<string>>();
@@ -252,7 +284,7 @@ namespace Bet.Extensions.Resilience.UnitTest.PolicyBuilders
             services.AddOptions();
             services.AddSingleton<IConfiguration>(config);
 
-            services.AddResiliencePolicyConfiguration(o =>
+            services.AddHttpResiliencePolicy(o =>
             {
                 o.HttpCircuitBreaker.ExceptionsAllowedBeforeBreaking = 83;
                 o.HttpRetry.BackoffPower = 22;

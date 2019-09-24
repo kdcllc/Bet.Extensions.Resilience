@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net.Http;
 
 using Bet.Extensions.Resilience.Http.Options;
@@ -13,6 +14,8 @@ namespace Bet.Extensions.Resilience.Http.Policies
     /// <typeparam name="TOptions"></typeparam>
     public interface IHttpPolicyConfigurator<TOptions> where TOptions : HttpPolicyOptions
     {
+        IReadOnlyDictionary<string, TOptions> OptionsCollection { get; }
+
         /// <summary>
         /// Get the named policy option instance.
         /// </summary>

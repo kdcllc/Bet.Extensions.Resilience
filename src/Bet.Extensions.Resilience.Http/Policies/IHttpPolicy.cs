@@ -18,12 +18,25 @@ namespace Bet.Extensions.Resilience.Http.Policies
         string Name { get; }
 
         /// <summary>
+        /// Policies options.
+        /// </summary>
+        TOptions Options { get; }
+
+        /// <summary>
         /// The method to register the policies with the.
         /// </summary>
         void RegisterPolicy();
 
+        /// <summary>
+        /// Create Async Polly Policy for <see cref="HttpResponseMessage"/>.
+        /// </summary>
+        /// <returns></returns>
         IAsyncPolicy<HttpResponseMessage> CreateAsyncPolicy();
 
+        /// <summary>
+        /// Create Sync Polly Policy for <see cref="HttpResponseMessage"/>.
+        /// </summary>
+        /// <returns></returns>
         ISyncPolicy<HttpResponseMessage> CreateSyncPolicy();
     }
 }

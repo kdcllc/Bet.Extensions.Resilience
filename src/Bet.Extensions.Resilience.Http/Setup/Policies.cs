@@ -28,10 +28,10 @@ namespace Bet.Extensions.Resilience.Http.Setup
             }
 
             // timeout async
-            policyRegistry.Add(HttpPoliciesKeys.HttpRequestTimeoutPolicyAsync, GetTimeoutAsync(options.HttpRequestTimeout.Timeout));
+            policyRegistry.Add(HttpPoliciesKeys.HttpRequestTimeoutPolicyAsync, GetTimeoutAsync(options.Timeout));
 
             // timeout sync
-            policyRegistry.Add(HttpPoliciesKeys.HttpRequestTimeoutPolicy, GetTimeout(options.HttpRequestTimeout.Timeout));
+            policyRegistry.Add(HttpPoliciesKeys.HttpRequestTimeoutPolicy, GetTimeout(options.Timeout));
 
             // retry async
             policyRegistry.Add(

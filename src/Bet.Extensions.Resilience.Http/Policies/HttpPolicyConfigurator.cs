@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 
 using Bet.Extensions.Resilience.Http.Options;
@@ -58,6 +59,8 @@ namespace Bet.Extensions.Resilience.Http.Policies
                 ConfigurePolicies();
             });
         }
+
+        public IReadOnlyDictionary<string, TOptions> OptionsCollection => _optionsCollection.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
 
         /// <inheritdoc/>
         public IHttpPolicyConfigurator<TOptions> AddPolicy(string policyName, Func<IAsyncPolicy<HttpResponseMessage>> policyFunc, bool replaceIfExists = false)

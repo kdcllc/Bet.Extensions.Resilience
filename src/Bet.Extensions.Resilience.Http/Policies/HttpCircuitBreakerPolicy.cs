@@ -14,58 +14,42 @@ namespace Bet.Extensions.Resilience.Http.Policies
     /// The default circuit breaker policy.
     /// </summary>
     /// <typeparam name="TOptions"></typeparam>
-    public class HttpCircuitBreakerPolicy<TOptions> : IHttpPolicy<TOptions> where TOptions : HttpPolicyOptions
+    public class HttpCircuitBreakerPolicy<TOptions> : BasePolicy<TOptions> where TOptions : HttpPolicyOptions
     {
-        private readonly IHttpPolicyConfigurator<TOptions> _policyBuilder;
-        private readonly ILogger<HttpCircuitBreakerPolicy<TOptions>> _logger;
-        private readonly TOptions _options;
-
         public HttpCircuitBreakerPolicy(
             string policyName,
-            IHttpPolicyConfigurator<TOptions> policyBuilder,
-            ILogger<HttpCircuitBreakerPolicy<TOptions>> logger)
+            IHttpPolicyConfigurator<TOptions> policyConfigurator,
+            ILogger<IHttpPolicy<TOptions>> logger) : base(policyName, policyConfigurator, logger)
         {
-            Name = policyName;
-
-            _policyBuilder = policyBuilder ?? throw new ArgumentNullException(nameof(policyBuilder));
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-
-            _options = policyBuilder.GetOptions(policyName);
         }
 
-        public virtual string Name { get; }
-
-        public virtual IAsyncPolicy<HttpResponseMessage> CreateAsyncPolicy()
+        /// <inheritdoc/>
+        public override IAsyncPolicy<HttpResponseMessage> CreateAsyncPolicy()
         {
             return HttpPolicyExtensions
                 .HandleTransientHttpError()
                 .CircuitBreakerAsync(
-                    handledEventsAllowedBeforeBreaking: _options.HttpCircuitBreaker.ExceptionsAllowedBeforeBreaking,
-                    durationOfBreak: _options.HttpCircuitBreaker.DurationOfBreak,
+                    handledEventsAllowedBeforeBreaking: Options.HttpCircuitBreaker.ExceptionsAllowedBeforeBreaking,
+                    durationOfBreak: Options.HttpCircuitBreaker.DurationOfBreak,
                     OnBreak,
                     OnReset);
         }
 
-        public virtual ISyncPolicy<HttpResponseMessage> CreateSyncPolicy()
+        /// <inheritdoc/>
+        public override ISyncPolicy<HttpResponseMessage> CreateSyncPolicy()
         {
             return HttpPolicyExtensions
                 .HandleTransientHttpError()
                 .CircuitBreaker(
-                    handledEventsAllowedBeforeBreaking: _options.HttpCircuitBreaker.ExceptionsAllowedBeforeBreaking,
-                    durationOfBreak: _options.HttpCircuitBreaker.DurationOfBreak,
+                    handledEventsAllowedBeforeBreaking: Options.HttpCircuitBreaker.ExceptionsAllowedBeforeBreaking,
+                    durationOfBreak: Options.HttpCircuitBreaker.DurationOfBreak,
                     OnBreak,
                     OnReset);
         }
 
-        public virtual void RegisterPolicy()
-        {
-            _policyBuilder.AddPolicy($"{Name}Async", CreateAsyncPolicy, true);
-            _policyBuilder.AddPolicy($"{Name}", CreateSyncPolicy, true);
-        }
-
         private void OnBreak(DelegateResult<HttpResponseMessage> delegateResult, TimeSpan breakSpan, Context context)
         {
-            _logger.LogWarning(
+            Logger.LogWarning(
                 "[CircuitBreak Policy][OnBreak] OperationKey: {OperationKey}; CorrelationId: {CorrelationId}; Duration of the break: {DurationOfBreak}; Reason:{ExceptionMessage}",
                 context.OperationKey,
                 context.CorrelationId,
@@ -75,7 +59,7 @@ namespace Bet.Extensions.Resilience.Http.Policies
 
         private void OnReset(Context context)
         {
-            _logger.LogInformation(
+            Logger.LogInformation(
                 "[CircuitBreak Policy][OnReset] OperationKey: {operationKey}; CorrelationId: {CorrelationId}",
                 context.OperationKey,
                 context.CorrelationId);

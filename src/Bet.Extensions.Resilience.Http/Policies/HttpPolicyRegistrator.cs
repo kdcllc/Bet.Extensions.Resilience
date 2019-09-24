@@ -4,7 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Bet.Extensions.Resilience.Http.Policies
 {
-    public class HttpPolicyRegistrator
+    public class HttpPolicyRegistrator : IHttpPolicyRegistrator
     {
         private readonly IServiceProvider _provider;
 
@@ -13,7 +13,7 @@ namespace Bet.Extensions.Resilience.Http.Policies
             _provider = provider ?? throw new ArgumentNullException(nameof(provider));
         }
 
-        public void Register()
+        public void ConfigurePolicies()
         {
             var types = _provider.GetService<HttpPolicyRegistrant>();
 

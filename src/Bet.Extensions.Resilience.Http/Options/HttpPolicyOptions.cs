@@ -32,9 +32,6 @@ namespace Bet.Extensions.Resilience.Http.Options
         /// </summary>
         public RetryJitterOptions HttpJitterRetry { get; set; } = new RetryJitterOptions();
 
-        // TODO: check this later
-        public RequestTimeoutOptions HttpRequestTimeout { get; set; } = new RequestTimeoutOptions();
-
         /// <summary>
         /// This is used for DI mapping.
         /// </summary>
