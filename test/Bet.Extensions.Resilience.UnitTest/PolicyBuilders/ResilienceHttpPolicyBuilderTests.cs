@@ -119,12 +119,12 @@ namespace Bet.Extensions.Resilience.UnitTest.PolicyBuilders
 
             Assert.Equal(3, individualPolicies.Count());
 
-            //Assert.Equal(TimeSpan.FromSeconds(14), options.HttpCircuitBreaker.DurationOfBreak);
-            //Assert.Equal(6, options.HttpCircuitBreaker.ExceptionsAllowedBeforeBreaking);
-            //Assert.Equal(1, options.HttpRetry.BackoffPower);
-            //Assert.Equal(10, options.HttpRetry.Count);
-            //Assert.Equal(100, options.CustomCount);
-            //Assert.Equal(HttpPoliciesKeys.DefaultPolicies, options.PolicyName);
+            // Assert.Equal(TimeSpan.FromSeconds(14), options.HttpCircuitBreaker.DurationOfBreak);
+            // Assert.Equal(6, options.HttpCircuitBreaker.ExceptionsAllowedBeforeBreaking);
+            // Assert.Equal(1, options.HttpRetry.BackoffPower);
+            // Assert.Equal(10, options.HttpRetry.Count);
+            // Assert.Equal(100, options.CustomCount);
+            // Assert.Equal(HttpPoliciesKeys.DefaultPolicies, options.PolicyName);
         }
 
         [Fact]

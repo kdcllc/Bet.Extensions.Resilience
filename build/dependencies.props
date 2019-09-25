@@ -3,22 +3,28 @@
     <RunCodeAnalysis>true</RunCodeAnalysis>
     <NetCoreCommon>2.2.*</NetCoreCommon>
     <BetCommon>1.4.1</BetCommon>
+    <SystemDiagnostics>4.5.1</SystemDiagnostics>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp2.2' Or '$(TargetFramework)' == 'netstandard2.0'">
     <NetCoreCommon>2.2.*</NetCoreCommon>
+    <SystemDiagnostics>4.5.1</SystemDiagnostics>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp3.0' Or '$(TargetFramework)' == 'netstandard2.1'">
     <NetCoreCommon>3.0.0</NetCoreCommon>
+    <SystemDiagnostics>4.6.0</SystemDiagnostics>
   </PropertyGroup>
 
   <ItemGroup Label="NetCore">
+    <PackageReference Update="Microsoft.AspNetCore.Hosting" Version="$(NetCoreCommon)"/>
+    <PackageReference Update="Microsoft.AspNetCore.Http.Abstractions" Version="$(NetCoreCommon)" />
     <PackageReference Update="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="$(NetCoreCommon)" />
     <PackageReference Update="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="$(NetCoreCommon)" />
     <PackageReference Update="Microsoft.AspNetCore.Mvc.Testing"  Version="$(NetCoreCommon)"/>
     <PackageReference Update="Microsoft.AspNetCore.TestHost"  Version="$(NetCoreCommon)"/>
     <PackageReference Update="Microsoft.Extensions.Configuration" Version="$(NetCoreCommon)" />
+    <PackageReference Update="Microsoft.Extensions.DependencyInjection" Version="$(NetCoreCommon)" />
     <PackageReference Update="Microsoft.Extensions.DependencyInjection.Abstractions" Version="$(NetCoreCommon)" />
     <PackageReference Update="Microsoft.Extensions.Hosting" Version="$(NetCoreCommon)" />
     <PackageReference Update="Microsoft.Extensions.Hosting.Abstractions"  Version="$(NetCoreCommon)"/>
@@ -28,6 +34,9 @@
     <PackageReference Update="Microsoft.Extensions.Logging.Debug" Version="$(NetCoreCommon)" />
     <PackageReference Update="Microsoft.Extensions.Options" Version="$(NetCoreCommon)" />
     <PackageReference Update="Microsoft.Extensions.Options.ConfigurationExtensions" Version="$(NetCoreCommon)" />
+    <PackageReference Update="Microsoft.Extensions.DiagnosticAdapter" Version="$(NetCoreCommon)" />
+
+    <PackageReference Update="System.Diagnostics.DiagnosticSource" Version="$(SystemDiagnostics)" />
   </ItemGroup>
 
   <ItemGroup Label="Unit Tests">

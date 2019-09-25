@@ -22,6 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\Bet.Extensions.Resilience.Hosting\Bet.Extensions.Resilience.Hosting.csproj" />
     <ProjectReference Include="..\..\src\Bet.Extensions.Resilience.Http\Bet.Extensions.Resilience.Http.csproj" />
   </ItemGroup>
 

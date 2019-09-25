@@ -9,7 +9,7 @@ This library extends various `MessageHandlers` for `HttpClient`.
 ## Nuget
 
 ```cmd
-    dotnet add package Bet.Extensions.Resilience.MessageHandlers --version 1.2.0
+    dotnet add package Bet.Extensions.Resilience.MessageHandlers
 ```
 
 ## TimeoutHandler

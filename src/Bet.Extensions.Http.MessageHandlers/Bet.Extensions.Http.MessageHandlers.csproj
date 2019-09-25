@@ -4,6 +4,11 @@
     <TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <Description>The collection of Http Message Handlers.</Description>
+    <PackageTags>DotNetCore, HTTP Message Handers, Extensions, CorrelationId, HTTP Timeout, Cookie Authentication</PackageTags>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="Polly" />
     <PackageReference Include="Bet.Extensions" />
@@ -14,6 +19,10 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Bet.Extensions.Http.MessageHandlers.Abstractions\Bet.Extensions.Http.MessageHandlers.Abstractions.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="CorrelationId\" />
   </ItemGroup>
 
 </Project>

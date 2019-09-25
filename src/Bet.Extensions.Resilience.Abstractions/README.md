@@ -9,5 +9,5 @@ This library contains the abstract classes to be use within `Bet.Extensions.Resi
 ## Nuget
 
 ```cmd
-    dotnet add package Bet.Extensions.Resilience.Abstractions --version 1.2.0
+    dotnet add package Bet.Extensions.Resilience.Abstractions
 ```

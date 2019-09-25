@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <Description>AspNetCore.Hosting library enables functionality used with AspNetCore such as CorrelationId.</Description>
+    <PackageTags>DotNetCore, IWebHost, Hosting ,Extensions, CorrelationId, HttpClientFactory</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- This is referenced directly in order to keep to netstandard not netcoreapp -->
+    <PackageReference Include="Microsoft.AspNetCore.Hosting.Abstractions" Version="2.2.0"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Bet.Extensions.Http.MessageHandlers\Bet.Extensions.Http.MessageHandlers.csproj" />
+  </ItemGroup>
+</Project>

@@ -38,7 +38,9 @@ namespace Bet.Extensions.Resilience.UnitTest
 
         private class NoopDisposable : IDisposable
         {
+#pragma warning disable SA1401 // Fields should be private
             public static NoopDisposable Instance = new NoopDisposable();
+#pragma warning restore SA1401 // Fields should be private
 
             public void Dispose()
             {

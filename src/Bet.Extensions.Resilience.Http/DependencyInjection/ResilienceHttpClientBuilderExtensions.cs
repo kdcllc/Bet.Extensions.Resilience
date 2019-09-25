@@ -131,7 +131,7 @@ namespace Microsoft.Extensions.DependencyInjection
                     return policy.CreateAsyncPolicy();
                 }
 
-                AddPollyPolicy(clientOptions, TimeoutPolicy);
+                clientOptions.HttpClientBuilder.AddPolicyHandler(TimeoutPolicy);
 
                 IAsyncPolicy<HttpResponseMessage> RetryPolicy(IServiceProvider sp, HttpRequestMessage request)
                 {
@@ -139,7 +139,7 @@ namespace Microsoft.Extensions.DependencyInjection
                     return policy?.CreateAsyncPolicy();
                 }
 
-                AddPollyPolicy(clientOptions, RetryPolicy);
+                clientOptions.HttpClientBuilder.AddPolicyHandler(RetryPolicy);
 
                 IAsyncPolicy<HttpResponseMessage> CircuitBreakerPolicy(IServiceProvider sp, HttpRequestMessage request)
                 {
@@ -147,7 +147,7 @@ namespace Microsoft.Extensions.DependencyInjection
                     return policy.CreateAsyncPolicy();
                 }
 
-                AddPollyPolicy(clientOptions, CircuitBreakerPolicy);
+                clientOptions.HttpClientBuilder.AddPolicyHandler(CircuitBreakerPolicy);
 
                 return builder;
             }
@@ -293,7 +293,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
                 foreach (var policy in options.Policies)
                 {
-                    AddPollyPolicy(options, policy);
+                    options.HttpClientBuilder.AddPolicyHandler(policy);
                 }
 
                 return builder;
@@ -365,14 +365,6 @@ namespace Microsoft.Extensions.DependencyInjection
                     }
                 });
             });
-        }
-
-        private static void AddPollyPolicy(
-            HttpClientOptionsBuilder options,
-            Func<IServiceProvider, HttpRequestMessage,
-            IAsyncPolicy<HttpResponseMessage>> policy)
-        {
-            options.HttpClientBuilder.AddPolicyHandler(policy);
         }
 
         /// <summary>
