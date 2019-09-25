@@ -1,9 +1,6 @@
-﻿using System;
-using System.Net.Http;
-
-namespace Bet.Extensions.Http.MessageHandlers
+﻿namespace System.Net.Http
 {
-    internal static class HttpRequestExtensions
+    internal static class TimeoutHttpRequestExtensions
     {
         public const string TimeoutPropertyKey = "RequestTimeout";
 

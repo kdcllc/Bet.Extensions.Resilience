@@ -5,7 +5,7 @@
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <SuppressNETCoreSdkPreviewMessage>true</SuppressNETCoreSdkPreviewMessage>
     <NoWarn>$(NoWarn);CS1591;</NoWarn>
-    <TieredCompilation>true</TieredCompilation>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <PropertyGroup Label="Nuget Package Settings">
