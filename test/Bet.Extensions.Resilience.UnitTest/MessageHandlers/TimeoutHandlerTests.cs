@@ -24,7 +24,7 @@ namespace Bet.Extensions.Resilience.UnitTest.MessageHandlers
         {
             var webHost = new WebHostBuilder()
                 .UseUrls("https://testserver:1000")
-                .UseStartup<TestStartup>()
+                .UseStartup<MessageHandlersStartup>()
                 .ConfigureLogging((context, builder) =>
                 {
                     builder.AddDebug();

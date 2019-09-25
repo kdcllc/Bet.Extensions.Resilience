@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Bet.Extensions.Resilience.UnitTest.ResilienceTypedClient
+namespace Bet.Extensions.Resilience.UnitTest.MessageHandlers
 {
-    internal class ResilienceTypedClientStartup
+    internal class MessageHandlersStartup
     {
         public virtual void ConfigureServices(IServiceCollection services)
         {

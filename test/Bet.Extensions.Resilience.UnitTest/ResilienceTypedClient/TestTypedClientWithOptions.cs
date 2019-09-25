@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace Bet.Extensions.Resilience.UnitTest.Resilience
+namespace Bet.Extensions.Resilience.UnitTest.ResilienceTypedClient.Clients
 {
     public class TestTypedClientWithOptions : ITestTypedClientWithOptions
     {

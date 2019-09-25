@@ -11,7 +11,6 @@ using Bet.Extensions.Resilience.Http.Policies;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Internal;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 using Polly;
