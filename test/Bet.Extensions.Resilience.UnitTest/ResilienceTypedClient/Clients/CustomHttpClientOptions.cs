@@ -2,7 +2,7 @@
 
 namespace Bet.Extensions.Resilience.UnitTest.ResilienceTypedClient.Clients
 {
-    public class TestHttpClientOptions : HttpClientOptions
+    public class CustomHttpClientOptions : HttpClientOptions
     {
         public string Id { get; set; }
     }

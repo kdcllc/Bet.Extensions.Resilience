@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Bet.Extensions.Http.MessageHandlers;
 using Bet.Extensions.Http.MessageHandlers.Abstractions.Options;
 using Bet.Extensions.Resilience.Http.Policies;
+using Bet.Extensions.Resilience.UnitTest.ResilienceTypedClient.Clients;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -17,7 +18,7 @@ using Polly.Registry;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Bet.Extensions.Resilience.UnitTest.Resilience
+namespace Bet.Extensions.Resilience.UnitTest.ResilienceTypedClient
 {
     public class ResilienceHttpClientTests
     {
@@ -73,7 +74,7 @@ namespace Bet.Extensions.Resilience.UnitTest.Resilience
 
             serviceCollection.AddSingleton<IConfiguration>(configurationBuilder.Build());
 
-            var client = serviceCollection.AddResilienceTypedClient<ITestTypedClient, TestTypedClient>()
+            var client = serviceCollection.AddResilienceTypedClient<ICustomTypedClient, CustomTypedClient>()
                 .AddAllConfigurations(options =>
                 {
                     options.ConfigureHttpClient.Add((sp, cl) => cl.Timeout = TimeSpan.FromSeconds(5));
@@ -83,7 +84,7 @@ namespace Bet.Extensions.Resilience.UnitTest.Resilience
                     options.ConfigureHttpClient.Add((sp, cl) => cl.Timeout = TimeSpan.FromSeconds(15));
                 });
 
-            Assert.Equal(nameof(ITestTypedClient), client.Name);
+            Assert.Equal(nameof(ICustomTypedClient), client.Name);
 
             var services = serviceCollection.BuildServiceProvider();
             var factory = services.GetRequiredService<IHttpMessageHandlerFactory>();
@@ -112,9 +113,9 @@ namespace Bet.Extensions.Resilience.UnitTest.Resilience
 
             serviceCollection.AddSingleton<IConfiguration>(configurationBuilder.Build());
 
-            var client = serviceCollection.AddResilienceTypedClient<ITestTypedClient, TestTypedClient>();
+            var client = serviceCollection.AddResilienceTypedClient<ICustomTypedClient, CustomTypedClient>();
 
-            Assert.Equal(nameof(ITestTypedClient), client.Name);
+            Assert.Equal(nameof(ICustomTypedClient), client.Name);
 
             var services = serviceCollection.BuildServiceProvider();
             var factory = services.GetRequiredService<IHttpMessageHandlerFactory>();
@@ -145,7 +146,7 @@ namespace Bet.Extensions.Resilience.UnitTest.Resilience
 #elif NETCOREAPP3_0
             serviceCollection.AddSingleton(_ => configurationBuilder.Build() as IConfiguration);
 #endif
-            var clientBuilder = serviceCollection.AddResilienceTypedClient<ITestTypedClient, TestTypedClient>(sectionName: "Clients")
+            var clientBuilder = serviceCollection.AddResilienceTypedClient<ICustomTypedClient, CustomTypedClient>(sectionName: "Clients")
                  .AddPrimaryHttpMessageHandler((sp) =>
                  {
                      return new DefaultHttpClientHandler();
@@ -161,13 +162,13 @@ namespace Bet.Extensions.Resilience.UnitTest.Resilience
 
             var services = serviceCollection.BuildServiceProvider();
 
-            var client = services.GetRequiredService<ITestTypedClient>();
+            var client = services.GetRequiredService<ICustomTypedClient>();
 
             Assert.Equal("http://localhost/", client.HttpClient.BaseAddress.ToString());
 
             var options = services.GetRequiredService<IOptionsMonitor<HttpClientOptions>>();
 
-            var value = options.Get(nameof(TestTypedClient));
+            var value = options.Get(nameof(CustomTypedClient));
 
             Assert.NotNull(value);
         }
@@ -191,7 +192,7 @@ namespace Bet.Extensions.Resilience.UnitTest.Resilience
 #elif NETCOREAPP3_0
             serviceCollection.AddSingleton(_ => configurationBuilder.Build() as IConfiguration);
 #endif
-            var clientBuilder = serviceCollection.AddResilienceTypedClient<ITestTypedClient, TestTypedClient>(sectionName: "Clients", "TestTypedClient2")
+            var clientBuilder = serviceCollection.AddResilienceTypedClient<ICustomTypedClient, CustomTypedClient>(sectionName: "Clients", "TestTypedClient2")
                  .AddPrimaryHttpMessageHandler((sp) =>
                  {
                      return new DefaultHttpClientHandler();
@@ -207,11 +208,11 @@ namespace Bet.Extensions.Resilience.UnitTest.Resilience
 
             var services = serviceCollection.BuildServiceProvider();
 
-            var client = services.GetRequiredService<ITestTypedClient>();
+            var client = services.GetRequiredService<ICustomTypedClient>();
 
             Assert.Equal("http://localhost/", client.HttpClient.BaseAddress.ToString());
 
-            var options = services.GetRequiredService<IOptionsMonitor<HttpClientOptions>>().Get(nameof(TestTypedClient));
+            var options = services.GetRequiredService<IOptionsMonitor<HttpClientOptions>>().Get(nameof(CustomTypedClient));
             Assert.NotNull(options?.BaseAddress);
         }
 
@@ -232,7 +233,7 @@ namespace Bet.Extensions.Resilience.UnitTest.Resilience
 
             serviceCollection.AddSingleton<IConfiguration>(configurationBuilder.Build());
 
-            var clientBuilder = serviceCollection.AddResilienceTypedClient<ITestTypedClient, TestTypedClient>()
+            var clientBuilder = serviceCollection.AddResilienceTypedClient<ICustomTypedClient, CustomTypedClient>()
                 .AddPrimaryHttpMessageHandler((sp) =>
                 {
                     return new DefaultHttpClientHandler();
@@ -240,11 +241,11 @@ namespace Bet.Extensions.Resilience.UnitTest.Resilience
 
             var services = serviceCollection.BuildServiceProvider();
 
-            var client = services.GetRequiredService<ITestTypedClient>();
+            var client = services.GetRequiredService<ICustomTypedClient>();
 
             var options = services.GetRequiredService<IOptionsMonitor<HttpClientOptions>>();
 
-            var value = options.Get(nameof(TestTypedClient));
+            var value = options.Get(nameof(CustomTypedClient));
 
             Assert.NotNull(value);
         }
@@ -269,7 +270,7 @@ namespace Bet.Extensions.Resilience.UnitTest.Resilience
 
             serviceCollection.AddSingleton<IConfiguration>(configurationBuilder.Build());
 
-            var clientBuilder = serviceCollection.AddResilienceTypedClient<ITestTypedClientWithOptions, TestTypedClientWithOptions, TestHttpClientOptions>()
+            var clientBuilder = serviceCollection.AddResilienceTypedClient<ICustomTypedClientWithOptions, CustomTypedClientWithOptions, CustomHttpClientOptions>()
                .AddPrimaryHttpMessageHandler((sp) =>
                {
                    return new DefaultHttpClientHandler();
@@ -285,13 +286,13 @@ namespace Bet.Extensions.Resilience.UnitTest.Resilience
 
             var services = serviceCollection.BuildServiceProvider();
 
-            var options = services.GetRequiredService<IOptionsMonitor<HttpClientOptions>>().Get(nameof(TestTypedClientWithOptions));
+            var options = services.GetRequiredService<IOptionsMonitor<HttpClientOptions>>().Get(nameof(CustomTypedClientWithOptions));
             Assert.NotNull(options?.BaseAddress);
 
-            var client = services.GetRequiredService<ITestTypedClientWithOptions>();
+            var client = services.GetRequiredService<ICustomTypedClientWithOptions>();
             Assert.Equal(id, client.Id);
 
-            var clientOptions = services.GetRequiredService<IOptions<TestHttpClientOptions>>().Value;
+            var clientOptions = services.GetRequiredService<IOptions<CustomHttpClientOptions>>().Value;
             Assert.NotNull(clientOptions?.BaseAddress);
             Assert.Equal(id, clientOptions.Id);
         }
@@ -321,12 +322,12 @@ namespace Bet.Extensions.Resilience.UnitTest.Resilience
 
             services.AddSingleton<IConfiguration>(configurationBuilder.Build());
 
-            using (var server = new TestServerBuilder(Output).GetSimpleServer())
+            using (var server = new ResilienceTypedClientTestServerBuilder(Output).GetSimpleServer())
             {
                 var handler = server.CreateHandler();
 
                 var clientBuilder = services
-                    .AddResilienceTypedClient<ITestTypedClientWithOptions, TestTypedClientWithOptions, TestHttpClientOptions>(optionsName: "TestHttpClient")
+                    .AddResilienceTypedClient<ICustomTypedClientWithOptions, CustomTypedClientWithOptions, CustomHttpClientOptions>(optionsName: "TestHttpClient")
                     .AddPrimaryHttpMessageHandler((sp) => handler)
                     .AddDefaultPolicies(enableLogging: true);
 
@@ -336,7 +337,7 @@ namespace Bet.Extensions.Resilience.UnitTest.Resilience
                 var registration = provider.GetService<IHttpPolicyRegistrator>();
                 registration.ConfigurePolicies();
 
-                var client = provider.GetRequiredService<ITestTypedClientWithOptions>();
+                var client = provider.GetRequiredService<ICustomTypedClientWithOptions>();
 
                 var result = await client.SendRequestAsync();
 
@@ -355,12 +356,12 @@ namespace Bet.Extensions.Resilience.UnitTest.Resilience
                 builder.AddProvider(new XunitLoggerProvider(Output));
             });
 
-            using (var server = new TestServerBuilder(Output).GetSimpleServer())
+            using (var server = new ResilienceTypedClientTestServerBuilder(Output).GetSimpleServer())
             {
                 var handler = server.CreateHandler();
 
                 Assert.Throws<InvalidOperationException>(() => serviceCollection
-                    .AddResilienceTypedClient<ITestTypedClient, TestTypedClient>()
+                    .AddResilienceTypedClient<ICustomTypedClient, CustomTypedClient>()
                     .AddPrimaryHttpMessageHandler((sp) => new DefaultHttpClientHandler())
                     .AddPrimaryHttpMessageHandler((sp) => new DefaultHttpClientHandler()));
             }

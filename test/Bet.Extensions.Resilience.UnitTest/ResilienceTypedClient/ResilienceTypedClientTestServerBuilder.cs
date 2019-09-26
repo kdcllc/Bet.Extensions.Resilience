@@ -8,11 +8,11 @@ using Xunit.Abstractions;
 
 namespace Bet.Extensions.Resilience.UnitTest
 {
-    internal sealed class TestServerBuilder
+    internal sealed class ResilienceTypedClientTestServerBuilder
     {
         private readonly ITestOutputHelper _output;
 
-        public TestServerBuilder(ITestOutputHelper output)
+        public ResilienceTypedClientTestServerBuilder(ITestOutputHelper output)
         {
             _output = output;
         }

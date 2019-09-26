@@ -6,14 +6,14 @@ using Microsoft.Extensions.Options;
 
 namespace Bet.Extensions.Resilience.UnitTest.ResilienceTypedClient.Clients
 {
-    public class TestTypedClientWithOptions : ITestTypedClientWithOptions
+    public class CustomTypedClientWithOptions : ICustomTypedClientWithOptions
     {
-        private readonly ILogger<TestTypedClientWithOptions> _logger;
+        private readonly ILogger<CustomTypedClientWithOptions> _logger;
 
-        public TestTypedClientWithOptions(
+        public CustomTypedClientWithOptions(
             HttpClient client,
-            IOptions<TestHttpClientOptions> options,
-            ILogger<TestTypedClientWithOptions> logger)
+            IOptions<CustomHttpClientOptions> options,
+            ILogger<CustomTypedClientWithOptions> logger)
         {
             HttpClient = client;
 

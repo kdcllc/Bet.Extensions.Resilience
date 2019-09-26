@@ -17,17 +17,23 @@ using Microsoft.Extensions.Primitives;
 namespace Bet.Extensions.Resilience.Hosting.CorrelationId
 {
     /// <summary>
-    /// https://github.com/dotnet/corefx/blob/194b2eb174bcf0683ce3146f1286765cdb897f74/src/System.Net.Http/src/HttpDiagnosticsGuide.md
+    /// https://github.com/dotnet/corefx/blob/194b2eb174bcf0683ce3146f1286765cdb897f74/src/System.Net.Http/src/HttpDiagnosticsGuide.md.
     /// </summary>
-    internal class CorrelationDiagnosticsListener : IHostedService, IObserver<DiagnosticListener>, IDisposable
+    internal class CorrelationDiagnosticsListener : IHostedService, IObserver<DiagnosticListener>, IDisposable, IObserver<KeyValuePair<string, object>>
     {
         private readonly List<IDisposable> _subscriptions = new List<IDisposable>();
         private readonly CorrelationIdOptions _options;
+        private readonly ICorrelationContextFactory _correlationContextFactory;
         private readonly ILogger<DiagnosticListener> _logger;
         private readonly IDisposable _reference;
 
-        public CorrelationDiagnosticsListener(IOptions<CorrelationIdOptions> options, ILogger<DiagnosticListener> logger)
+        public CorrelationDiagnosticsListener(
+            ICorrelationContextFactory correlationContextFactory,
+            IOptions<CorrelationIdOptions> options,
+            ILogger<DiagnosticListener> logger)
         {
+            _correlationContextFactory = correlationContextFactory ?? throw new ArgumentNullException(nameof(correlationContextFactory));
+
             _options = options.Value;
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _reference = DiagnosticListener.AllListeners.Subscribe(this);
@@ -61,14 +67,22 @@ namespace Bet.Extensions.Resilience.Hosting.CorrelationId
 
         public void OnNext(DiagnosticListener value)
         {
-            if (value.Name == "HttpHandlerDiagnosticListener")
+            _logger.LogInformation(value.Name);
+
+            if (value.Name == "HttpHandlerDiagnosticListener"
+                || value.Name == "Microsoft.AspNetCore")
             {
                 _subscriptions.Add(value.SubscribeWithAdapter(this));
             }
         }
 
+        public void OnNext(KeyValuePair<string, object> value)
+        {
+            _logger.LogInformation($"{value.Key} - {value.Value}");
+        }
+
         [DiagnosticName("System.Net.Http.HttpRequestOut")]
-        public virtual void OnHttpRequestOut()
+        public virtual void IsEnabled()
         {
             // this method is required to be present for the diagnostics to work.
         }
@@ -76,17 +90,17 @@ namespace Bet.Extensions.Resilience.Hosting.CorrelationId
         [DiagnosticName("System.Net.Http.HttpRequestOut.Start")]
         public virtual void OnHttpRequestOutStart(HttpRequestMessage request)
         {
-            _logger.LogWarning("System.Net.Http.HttpRequestOut.Start");
+            _logger.LogDebug("System.Net.Http.HttpRequestOut.Start");
 
             var correlationId = SetCorrelationId(request);
-            if (_options.UpdateTraceIdentifier)
-            {
-                // Activity.Current.Id = correlationId;
-            }
+
+            _correlationContextFactory.Create(correlationId, _options.Header);
+
+            Activity.Current.AddTag(_options.Header, correlationId);
 
             if (!request.Headers.TryGetValues(_options.Header, out var values))
             {
-                Activity.Current.AddTag($"{_options.Header}", string.Join(", ", values));
+                request.Headers.Add(_options.Header, new string[] { correlationId });
             }
         }
 
@@ -110,7 +124,7 @@ namespace Bet.Extensions.Resilience.Hosting.CorrelationId
                 {
                     response.Headers.Add(_options.Header, values);
 
-                    Activity.Current.AddTag($"{_options.Header}", string.Join(", ", values));
+                    Activity.Current.AddTag(_options.Header, string.Join(", ", values));
                 }
             }
         }

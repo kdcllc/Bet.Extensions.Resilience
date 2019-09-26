@@ -3,9 +3,9 @@
 namespace Bet.Extensions.Resilience.UnitTest.ResilienceTypedClient.Clients
 {
     // Simple typed client for use in tests
-    public class TestTypedClient : ITestTypedClient
+    public class CustomTypedClient : ICustomTypedClient
     {
-        public TestTypedClient(HttpClient httpClient)
+        public CustomTypedClient(HttpClient httpClient)
         {
             HttpClient = httpClient;
         }
