@@ -1,4 +1,4 @@
-﻿namespace Bet.Extensions.Resilience.SampleWebApp.Clients.Models
+﻿namespace Bet.Extensions.Resilience.WebApp.Sample.Clients.Models
 {
     /// <summary>
     /// Defines how well a song is ranked among its peers.

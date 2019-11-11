@@ -6,7 +6,7 @@
     <ProjectGuid>833f0a13-3371-483a-9440-7b4dedcfbf71</ProjectGuid>
     <DockerLaunchAction>LaunchBrowser</DockerLaunchAction>
     <DockerServiceUrl>{Scheme}://localhost:{ServicePort}</DockerServiceUrl>
-    <DockerServiceName>Bet.Extensions.Resilience.SampleWebApp</DockerServiceName>
+    <DockerServiceName>Bet.Extensions.Resilience.WebApp.Sample</DockerServiceName>
   </PropertyGroup>
   <ItemGroup>
     <None Include="docker-compose.override.yml">

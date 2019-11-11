@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-using Bet.Extensions.Resilience.SampleWebApp.Clients;
-using Bet.Extensions.Resilience.SampleWebApp.Clients.Models;
+using Bet.Extensions.Resilience.WebApp.Sample.Clients;
+using Bet.Extensions.Resilience.WebApp.Sample.Clients.Models;
 
 using Microsoft.AspNetCore.Mvc;
 
-namespace Bet.Extensions.Resilience.SampleWebApp.Controllers
+namespace Bet.Extensions.Resilience.WebApp.Sample.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]

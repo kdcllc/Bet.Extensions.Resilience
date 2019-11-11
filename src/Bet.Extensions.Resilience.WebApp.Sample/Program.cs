@@ -7,7 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace Bet.Extensions.Resilience.SampleWebApp
+namespace Bet.Extensions.Resilience.WebApp.Sample
 {
     public sealed class Program
     {

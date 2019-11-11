@@ -6,9 +6,9 @@
 
 This library extends various `MessageHandlers` for `HttpClient`.
 
-## Nuget
+## Install
 
-```cmd
+```bash
     dotnet add package Bet.Extensions.Resilience.MessageHandlers
 ```
 

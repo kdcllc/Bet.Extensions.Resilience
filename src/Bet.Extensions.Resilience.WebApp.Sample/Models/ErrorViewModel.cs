@@ -1,6 +1,6 @@
 using System;
 
-namespace Bet.Extensions.Resilience.SampleWebApp.Models
+namespace Bet.Extensions.Resilience.WebApp.Sample.Models
 {
     public class ErrorViewModel
     {

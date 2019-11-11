@@ -24,7 +24,7 @@ Resilience
 
 ## Sample Application
 
-- [`Bet.Extensions.Resilience.SampleWebApp`](./src/Bet.Extensions.Resilience.SampleWebApp/README.md)
+- [`Bet.Extensions.Resilience.WebApp.Sample`](./src/Bet.Extensions.Resilience.WebApp.Sample/README.md)
 
 ## Development Environment
 

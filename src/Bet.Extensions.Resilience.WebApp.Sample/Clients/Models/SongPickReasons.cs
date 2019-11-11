@@ -1,4 +1,4 @@
-﻿namespace Bet.Extensions.Resilience.SampleWebApp.Clients.Models
+﻿namespace Bet.Extensions.Resilience.WebApp.Sample.Clients.Models
 {
     public class SongPickReasons
     {

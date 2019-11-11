@@ -20,7 +20,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{EDACF3E2
 		build\sources.props = build\sources.props
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bet.Extensions.Resilience.SampleWebApp", "src\Bet.Extensions.Resilience.SampleWebApp\Bet.Extensions.Resilience.SampleWebApp.csproj", "{EFA33EF3-60AC-41F9-AB21-722E54644C5A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bet.Extensions.Resilience.WebApp.Sample", "src\Bet.Extensions.Resilience.WebApp.Sample\Bet.Extensions.Resilience.WebApp.Sample.csproj", "{EFA33EF3-60AC-41F9-AB21-722E54644C5A}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{D6D65A0B-5D03-44DC-A730-DB8A333CDC81}"
 	ProjectSection(SolutionItems) = preProject

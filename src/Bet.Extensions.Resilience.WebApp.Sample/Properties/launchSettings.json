@@ -1,0 +1,12 @@
+﻿{
+  "profiles": {
+    "Bet.Extensions.Resilience.WebApp.Sample": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "applicationUrl": "https://localhost:8001;http://localhost:8000",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}

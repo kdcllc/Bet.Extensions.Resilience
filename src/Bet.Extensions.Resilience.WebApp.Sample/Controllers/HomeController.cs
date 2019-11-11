@@ -1,10 +1,10 @@
 ﻿using System.Diagnostics;
 
-using Bet.Extensions.Resilience.SampleWebApp.Models;
+using Bet.Extensions.Resilience.WebApp.Sample.Models;
 
 using Microsoft.AspNetCore.Mvc;
 
-namespace Bet.Extensions.Resilience.SampleWebApp.Controllers
+namespace Bet.Extensions.Resilience.WebApp.Sample.Controllers
 {
     public class HomeController : Controller
     {

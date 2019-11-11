@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Bet.Extensions.Resilience.SampleWebApp.Clients.Models;
+using Bet.Extensions.Resilience.WebApp.Sample.Clients.Models;
 
-namespace Bet.Extensions.Resilience.SampleWebApp.Clients
+namespace Bet.Extensions.Resilience.WebApp.Sample.Clients
 {
     public interface IChavahClient
     {

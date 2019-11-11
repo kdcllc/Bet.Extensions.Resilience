@@ -4,10 +4,10 @@
 [![NuGet](https://img.shields.io/nuget/v/Bet.Extensions.Http.MessageHandlers.Abstractions.svg)](https://www.nuget.org/packages?q=Bet.Extensions.Http.MessageHandlers.Abstractions)
 [![MyGet](https://img.shields.io/myget/kdcllc/v/Bet.Extensions.Http.MessageHandlers.Abstractions.svg?label=myget)](https://www.myget.org/F/kdcllc/api/v2)
 
-This is an Abstraction Library that contains reusable classes.
+The Abstractions library that provides functionality for the Http Message Handlers.
 
-## Nuget
+## Install
 
-```cmd
+```bash
     dotnet add package Bet.Extensions.Http.MessageHandlers.Abstractions
 ```

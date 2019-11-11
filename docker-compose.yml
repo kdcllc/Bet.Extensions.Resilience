@@ -5,10 +5,10 @@ services:
     image: ${DOCKER_REGISTRY-}resiliencesampleapp
     build:
       context: .
-      dockerfile: src/Bet.Extensions.Resilience.SampleWebApp/Dockerfile
+      dockerfile: src/Bet.Extensions.Resilience.WebApp.Sample/Dockerfile
       args:
         RUNTESTS: "false"
         VERBOSE: "false"
         #NUGET_RESTORE: "-f" #overides the --disable-parallel
-        PROJECT_PATH: "/src/Bet.Extensions.Resilience.SampleWebApp/Bet.Extensions.Resilience.SampleWebApp.csproj"
+        PROJECT_PATH: "/src/Bet.Extensions.Resilience.WebApp.Sample/Bet.Extensions.Resilience.WebApp.Sample.csproj"
         SOLUTION_BASE: "false"

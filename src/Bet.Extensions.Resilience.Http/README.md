@@ -6,8 +6,8 @@
 
 This library provides with Fluent Syntax to add Polly Policies.
 
-## Nuget
+## Install
 
 ```cmd
-    dotnet add package Bet.Extensions.Resilience.Http --version 1.2.0
+    dotnet add package Bet.Extensions.Resilience.Http
 ```
