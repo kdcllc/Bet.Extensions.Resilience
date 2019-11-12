@@ -11,6 +11,12 @@
         string Name { get; }
 
         /// <summary>
+        /// Name of the Options registered with the client.
+        /// It can be the same as the Name or different.
+        /// </summary>
+        string OptionsName { get; }
+
+        /// <summary>
         /// Gets the application service collection.
         /// </summary>
         IServiceCollection Services { get; }

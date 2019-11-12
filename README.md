@@ -8,7 +8,7 @@ This library provides with a configurational Resilience framework for [HttpClien
 
 In addition later work will also include the Resilience providers for Azure SQL.
 
-The Resilience of these packages is based on `Polly` standard library.
+The Resilience of these packages is based on [`Polly`](https://github.com/App-vNext/Polly) standard library.
 
 Message Handlers
 
@@ -20,7 +20,7 @@ Resilience
 - [`Bet.Extensions.Resilience.Http`](./src/Bet.Extensions.Resilience.Http/README.md)
 - [`Bet.Extensions.Resilience.Abstractions`](./src/Bet.Extensions.Resilience.Abstractions/README.md)
 - [`Bet.Extensions.Hosting.Resilience`](./src/Bet.Extensions.Hosting.Resilience/README.md)
-
+- [`Bet.AspNetCore.Hosting.Resilience`](./src/Bet.AspNetCore.Hosting.Resilience/README.md)
 
 ## Sample Application
 

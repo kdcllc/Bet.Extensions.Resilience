@@ -21,8 +21,4 @@
     <ProjectReference Include="..\Bet.Extensions.Http.MessageHandlers.Abstractions\Bet.Extensions.Http.MessageHandlers.Abstractions.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="CorrelationId\" />
-  </ItemGroup>
-
 </Project>
