@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 
-namespace Bet.Extensions.Resilience.AspNetCore.Hosting.Middleware.CorrelationId
+namespace Bet.AspNetCore.Hosting.Resilience.Middleware.CorrelationId
 {
     /// <summary>
     /// Middleware which attempts to reads / creates a Correlation ID that can then be used in logs and

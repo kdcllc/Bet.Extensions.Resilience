@@ -1,5 +1,5 @@
 ﻿using System;
-using Bet.Extensions.Resilience.Hosting.CorrelationId;
+using Bet.Extensions.Hosting.Resilience.CorrelationId;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;

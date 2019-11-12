@@ -40,9 +40,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bet.Extensions.Http.Message
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bet.Extensions.Http.MessageHandlers.Abstractions", "src\Bet.Extensions.Http.MessageHandlers.Abstractions\Bet.Extensions.Http.MessageHandlers.Abstractions.csproj", "{843F4541-DA4E-4F42-BD45-BAA72F1F49FB}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bet.Extensions.Resilience.Hosting", "src\Bet.Extensions.Resilience.Hosting\Bet.Extensions.Resilience.Hosting.csproj", "{4F6D44FD-717D-4AE5-926C-F2629631B9F1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bet.Extensions.Hosting.Resilience", "src\Bet.Extensions.Hosting.Resilience\Bet.Extensions.Hosting.Resilience.csproj", "{4F6D44FD-717D-4AE5-926C-F2629631B9F1}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bet.Extensions.Resilience.AspNetCore.Hosting", "src\Bet.Extensions.Resilience.AspNetCore.Hosting\Bet.Extensions.Resilience.AspNetCore.Hosting.csproj", "{3BADFB16-FD25-45EF-8F05-6694116BB2A2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bet.AspNetCore.Hosting.Resilience", "src\Bet.AspNetCore.Hosting.Resilience\Bet.AspNetCore.Hosting.Resilience.csproj", "{3BADFB16-FD25-45EF-8F05-6694116BB2A2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bet.Extensions.Resilience.UnitTest", "test\Bet.Extensions.Resilience.UnitTest\Bet.Extensions.Resilience.UnitTest.csproj", "{32FCD106-30FC-4458-966B-DBB0E0637DE2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -82,6 +84,10 @@ Global
 		{3BADFB16-FD25-45EF-8F05-6694116BB2A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3BADFB16-FD25-45EF-8F05-6694116BB2A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3BADFB16-FD25-45EF-8F05-6694116BB2A2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{32FCD106-30FC-4458-966B-DBB0E0637DE2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{32FCD106-30FC-4458-966B-DBB0E0637DE2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{32FCD106-30FC-4458-966B-DBB0E0637DE2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{32FCD106-30FC-4458-966B-DBB0E0637DE2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -95,6 +101,7 @@ Global
 		{843F4541-DA4E-4F42-BD45-BAA72F1F49FB} = {32C6BDF4-6EEB-4C13-B084-AB554A2ACDAC}
 		{4F6D44FD-717D-4AE5-926C-F2629631B9F1} = {32C6BDF4-6EEB-4C13-B084-AB554A2ACDAC}
 		{3BADFB16-FD25-45EF-8F05-6694116BB2A2} = {32C6BDF4-6EEB-4C13-B084-AB554A2ACDAC}
+		{32FCD106-30FC-4458-966B-DBB0E0637DE2} = {23BB98BA-5F4A-4220-BE4D-5604E58F56E5}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {23EAFD8A-DAB7-43F6-86D1-9F6C6A81F6D0}

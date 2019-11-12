@@ -15,7 +15,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "Bet.Extensions.Resilience.AspNetCore.Hosting": {
+    "Bet.AspNetCore.Hosting.Resilience": {
       "commandName": "Project",
       "launchBrowser": true,
       "environmentVariables": {

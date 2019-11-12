@@ -19,7 +19,7 @@ Resilience
 
 - [`Bet.Extensions.Resilience.Http`](./src/Bet.Extensions.Resilience.Http/README.md)
 - [`Bet.Extensions.Resilience.Abstractions`](./src/Bet.Extensions.Resilience.Abstractions/README.md)
-- [`Bet.Extensions.Resilience.Hosting`](./src/Bet.Extensions.Resilience.Hosting/README.md)
+- [`Bet.Extensions.Hosting.Resilience`](./src/Bet.Extensions.Hosting.Resilience/README.md)
 
 
 ## Sample Application

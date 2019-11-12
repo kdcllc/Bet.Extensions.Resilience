@@ -58,8 +58,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Bet.Extensions.Resilience.AspNetCore.Hosting\Bet.Extensions.Resilience.AspNetCore.Hosting.csproj" />
-    <ProjectReference Include="..\..\src\Bet.Extensions.Resilience.Hosting\Bet.Extensions.Resilience.Hosting.csproj" />
+    <ProjectReference Include="..\..\src\Bet.AspNetCore.Hosting.Resilience\Bet.AspNetCore.Hosting.Resilience.csproj" />
+    <ProjectReference Include="..\..\src\Bet.Extensions.Hosting.Resilience\Bet.Extensions.Hosting.Resilience.csproj" />
     <ProjectReference Include="..\..\src\Bet.Extensions.Resilience.Http\Bet.Extensions.Resilience.Http.csproj" />
   </ItemGroup>
 

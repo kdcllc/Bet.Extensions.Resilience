@@ -14,7 +14,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 
-namespace Bet.Extensions.Resilience.Hosting.CorrelationId
+namespace Bet.Extensions.Hosting.Resilience.CorrelationId
 {
     /// <summary>
     /// https://github.com/dotnet/corefx/blob/194b2eb174bcf0683ce3146f1286765cdb897f74/src/System.Net.Http/src/HttpDiagnosticsGuide.md.

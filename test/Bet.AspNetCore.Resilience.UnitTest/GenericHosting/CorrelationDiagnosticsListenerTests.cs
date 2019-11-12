@@ -5,7 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Bet.Extensions.Http.MessageHandlers;
 using Bet.Extensions.Http.MessageHandlers.CorrelationId;
-using Bet.Extensions.Resilience.Hosting.CorrelationId;
+using Bet.Extensions.Hosting.Resilience.CorrelationId;
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;

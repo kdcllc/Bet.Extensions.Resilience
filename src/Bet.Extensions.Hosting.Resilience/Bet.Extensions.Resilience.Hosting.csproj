@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <Description>Bet.Extensions.Resilience.Hosting library enables functionality used with GenericHost such as CorrelationId.</Description>
+    <Description>Bet.Extensions.Hosting.Resilience library enables functionality used with GenericHost such as CorrelationId.</Description>
     <PackageTags>DotNetCore, IHost, Hosting ,Extensions, CorrelationId, HttpClientFactory</PackageTags>
   </PropertyGroup>
 
