@@ -92,7 +92,7 @@ namespace Bet.Extensions.Http.MessageHandlers.CookieAuthentication
                     return null;
                 }
 
-                _cookies = _cookies ?? await _cookieGenerator.GetCookies(cancellationToken);
+                _cookies ??= await _cookieGenerator.GetCookies(cancellationToken);
 
                 return _cookies.Flatten(";");
             }

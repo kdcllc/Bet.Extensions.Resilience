@@ -8,7 +8,6 @@ namespace Bet.Extensions.Resilience.UnitTest
         [Fact]
         public void Test1()
         {
-
         }
     }
 }

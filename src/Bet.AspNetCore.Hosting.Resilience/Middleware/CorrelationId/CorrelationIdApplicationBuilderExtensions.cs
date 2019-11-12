@@ -1,7 +1,7 @@
 ﻿using System;
 
-using Bet.Extensions.Http.MessageHandlers.CorrelationId;
 using Bet.AspNetCore.Hosting.Resilience.Middleware.CorrelationId;
+using Bet.Extensions.Http.MessageHandlers.CorrelationId;
 
 using Microsoft.Extensions.Options;
 

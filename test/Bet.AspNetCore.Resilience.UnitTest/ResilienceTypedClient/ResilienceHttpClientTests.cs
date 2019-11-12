@@ -4,10 +4,11 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 
+using Bet.AspNetCore.Resilience.UnitTest.ResilienceTypedClient.Clients;
 using Bet.Extensions.Http.MessageHandlers;
 using Bet.Extensions.Http.MessageHandlers.Abstractions.Options;
 using Bet.Extensions.Resilience.Http.Policies;
-using Bet.AspNetCore.Resilience.UnitTest.ResilienceTypedClient.Clients;
+
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -135,9 +136,9 @@ namespace Bet.AspNetCore.Resilience.UnitTest.ResilienceTypedClient
 
             var dic1 = new Dictionary<string, string>()
             {
-                { "Clients:TestTypedClient:BaseAddress", "http://localhost" },
-                { "Clients:TestTypedClient:Timeout", "00:05:00" },
-                { "Clients:TestTypedClient:ContentType", "application/json" }
+                { "Clients:CustomTypedClient:BaseAddress", "http://localhost" },
+                { "Clients:CustomTypedClient:Timeout", "00:05:00" },
+                { "Clients:CustomTypedClient:ContentType", "application/json" }
             };
 
             var configurationBuilder = new ConfigurationBuilder().AddInMemoryCollection(dic1);
@@ -185,11 +186,9 @@ namespace Bet.AspNetCore.Resilience.UnitTest.ResilienceTypedClient
             };
 
             var configurationBuilder = new ConfigurationBuilder().AddInMemoryCollection(dic1);
-#if NETCOREAPP2_2
-            serviceCollection.AddSingleton<IConfiguration>(configurationBuilder.Build());
-#elif NETCOREAPP3_0
+
             serviceCollection.AddSingleton(_ => configurationBuilder.Build() as IConfiguration);
-#endif
+
             var clientBuilder = serviceCollection.AddResilienceTypedClient<ICustomTypedClient, CustomTypedClient>(sectionName: "Clients", "TestTypedClient2")
                  .AddPrimaryHttpMessageHandler((sp) =>
                  {
@@ -258,15 +257,15 @@ namespace Bet.AspNetCore.Resilience.UnitTest.ResilienceTypedClient
 
             var dic1 = new Dictionary<string, string>()
             {
-                { "TestHttpClientOptions:BaseAddress", "http://localhost" },
-                { "TestHttpClientOptions:Timeout", "00:05:00" },
-                { "TestHttpClientOptions:ContentType", "application/json" },
-                { "TestHttpClientOptions:Id", id }
+                { "CustomHttpClientOptions:BaseAddress", "http://localhost" },
+                { "CustomHttpClientOptions:Timeout", "00:05:00" },
+                { "CustomHttpClientOptions:ContentType", "application/json" },
+                { "CustomHttpClientOptions:Id", id }
             };
 
             var configurationBuilder = new ConfigurationBuilder().AddInMemoryCollection(dic1);
 
-            serviceCollection.AddSingleton<IConfiguration>(configurationBuilder.Build());
+            serviceCollection.AddSingleton(_ => configurationBuilder.Build() as IConfiguration);
 
             var clientBuilder = serviceCollection.AddResilienceTypedClient<ICustomTypedClientWithOptions, CustomTypedClientWithOptions, CustomHttpClientOptions>()
                .AddPrimaryHttpMessageHandler((sp) =>

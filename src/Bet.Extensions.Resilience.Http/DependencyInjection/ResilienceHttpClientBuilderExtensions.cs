@@ -43,7 +43,7 @@ namespace Microsoft.Extensions.DependencyInjection
             string optionsName = null) where TClient : class where TImplementation : class, TClient where TOptions : HttpClientOptions, new()
         {
             var builder = AddResilienceHttpClientBuilder<TClient>(services);
-            optionsName = optionsName ?? typeof(TOptions).Name;
+            optionsName ??= typeof(TOptions).Name;
 
             // adds default HttpOptionsConfiguration
             var implName = typeof(TImplementation).Name;
@@ -449,12 +449,6 @@ namespace Microsoft.Extensions.DependencyInjection
             throw new InvalidOperationException(string.Format(_message, builder.Name));
         }
 
-#if NETSTANDARD2_0
-        private static IConfiguration GetConfiguration(IResilienceBuilder builder)
-        {
-            return builder.Services.SingleOrDefault(sd => sd.ServiceType == typeof(IConfiguration))?.ImplementationInstance as IConfiguration;
-        }
-#elif NETSTANDARD2_1
         private static IConfiguration GetConfiguration(IResilienceBuilder builder)
         {
             // builder.Services.BuildServiceProvider() is not the best implementation but required for getting configurations at this point.
@@ -464,6 +458,5 @@ namespace Microsoft.Extensions.DependencyInjection
                 .ImplementationFactory?
                 .Invoke(builder.Services.BuildServiceProvider()) as IConfiguration;
         }
-#endif
     }
 }
