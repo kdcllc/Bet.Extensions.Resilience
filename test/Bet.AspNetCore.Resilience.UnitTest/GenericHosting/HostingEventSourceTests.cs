@@ -3,7 +3,7 @@ using System.Diagnostics.Tracing;
 using Microsoft.Extensions.Hosting;
 using Xunit;
 
-namespace Bet.Extensions.Resilience.UnitTest.GenericHosting
+namespace Bet.AspNetCore.Resilience.UnitTest.GenericHosting
 {
     public class HostingEventSourceTests
     {

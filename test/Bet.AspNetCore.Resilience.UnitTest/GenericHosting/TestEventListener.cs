@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics.Tracing;
 
-namespace Bet.Extensions.Resilience.UnitTest.GenericHosting
+namespace Bet.AspNetCore.Resilience.UnitTest.GenericHosting
 {
     internal class TestEventListener : EventListener
     {

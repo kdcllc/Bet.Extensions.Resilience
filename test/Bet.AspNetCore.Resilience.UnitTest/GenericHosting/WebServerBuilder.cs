@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 
 using Xunit.Abstractions;
 
-namespace Bet.Extensions.Resilience.UnitTest.GenericHosting
+namespace Bet.AspNetCore.Resilience.UnitTest.GenericHosting
 {
     /// <summary>
     /// This server is used to simulate the Web Server that serves the requests back to the user.

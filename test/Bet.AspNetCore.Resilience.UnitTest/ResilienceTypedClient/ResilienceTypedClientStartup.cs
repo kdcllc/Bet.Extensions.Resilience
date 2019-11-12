@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Bet.Extensions.Resilience.UnitTest.ResilienceTypedClient
+namespace Bet.AspNetCore.Resilience.UnitTest.ResilienceTypedClient
 {
     internal class ResilienceTypedClientStartup
     {

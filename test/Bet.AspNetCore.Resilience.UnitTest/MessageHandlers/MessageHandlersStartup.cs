@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Bet.Extensions.Resilience.UnitTest.MessageHandlers
+namespace Bet.AspNetCore.Resilience.UnitTest.MessageHandlers
 {
     internal class MessageHandlersStartup
     {

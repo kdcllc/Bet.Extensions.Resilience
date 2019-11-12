@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 
 using Xunit.Abstractions;
 
-namespace Bet.Extensions.Resilience.UnitTest
+namespace Bet.AspNetCore.Resilience.UnitTest
 {
     public class XunitLogger : ILogger
     {

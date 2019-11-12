@@ -22,7 +22,7 @@ build_script:
   - ps: dotnet build Bet.Extensions.Resilience.sln /p:configuration=Release /p:Version=$($env:appveyor_build_version)
 
 test_script:
-  - dotnet test test/Bet.Extensions.Resilience.UnitTest/Bet.Extensions.Resilience.UnitTest.csproj -c Release --no-build
+  - dotnet test test/Bet.AspNetCore.Resilience.UnitTest/Bet.AspNetCore.Resilience.UnitTest.csproj -c Release --no-build
 
 artifacts:
 - path: .\src\**\*.nupkg

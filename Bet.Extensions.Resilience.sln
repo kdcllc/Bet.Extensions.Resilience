@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.28803.352
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bet.Extensions.Resilience.Abstractions", "src\Bet.Extensions.Resilience.Abstractions\Bet.Extensions.Resilience.Abstractions.csproj", "{AA56D526-0777-40C6-8CAF-9DA96911941C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bet.Extensions.Resilience.UnitTest", "test\Bet.Extensions.Resilience.UnitTest\Bet.Extensions.Resilience.UnitTest.csproj", "{A7C3FDE4-CA19-40C4-A58C-3CD3386D7A78}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bet.AspNetCore.Resilience.UnitTest", "test\Bet.AspNetCore.Resilience.UnitTest\Bet.AspNetCore.Resilience.UnitTest.csproj", "{A7C3FDE4-CA19-40C4-A58C-3CD3386D7A78}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{32C6BDF4-6EEB-4C13-B084-AB554A2ACDAC}"
 EndProject

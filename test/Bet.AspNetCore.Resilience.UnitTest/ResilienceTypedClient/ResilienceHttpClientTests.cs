@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Bet.Extensions.Http.MessageHandlers;
 using Bet.Extensions.Http.MessageHandlers.Abstractions.Options;
 using Bet.Extensions.Resilience.Http.Policies;
-using Bet.Extensions.Resilience.UnitTest.ResilienceTypedClient.Clients;
+using Bet.AspNetCore.Resilience.UnitTest.ResilienceTypedClient.Clients;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -18,7 +18,7 @@ using Polly.Registry;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Bet.Extensions.Resilience.UnitTest.ResilienceTypedClient
+namespace Bet.AspNetCore.Resilience.UnitTest.ResilienceTypedClient
 {
     public class ResilienceHttpClientTests
     {
@@ -141,11 +141,9 @@ namespace Bet.Extensions.Resilience.UnitTest.ResilienceTypedClient
             };
 
             var configurationBuilder = new ConfigurationBuilder().AddInMemoryCollection(dic1);
-#if NETCOREAPP2_2
-            serviceCollection.AddSingleton<IConfiguration>(configurationBuilder.Build());
-#elif NETCOREAPP3_0
+
             serviceCollection.AddSingleton(_ => configurationBuilder.Build() as IConfiguration);
-#endif
+
             var clientBuilder = serviceCollection.AddResilienceTypedClient<ICustomTypedClient, CustomTypedClient>(sectionName: "Clients")
                  .AddPrimaryHttpMessageHandler((sp) =>
                  {

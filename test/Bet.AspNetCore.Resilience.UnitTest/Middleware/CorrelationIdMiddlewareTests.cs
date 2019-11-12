@@ -9,7 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 using Xunit;
 
-namespace Bet.Extensions.Resilience.UnitTest.Middleware
+namespace Bet.AspNetCore.Resilience.UnitTest.Middleware
 {
     public class CorrelationIdMiddlewareTests
     {

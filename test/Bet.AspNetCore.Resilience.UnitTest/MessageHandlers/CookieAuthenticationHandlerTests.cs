@@ -22,7 +22,7 @@ using Newtonsoft.Json;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Bet.Extensions.Resilience.UnitTest.MessageHandlers
+namespace Bet.AspNetCore.Resilience.UnitTest.MessageHandlers
 {
     public class CookieAuthenticationHandlerTests
     {

@@ -15,7 +15,7 @@ using Polly.Registry;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Bet.Extensions.Resilience.UnitTest.PolicyBuilders
+namespace Bet.AspNetCore.Resilience.UnitTest.PolicyBuilders
 {
     public class ResilienceHttpPolicyBuilderTests
     {

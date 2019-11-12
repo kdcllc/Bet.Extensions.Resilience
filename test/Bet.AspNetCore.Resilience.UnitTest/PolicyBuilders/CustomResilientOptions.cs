@@ -1,6 +1,6 @@
 ﻿using Bet.Extensions.Resilience.Http.Options;
 
-namespace Bet.Extensions.Resilience.UnitTest.PolicyBuilders
+namespace Bet.AspNetCore.Resilience.UnitTest.PolicyBuilders
 {
     public class CustomResilientOptions : HttpPolicyOptions
     {

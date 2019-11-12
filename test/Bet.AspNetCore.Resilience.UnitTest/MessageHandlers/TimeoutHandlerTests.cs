@@ -14,7 +14,7 @@ using Microsoft.Extensions.Logging;
 
 using Xunit;
 
-namespace Bet.Extensions.Resilience.UnitTest.MessageHandlers
+namespace Bet.AspNetCore.Resilience.UnitTest.MessageHandlers
 {
     public class TimeoutHandlerTests
     {

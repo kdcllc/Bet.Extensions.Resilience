@@ -14,7 +14,7 @@ using Moq.Protected;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Bet.Extensions.Resilience.UnitTest.GenericHosting
+namespace Bet.AspNetCore.Resilience.UnitTest.GenericHosting
 {
     public class CorrelationDiagnosticsListenerTests
     {
