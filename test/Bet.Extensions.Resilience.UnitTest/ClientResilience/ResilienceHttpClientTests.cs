@@ -2,16 +2,17 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
-using Bet.Extensions.Http.MessageHandlers;
-using Bet.Extensions.Http.MessageHandlers.Abstractions.Options;
-using Bet.Extensions.Http.MessageHandlers.Timeout;
+
+using Bet.Extensions.Resilience.Http.Abstractions.Options;
 using Bet.Extensions.Resilience.UnitTest.ClientResilience.Clients;
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Internal;
 using Microsoft.Extensions.Options;
+
 using Polly;
+
 using Xunit;
 
 namespace Bet.Extensions.Resilience.UnitTest.ClientResilience
@@ -54,8 +55,6 @@ namespace Bet.Extensions.Resilience.UnitTest.ClientResilience
             // assert
             Assert.Equal(nameof(ITestClient), builder.Name);
             Assert.Equal(nameof(TestClient), builder.OptionsName);
-
-            Assert.NotNull(builder.HttpClientBuilder);
 
             Assert.False(builder.Debug().IsPrimaryHandlerSet);
 
@@ -204,7 +203,7 @@ namespace Bet.Extensions.Resilience.UnitTest.ClientResilience
 
             serviceCollection.AddTransient<TestDelegatingHandler>(sp => new TestDelegatingHandler());
 
-            var noOp = Policy.NoOpAsync().AsAsyncPolicy<HttpResponseMessage>();
+            var noOp = Polly.Policy.NoOpAsync().AsAsyncPolicy<HttpResponseMessage>();
 
             var builder = serviceCollection
                         .AddResilienceHttpClient<ITestClient, TestClient>()

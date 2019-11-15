@@ -1,16 +1,16 @@
-﻿using System.Net.Http;
-
-using Bet.Extensions.Resilience.Http.Options;
+﻿
+using Bet.Extensions.Resilience.Abstractions.Options;
 
 using Polly;
 
-namespace Bet.Extensions.Resilience.Http.Policies
+namespace Bet.Extensions.Resilience.Abstractions
 {
     /// <summary>
     /// The default interface that allows for Policy Configurations framework to configure it.
     /// </summary>
+    /// <typeparam name="T">The type for the policy.</typeparam>
     /// <typeparam name="TOptions"></typeparam>
-    public interface IHttpPolicy<TOptions> where TOptions : HttpPolicyOptions
+    public interface IPolicyCreator<T, TOptions> where TOptions : PolicyOptions
     {
         /// <summary>
         /// The name of the Http Policy to be configured.
@@ -24,19 +24,20 @@ namespace Bet.Extensions.Resilience.Http.Policies
 
         /// <summary>
         /// The method to register the policies with the.
+        /// This method is called inside <see cref="DefaultPolicyConfigurator{T, TOptions}"/> class.
         /// </summary>
         void RegisterPolicy();
 
         /// <summary>
-        /// Create Async Polly Policy for <see cref="HttpResponseMessage"/>.
+        /// Create Async Polly Policy.
         /// </summary>
         /// <returns></returns>
-        IAsyncPolicy<HttpResponseMessage> CreateAsyncPolicy();
+        IAsyncPolicy<T> CreateAsyncPolicy();
 
         /// <summary>
-        /// Create Sync Polly Policy for <see cref="HttpResponseMessage"/>.
+        /// Create Sync Polly Policy.
         /// </summary>
         /// <returns></returns>
-        ISyncPolicy<HttpResponseMessage> CreateSyncPolicy();
+        ISyncPolicy<T> CreateSyncPolicy();
     }
 }

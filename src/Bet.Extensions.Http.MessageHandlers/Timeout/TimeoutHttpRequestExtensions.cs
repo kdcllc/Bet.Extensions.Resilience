@@ -1,6 +1,6 @@
 ﻿namespace System.Net.Http
 {
-    internal static class TimeoutHttpRequestExtensions
+    public static class TimeoutHttpRequestExtensions
     {
         public const string TimeoutPropertyKey = "RequestTimeout";
 

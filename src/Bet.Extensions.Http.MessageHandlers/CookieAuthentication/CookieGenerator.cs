@@ -5,7 +5,7 @@ using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 
-using Bet.Extensions.Http.MessageHandlers.Abstractions;
+using Bet.Extensions.Resilience.Http.Abstractions;
 
 namespace Bet.Extensions.Http.MessageHandlers.CookieAuthentication
 {

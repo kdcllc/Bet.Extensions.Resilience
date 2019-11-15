@@ -38,13 +38,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bet.Extensions.Http.MessageHandlers", "src\Bet.Extensions.Http.MessageHandlers\Bet.Extensions.Http.MessageHandlers.csproj", "{199EAEAC-9EE7-4324-A26D-F4CCF34BD971}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bet.Extensions.Http.MessageHandlers.Abstractions", "src\Bet.Extensions.Http.MessageHandlers.Abstractions\Bet.Extensions.Http.MessageHandlers.Abstractions.csproj", "{843F4541-DA4E-4F42-BD45-BAA72F1F49FB}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bet.Extensions.Hosting.Resilience", "src\Bet.Extensions.Hosting.Resilience\Bet.Extensions.Hosting.Resilience.csproj", "{4F6D44FD-717D-4AE5-926C-F2629631B9F1}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bet.AspNetCore.Hosting.Resilience", "src\Bet.AspNetCore.Hosting.Resilience\Bet.AspNetCore.Hosting.Resilience.csproj", "{3BADFB16-FD25-45EF-8F05-6694116BB2A2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bet.Extensions.Resilience.UnitTest", "test\Bet.Extensions.Resilience.UnitTest\Bet.Extensions.Resilience.UnitTest.csproj", "{32FCD106-30FC-4458-966B-DBB0E0637DE2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bet.Extensions.Resilience.UnitTest", "test\Bet.Extensions.Resilience.UnitTest\Bet.Extensions.Resilience.UnitTest.csproj", "{32FCD106-30FC-4458-966B-DBB0E0637DE2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bet.Extensions.Resilience.Http.Abstractions", "src\Bet.Extensions.Resilience.Http.Abstractions\Bet.Extensions.Resilience.Http.Abstractions.csproj", "{FD239D35-D490-4817-98C8-16C86A1470AD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -72,10 +72,6 @@ Global
 		{199EAEAC-9EE7-4324-A26D-F4CCF34BD971}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{199EAEAC-9EE7-4324-A26D-F4CCF34BD971}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{199EAEAC-9EE7-4324-A26D-F4CCF34BD971}.Release|Any CPU.Build.0 = Release|Any CPU
-		{843F4541-DA4E-4F42-BD45-BAA72F1F49FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{843F4541-DA4E-4F42-BD45-BAA72F1F49FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{843F4541-DA4E-4F42-BD45-BAA72F1F49FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{843F4541-DA4E-4F42-BD45-BAA72F1F49FB}.Release|Any CPU.Build.0 = Release|Any CPU
 		{4F6D44FD-717D-4AE5-926C-F2629631B9F1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{4F6D44FD-717D-4AE5-926C-F2629631B9F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4F6D44FD-717D-4AE5-926C-F2629631B9F1}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -88,6 +84,10 @@ Global
 		{32FCD106-30FC-4458-966B-DBB0E0637DE2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{32FCD106-30FC-4458-966B-DBB0E0637DE2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{32FCD106-30FC-4458-966B-DBB0E0637DE2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FD239D35-D490-4817-98C8-16C86A1470AD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FD239D35-D490-4817-98C8-16C86A1470AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FD239D35-D490-4817-98C8-16C86A1470AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FD239D35-D490-4817-98C8-16C86A1470AD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -98,10 +98,10 @@ Global
 		{4BA05CA6-9669-4014-8856-034B7229B835} = {32C6BDF4-6EEB-4C13-B084-AB554A2ACDAC}
 		{EFA33EF3-60AC-41F9-AB21-722E54644C5A} = {32C6BDF4-6EEB-4C13-B084-AB554A2ACDAC}
 		{199EAEAC-9EE7-4324-A26D-F4CCF34BD971} = {32C6BDF4-6EEB-4C13-B084-AB554A2ACDAC}
-		{843F4541-DA4E-4F42-BD45-BAA72F1F49FB} = {32C6BDF4-6EEB-4C13-B084-AB554A2ACDAC}
 		{4F6D44FD-717D-4AE5-926C-F2629631B9F1} = {32C6BDF4-6EEB-4C13-B084-AB554A2ACDAC}
 		{3BADFB16-FD25-45EF-8F05-6694116BB2A2} = {32C6BDF4-6EEB-4C13-B084-AB554A2ACDAC}
 		{32FCD106-30FC-4458-966B-DBB0E0637DE2} = {23BB98BA-5F4A-4220-BE4D-5604E58F56E5}
+		{FD239D35-D490-4817-98C8-16C86A1470AD} = {32C6BDF4-6EEB-4C13-B084-AB554A2ACDAC}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {23EAFD8A-DAB7-43F6-86D1-9F6C6A81F6D0}

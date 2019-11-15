@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Linq;
+using System.Net.Http;
 
 using Bet.Extensions.Resilience.Abstractions;
-using Bet.Extensions.Resilience.Http.Options;
+using Bet.Extensions.Resilience.Abstractions.Options;
 using Bet.Extensions.Resilience.Http.Policies;
 
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 
@@ -13,42 +13,42 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static class ServiceCollectionExtensions
     {
-        private static readonly Func<IServiceCollection, HttpPolicyRegistrant>
-     _findPolicyBuilderIntance = (services) => services.SingleOrDefault(sd => sd.ServiceType == typeof(HttpPolicyRegistrant))?.ImplementationInstance as HttpPolicyRegistrant;
+        private static readonly Func<IServiceCollection, PolicyRegistrant>
+     _findPolicyBuilderIntance = (services) => services.SingleOrDefault(sd => sd.ServiceType == typeof(PolicyRegistrant))?.ImplementationInstance as PolicyRegistrant;
 
         public static IServiceCollection AddHttpResiliencePolicy(
             this IServiceCollection services,
-            Action<HttpPolicyOptions> configure = null,
-            string policySectionName = Constants.Policies,
-            string policyName = HttpPoliciesKeys.DefaultPolicies)
+            Action<PolicyOptions>? configure = null,
+            string policySectionName = PolicyName.DefaultPolicy,
+            string policyName = PolicyName.DefaultPolicy)
         {
-            return services.AddHttpResiliencePolicy<HttpPolicyOptions>(configure, policySectionName, policyName);
+            return services.AddHttpResiliencePolicy<PolicyOptions>(configure, policySectionName, policyName);
         }
 
         public static IServiceCollection AddHttpResiliencePolicy<TOptions>(
             this IServiceCollection services,
-            Action<TOptions> configure = null,
-            string policySectionName = Constants.Policies,
-            string policyName = HttpPoliciesKeys.DefaultPolicies)
-            where TOptions : HttpPolicyOptions, new()
+            Action<TOptions>? configure = null,
+            string policySectionName = PolicyName.DefaultPolicy,
+            string policyName = PolicyName.DefaultPolicy)
+            where TOptions : PolicyOptions, new()
         {
-            return services.AddHttpResiliencePolicy<HttpPolicyConfigurator<TOptions>, TOptions>(configure, policySectionName, policyName);
+            return services.AddHttpResiliencePolicy<DefaultPolicyConfigurator<HttpResponseMessage, TOptions>, TOptions>(configure, policySectionName, policyName);
         }
 
         public static IServiceCollection AddHttpResiliencePolicy<T, TOptions>(
             this IServiceCollection services,
-            Action<TOptions> configure = null,
-            string policySectionName = Constants.Policies,
-            string policyName = HttpPoliciesKeys.DefaultPolicies,
-            string[] defaultPolicies = null)
-            where T : class, IHttpPolicyConfigurator<TOptions>
-            where TOptions : HttpPolicyOptions, new()
+            Action<TOptions>? configure = null,
+            string policySectionName = PolicyName.DefaultPolicy,
+            string policyName = PolicyName.DefaultPolicy,
+            string[] ? defaultPolicies = null)
+            where T : class, IPolicyConfigurator<HttpResponseMessage, TOptions>
+            where TOptions : PolicyOptions, new()
         {
             // adds Polly Policy registration
             var registry = services.TryAddPolicyRegistry();
 
             // adds DI based marker object
-            services.TryAddSingleton(new HttpPolicyRegistrant());
+            services.TryAddSingleton(new PolicyRegistrant());
 
             // return an instant of ResilienceHttpPolicyRegistrant
             var registrant = _findPolicyBuilderIntance(services);
@@ -66,71 +66,84 @@ namespace Microsoft.Extensions.DependencyInjection
 
             services.Configure<TOptions>(policyName, options =>
             {
-                options.PolicyName = policyName;
-                options.SectionName = policySectionName;
+                options.Name = policyName;
+                options.OptionsName = policySectionName;
             });
 
             services.AddChangeTokenOptions(policySectionName, policyName, configure);
 
-            services.AddSingleton<IHttpPolicyConfigurator<TOptions>>((sp) =>
+            services.AddSingleton<IPolicyConfigurator<HttpResponseMessage, TOptions>>((sp) =>
             {
                 var provider = sp.GetRequiredService<IServiceProvider>();
-                return new HttpPolicyConfigurator<TOptions>(provider, policyName, defaultPolicies);
+                return new DefaultPolicyConfigurator<HttpResponseMessage, TOptions>(provider, policyName, defaultPolicies);
             });
 
             // this service provides the initial policies registrations based on the type of the host.
-            services.TryAddScoped<IHttpPolicyRegistrator, HttpPolicyRegistrator>();
+            services.TryAddScoped<IPolicyRegistrator, DefaultPolicyRegistrator<HttpResponseMessage, TOptions>>();
 
             return services;
         }
 
         public static IServiceCollection AddHttpDefaultResiliencePolicies(
             this IServiceCollection services,
-            Action<HttpPolicyOptions> configure = null,
-            string policySectionName = Constants.Policies,
-            string policyName = HttpPoliciesKeys.DefaultPolicies)
+            Action<PolicyOptions>? configure = null,
+            string policySectionName = PolicyName.DefaultPolicy,
+            string policyName = PolicyName.DefaultPolicy)
         {
-            return services.AddHttpDefaultResiliencePolicies<HttpPolicyOptions>(configure, policySectionName, policyName);
+            return services.AddHttpDefaultResiliencePolicies<PolicyOptions>(configure, policySectionName, policyName);
         }
 
+        /// <summary>
+        /// Adds Http Policies to the global Polly registry.
+        /// </summary>
+        /// <typeparam name="TOptions"></typeparam>
+        /// <param name="services"></param>
+        /// <param name="configure"></param>
+        /// <param name="policySectionName"></param>
+        /// <param name="policyName"></param>
+        /// <returns></returns>
         public static IServiceCollection AddHttpDefaultResiliencePolicies<TOptions>(
             this IServiceCollection services,
-            Action<TOptions> configure = null,
-            string policySectionName = Constants.Policies,
-            string policyName = HttpPoliciesKeys.DefaultPolicies) where TOptions : HttpPolicyOptions, new()
+            Action<TOptions>? configure = null,
+            string policySectionName = PolicyName.DefaultPolicy,
+            string policyName = PolicyName.DefaultPolicy) where TOptions : PolicyOptions, new()
         {
                 var defaultPolicies = new string[]
                 {
-                    HttpPoliciesKeys.HttpTimeoutPolicy,
-                    HttpPoliciesKeys.HttpWaitAndRetryPolicy,
-                    HttpPoliciesKeys.HttpCircuitBreakerPolicy
+                    PolicyName.TimeoutPolicy,
+                    PolicyName.RetryPolicy,
+                    PolicyName.CircuitBreakerPolicy
                 };
 
-                services.AddScoped<IHttpPolicy<TOptions>, HttpTimeoutPolicy<TOptions>>(sp =>
+                services.AddScoped<IPolicyCreator<HttpResponseMessage, TOptions>, HttpTimeoutPolicy<TOptions>>(sp =>
                 {
                     var logger = sp.GetRequiredService<ILogger<HttpTimeoutPolicy<TOptions>>>();
-                    var options = sp.GetRequiredService<IHttpPolicyConfigurator<TOptions>>();
+                    var options = sp.GetRequiredService<IPolicyConfigurator<HttpResponseMessage, TOptions>>();
 
-                    return new HttpTimeoutPolicy<TOptions>(HttpPoliciesKeys.HttpTimeoutPolicy, options, logger);
+                    return new HttpTimeoutPolicy<TOptions>(PolicyName.TimeoutPolicy, options, logger);
                 });
 
-                services.AddScoped<IHttpPolicy<TOptions>, HttpWaitAndRetryPolicy<TOptions>>(sp =>
+                services.AddScoped<IPolicyCreator<HttpResponseMessage, TOptions>, HttpWaitAndRetryPolicy<TOptions>>(sp =>
                 {
                     var logger = sp.GetRequiredService<ILogger<HttpWaitAndRetryPolicy<TOptions>>>();
-                    var options = sp.GetRequiredService<IHttpPolicyConfigurator<TOptions>>();
+                    var options = sp.GetRequiredService<IPolicyConfigurator<HttpResponseMessage, TOptions>>();
 
-                    return new HttpWaitAndRetryPolicy<TOptions>(HttpPoliciesKeys.HttpWaitAndRetryPolicy, options, logger);
+                    return new HttpWaitAndRetryPolicy<TOptions>(PolicyName.RetryPolicy, options, logger);
                 });
 
-                services.AddScoped<IHttpPolicy<TOptions>, HttpCircuitBreakerPolicy<TOptions>>(sp =>
+                services.AddScoped<IPolicyCreator<HttpResponseMessage, TOptions>, HttpCircuitBreakerPolicy<TOptions>>(sp =>
                 {
                     var logger = sp.GetRequiredService<ILogger<HttpCircuitBreakerPolicy<TOptions>>>();
-                    var options = sp.GetRequiredService<IHttpPolicyConfigurator<TOptions>>();
+                    var options = sp.GetRequiredService<IPolicyConfigurator<HttpResponseMessage, TOptions>>();
 
-                    return new HttpCircuitBreakerPolicy<TOptions>(HttpPoliciesKeys.HttpCircuitBreakerPolicy, options, logger);
+                    return new HttpCircuitBreakerPolicy<TOptions>(PolicyName.CircuitBreakerPolicy, options, logger);
                 });
 
-                return services.AddHttpResiliencePolicy<HttpPolicyConfigurator<TOptions>, TOptions>(configure, policySectionName, policyName, defaultPolicies);
+                return services.AddHttpResiliencePolicy<DefaultPolicyConfigurator<HttpResponseMessage, TOptions>, TOptions>(
+                configure,
+                policySectionName,
+                policyName,
+                defaultPolicies);
         }
     }
 }

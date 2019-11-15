@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Bet.Extensions.Resilience.Abstractions
+namespace Bet.Extensions.Resilience.Abstractions.Executor
 {
     /// <summary>
     /// <para>

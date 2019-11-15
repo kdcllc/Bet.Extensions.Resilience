@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Bet.Extensions.Resilience.Http.Options;
+using System.Net.Http;
+using Bet.Extensions.Resilience.Abstractions;
+using Bet.Extensions.Resilience.Abstractions.Options;
 using Bet.Extensions.Resilience.Http.Policies;
 
 using Microsoft.Extensions.Configuration;
@@ -9,7 +11,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-using Polly;
 using Polly.Registry;
 
 using Xunit;
@@ -87,12 +88,12 @@ namespace Bet.AspNetCore.Resilience.UnitTest.PolicyBuilders
 
             services.AddLogging(builder => builder.AddProvider(new XunitLoggerProvider(Output)));
 
-            services.AddHttpDefaultResiliencePolicies<HttpPolicyOptions>();
+            services.AddHttpDefaultResiliencePolicies<PolicyOptions>();
 
             var sp = services.BuildServiceProvider();
 
             // simulates the hosting service registration
-            var registration = sp.GetService<IHttpPolicyRegistrator>();
+            var registration = sp.GetService<IPolicyRegistrator>();
             registration.ConfigurePolicies();
 
             var policy = sp.GetRequiredService<IPolicyRegistry<string>>();
@@ -100,22 +101,22 @@ namespace Bet.AspNetCore.Resilience.UnitTest.PolicyBuilders
             // no policy added at this point to the registry
             Assert.Equal(6, policy.Count);
 
-            Assert.True(policy.ContainsKey(HttpPoliciesKeys.HttpTimeoutPolicy));
-            Assert.True(policy.ContainsKey(HttpPoliciesKeys.HttpTimeoutPolicyAsync));
+            Assert.True(policy.ContainsKey(PolicyName.TimeoutPolicy));
+            Assert.True(policy.ContainsKey(PolicyName.TimeoutPolicyAsync));
 
-            Assert.True(policy.ContainsKey(HttpPoliciesKeys.HttpWaitAndRetryPolicy));
-            Assert.True(policy.ContainsKey(HttpPoliciesKeys.HttpWaitAndRetryPolicyAsync));
+            Assert.True(policy.ContainsKey(PolicyName.RetryPolicy));
+            Assert.True(policy.ContainsKey(PolicyName.RetryPolicyAsync));
 
-            Assert.True(policy.ContainsKey(HttpPoliciesKeys.HttpCircuitBreakerPolicy));
-            Assert.True(policy.ContainsKey(HttpPoliciesKeys.HttpCircuitBreakerPolicyAsync));
+            Assert.True(policy.ContainsKey(PolicyName.CircuitBreakerPolicy));
+            Assert.True(policy.ContainsKey(PolicyName.CircuitBreakerPolicyAsync));
 
-            var options = sp.GetRequiredService<IHttpPolicyConfigurator<HttpPolicyOptions>>();
+            var options = sp.GetRequiredService<IPolicyConfigurator<HttpResponseMessage, PolicyOptions>>();
 
             Assert.Equal(7, options.OptionsCollection.Count);
             Assert.Equal(3, options.AsyncPolicyCollection.Count);
             Assert.Equal(3, options.SyncPolicyCollection.Count);
 
-            var individualPolicies = sp.GetServices<IHttpPolicy<HttpPolicyOptions>>();
+            var individualPolicies = sp.GetServices<IPolicyCreator<HttpResponseMessage, PolicyOptions>>();
 
             Assert.Equal(3, individualPolicies.Count());
 
@@ -150,14 +151,14 @@ namespace Bet.AspNetCore.Resilience.UnitTest.PolicyBuilders
 
             // no policy added at this point to the registry
             Assert.Equal(0, policy.Count);
-            var options = sp.GetRequiredService<IOptionsMonitor<CustomResilientOptions>>().Get(HttpPoliciesKeys.DefaultPolicies);
+            var options = sp.GetRequiredService<IOptionsMonitor<CustomResilientOptions>>().Get(PolicyName.DefaultPolicy);
 
             Assert.Equal(TimeSpan.FromSeconds(14), options.HttpCircuitBreaker.DurationOfBreak);
             Assert.Equal(6, options.HttpCircuitBreaker.ExceptionsAllowedBeforeBreaking);
             Assert.Equal(1, options.HttpRetry.BackoffPower);
             Assert.Equal(10, options.HttpRetry.Count);
             Assert.Equal(100, options.CustomCount);
-            Assert.Equal(HttpPoliciesKeys.DefaultPolicies, options.PolicyName);
+            Assert.Equal(PolicyName.DefaultPolicy, options.Name);
         }
 
         [Fact]
@@ -216,7 +217,7 @@ namespace Bet.AspNetCore.Resilience.UnitTest.PolicyBuilders
             // no policy added at this point to the registry
             Assert.Equal(0, policy.Count);
 
-            var options = sp.GetRequiredService<IOptionsMonitor<HttpPolicyOptions>>().Get("CustomName");
+            var options = sp.GetRequiredService<IOptionsMonitor<PolicyOptions>>().Get("CustomName");
 
             Assert.Equal(TimeSpan.FromSeconds(14), options.HttpCircuitBreaker.DurationOfBreak);
             Assert.Equal(6, options.HttpCircuitBreaker.ExceptionsAllowedBeforeBreaking);
@@ -255,7 +256,7 @@ namespace Bet.AspNetCore.Resilience.UnitTest.PolicyBuilders
             Assert.Equal(1, options.HttpRetry.BackoffPower);
             Assert.Equal(10, options.HttpRetry.Count);
             Assert.Equal(100, options.CustomCount);
-            Assert.Equal("CustomPolicy", options.PolicyName);
+            Assert.Equal("CustomPolicy", options.Name);
         }
 
         [Fact]
@@ -287,13 +288,13 @@ namespace Bet.AspNetCore.Resilience.UnitTest.PolicyBuilders
 
             // no policy added at this point to the registry
             Assert.Equal(0, policy.Count);
-            var options = sp.GetRequiredService<IOptionsMonitor<HttpPolicyOptions>>().Get(HttpPoliciesKeys.DefaultPolicies);
+            var options = sp.GetRequiredService<IOptionsMonitor<PolicyOptions>>().Get(PolicyName.DefaultPolicy);
 
             Assert.Equal(TimeSpan.FromSeconds(14), options.HttpCircuitBreaker.DurationOfBreak);
             Assert.Equal(83, options.HttpCircuitBreaker.ExceptionsAllowedBeforeBreaking);
             Assert.Equal(22, options.HttpRetry.BackoffPower);
             Assert.Equal(10, options.HttpRetry.Count);
-            Assert.Equal(HttpPoliciesKeys.DefaultPolicies, options.PolicyName);
+            Assert.Equal(PolicyName.DefaultPolicy, options.Name);
         }
     }
 }

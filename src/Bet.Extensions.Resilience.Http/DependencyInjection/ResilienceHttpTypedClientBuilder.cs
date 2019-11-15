@@ -4,8 +4,9 @@ using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 
-using Bet.Extensions.Http.MessageHandlers.Abstractions.Options;
-using Bet.Extensions.Resilience.Http.Options;
+using Bet.Extensions.Resilience.Abstractions;
+using Bet.Extensions.Resilience.Abstractions.Options;
+using Bet.Extensions.Resilience.Http.Abstractions.Options;
 using Bet.Extensions.Resilience.Http.Policies;
 
 using Microsoft.Extensions.Configuration;
@@ -17,7 +18,7 @@ using Polly;
 namespace Microsoft.Extensions.DependencyInjection
 {
     /// <inheritdoc/>
-    public class ResilienceHttpTypedClientBuilder<TClient, TImplementation> : IResilienceHttpClientBuilder
+    internal class ResilienceHttpTypedClientBuilder<TClient, TImplementation> : IResilienceHttpClientBuilder
         where TClient : class where TImplementation : class, TClient
     {
         private readonly List<(bool configured, Action<IServiceProvider, HttpClient> options)> _configurationHttpClientCollection
@@ -154,12 +155,16 @@ namespace Microsoft.Extensions.DependencyInjection
             return (_configuredPrimaryHandler.configured, _configurationHttpClientCollection.Count, _delegatingHandlerCollection.Count, _policyCollection.Count);
         }
 
+        /// <inheritdoc/>
         public IResilienceHttpClientBuilder ConfigureDefaultPolicies()
         {
+            // register default policies with default options name.
+            Services.AddHttpDefaultResiliencePolicies();
+
             // TODO: rework with policies the issue of registration.
             IAsyncPolicy<HttpResponseMessage>? TimeoutPolicy(IServiceProvider sp, HttpRequestMessage request)
             {
-                var policy = sp.GetServices<IHttpPolicy<HttpPolicyOptions>>()?.FirstOrDefault(x => x.Name == HttpPoliciesKeys.HttpTimeoutPolicy);
+                var policy = sp.GetServices<IPolicyCreator<HttpResponseMessage, PolicyOptions>>()?.FirstOrDefault(x => x.Name == PolicyName.TimeoutPolicy);
                 return policy?.CreateAsyncPolicy();
             }
 
@@ -167,7 +172,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
             IAsyncPolicy<HttpResponseMessage>? RetryPolicy(IServiceProvider sp, HttpRequestMessage request)
             {
-                var policy = sp.GetServices<IHttpPolicy<HttpPolicyOptions>>()?.FirstOrDefault(x => x.Name == HttpPoliciesKeys.HttpWaitAndRetryPolicy);
+                var policy = sp.GetServices<IPolicyCreator<HttpResponseMessage, PolicyOptions>>()?.FirstOrDefault(x => x.Name == PolicyName.RetryPolicy);
                 return policy?.CreateAsyncPolicy();
             }
 
@@ -175,7 +180,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
             IAsyncPolicy<HttpResponseMessage>? CircuitBreakerPolicy(IServiceProvider sp, HttpRequestMessage request)
             {
-                var policy = sp.GetServices<IHttpPolicy<HttpPolicyOptions>>()?.FirstOrDefault(x => x.Name == HttpPoliciesKeys.HttpCircuitBreakerPolicy);
+                var policy = sp.GetServices<IPolicyCreator<HttpResponseMessage, PolicyOptions>>()?.FirstOrDefault(x => x.Name == PolicyName.CircuitBreakerPolicy);
                 return policy?.CreateAsyncPolicy();
             }
 

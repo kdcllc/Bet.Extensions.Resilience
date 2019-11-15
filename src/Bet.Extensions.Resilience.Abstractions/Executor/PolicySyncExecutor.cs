@@ -5,7 +5,7 @@ using System.Linq;
 using Polly;
 using Polly.Wrap;
 
-namespace Bet.Extensions.Resilience.Abstractions
+namespace Bet.Extensions.Resilience.Abstractions.Executor
 {
     public class PolicySyncExecutor : IPolicySyncExecutor
     {

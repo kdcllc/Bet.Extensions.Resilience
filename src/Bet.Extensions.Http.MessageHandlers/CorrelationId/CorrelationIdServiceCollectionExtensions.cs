@@ -20,5 +20,11 @@ namespace Microsoft.Extensions.DependencyInjection
 
             return serviceCollection;
         }
+
+        public static IResilienceHttpClientBuilder ConfigureCorrelationIdHandler(this IResilienceHttpClientBuilder builder)
+        {
+
+            return builder;
+        }
     }
 }

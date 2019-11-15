@@ -1,23 +1,22 @@
 ﻿using System;
-using System.Net.Http;
 
-using Bet.Extensions.Resilience.Http.Options;
+using Bet.Extensions.Resilience.Abstractions.Options;
 
 using Microsoft.Extensions.Logging;
 
 using Polly;
 
-namespace Bet.Extensions.Resilience.Http.Policies
+namespace Bet.Extensions.Resilience.Abstractions
 {
     /// <inheritdoc/>
-    public abstract class BasePolicy<TOptions> : IHttpPolicy<TOptions> where TOptions : HttpPolicyOptions
+    public abstract class BasePolicy<T, TOptions> : IPolicyCreator<T, TOptions> where TOptions : PolicyOptions
     {
-        private readonly IHttpPolicyConfigurator<TOptions> _policyConfigurator;
+        private readonly IPolicyConfigurator<T, TOptions> _policyConfigurator;
 
         protected BasePolicy(
             string policyName,
-            IHttpPolicyConfigurator<TOptions> policyConfigurator,
-            ILogger<IHttpPolicy<TOptions>> logger)
+            IPolicyConfigurator<T, TOptions> policyConfigurator,
+            ILogger<IPolicyCreator<T, TOptions>> logger)
         {
             Name = policyName;
 
@@ -33,13 +32,13 @@ namespace Bet.Extensions.Resilience.Http.Policies
         /// <inheritdoc/>
         public virtual TOptions Options { get; }
 
-        protected ILogger<IHttpPolicy<TOptions>> Logger { get; }
+        protected ILogger<IPolicyCreator<T, TOptions>> Logger { get; }
 
         /// <inheritdoc/>
-        public abstract IAsyncPolicy<HttpResponseMessage> CreateAsyncPolicy();
+        public abstract IAsyncPolicy<T> CreateAsyncPolicy();
 
         /// <inheritdoc/>
-        public abstract ISyncPolicy<HttpResponseMessage> CreateSyncPolicy();
+        public abstract ISyncPolicy<T> CreateSyncPolicy();
 
         /// <inheritdoc/>
         public virtual void RegisterPolicy()

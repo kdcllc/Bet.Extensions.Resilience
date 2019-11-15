@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Polly;
 using Polly.Wrap;
 
-namespace Bet.Extensions.Resilience.Abstractions
+namespace Bet.Extensions.Resilience.Abstractions.Executor
 {
     /// <inheritdoc/>
     public sealed class PolicyAsyncExecutor : IPolicyAsyncExecutor

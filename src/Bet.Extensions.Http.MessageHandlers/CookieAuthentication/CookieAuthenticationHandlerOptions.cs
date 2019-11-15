@@ -1,12 +1,12 @@
 ﻿using System.Net.Http;
 
-using Bet.Extensions.Http.MessageHandlers.Abstractions.Options;
+using Bet.Extensions.Resilience.Http.Abstractions.Options;
 
 namespace Bet.Extensions.Http.MessageHandlers.CookieAuthentication
 {
     public sealed class CookieAuthenticationHandlerOptions
     {
-        public CookieGeneratorOptions Options { get; set; } = new CookieGeneratorOptions(new HttpBasicAuthClientOptions());
+        public CookieGeneratorOptions Options { get; set; } = new CookieGeneratorOptions(new HttpClientBasicAuthOptions());
 
         public HttpMessageHandler InnerHandler { get; set; }
     }

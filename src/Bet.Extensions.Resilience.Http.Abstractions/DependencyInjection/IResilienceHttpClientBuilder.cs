@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Net.Http;
 
-using Bet.Extensions.Http.MessageHandlers.Abstractions.Options;
+using Bet.Extensions.Resilience.Http.Abstractions.Options;
 
 using Polly;
 
@@ -10,12 +10,23 @@ namespace Microsoft.Extensions.DependencyInjection
     /// <summary>
     /// Provides builder pattern for <see cref="HttpClient"/> registration.
     /// </summary>
-    public interface IResilienceHttpClientBuilder : IResilienceBuilder
+    public interface IResilienceHttpClientBuilder
     {
         /// <summary>
-        ///  Associated <see cref="IHttpClientBuilder"/>.
+        /// Gets the name of the client configured by this builder.
         /// </summary>
-        IHttpClientBuilder HttpClientBuilder { get; }
+        string Name { get; }
+
+        /// <summary>
+        /// Name of the Options registered with the client.
+        /// It can be the same as the Name or different.
+        /// </summary>
+        string OptionsName { get; }
+
+        /// <summary>
+        /// Gets the application service collection.
+        /// </summary>
+        IServiceCollection Services { get; }
 
         /// <summary>
         /// Configure <see cref="HttpClient"/> with options that have Root Section Name.

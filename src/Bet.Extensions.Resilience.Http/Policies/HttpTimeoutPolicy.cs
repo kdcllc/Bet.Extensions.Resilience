@@ -2,7 +2,8 @@
 using System.Net.Http;
 using System.Threading.Tasks;
 
-using Bet.Extensions.Resilience.Http.Options;
+using Bet.Extensions.Resilience.Abstractions;
+using Bet.Extensions.Resilience.Abstractions.Options;
 
 using Microsoft.Extensions.Logging;
 
@@ -11,12 +12,12 @@ using Polly.Timeout;
 
 namespace Bet.Extensions.Resilience.Http.Policies
 {
-    public class HttpTimeoutPolicy<TOptions> : BasePolicy<TOptions> where TOptions : HttpPolicyOptions
+    public class HttpTimeoutPolicy<TOptions> : BasePolicy<HttpResponseMessage, TOptions> where TOptions : PolicyOptions
     {
         public HttpTimeoutPolicy(
             string policyName,
-            IHttpPolicyConfigurator<TOptions> policyConfigurator,
-            ILogger<IHttpPolicy<TOptions>> logger) : base(policyName, policyConfigurator, logger)
+            IPolicyConfigurator<HttpResponseMessage, TOptions> policyConfigurator,
+            ILogger<IPolicyCreator<HttpResponseMessage, TOptions>> logger) : base(policyName, policyConfigurator, logger)
         {
         }
 

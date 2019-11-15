@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Net;
 
-namespace Bet.Extensions.Http.MessageHandlers.Abstractions
+namespace Bet.Extensions.Resilience.Http.Abstractions
 {
     public class HttpException : Exception
     {

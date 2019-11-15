@@ -7,7 +7,7 @@ using System.Text;
 
 namespace Microsoft.Extensions.Internal
 {
-    internal sealed class TypeNameHelper
+    public sealed class TypeNameHelper
     {
         private const char DefaultNestedTypeDelimiter = '+';
 

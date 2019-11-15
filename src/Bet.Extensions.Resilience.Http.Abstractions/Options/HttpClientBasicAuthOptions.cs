@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Text;
 
-namespace Bet.Extensions.Http.MessageHandlers.Abstractions.Options
+namespace Bet.Extensions.Resilience.Http.Abstractions.Options
 {
-    public class HttpBasicAuthClientOptions : HttpClientOptions
+    public class HttpClientBasicAuthOptions : HttpClientOptions
     {
-        private string _password;
+        private string _password = string.Empty;
 
-        public string Username { get; set; }
+        public string Username { get; set; } = string.Empty;
 
         public string Password
         {

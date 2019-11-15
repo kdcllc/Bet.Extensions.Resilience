@@ -1,15 +1,13 @@
 ﻿using System;
 using System.Net.Http;
 
-using Bet.Extensions.Resilience.Abstractions.Options;
-
-namespace Bet.Extensions.Resilience.Http.Options
+namespace Bet.Extensions.Resilience.Abstractions.Options
 {
     /// <summary>
     /// The default policy option.
     /// The default configuration section name is 'Policies'.
     /// </summary>
-    public class HttpPolicyOptions
+    public class PolicyOptions
     {
         /// <summary>
         /// The timeout policy options. The default is 100 seconds or 00:01:40.
@@ -35,11 +33,11 @@ namespace Bet.Extensions.Resilience.Http.Options
         /// <summary>
         /// This is used for DI mapping.
         /// </summary>
-        internal string PolicyName { get; set; }
+        public string Name { get; set; } = string.Empty;
 
         /// <summary>
         /// Configuration section name associated with this configuration.
         /// </summary>
-        internal string SectionName { get; set; }
+        public string OptionsName { get; set; } = string.Empty;
     }
 }

@@ -4,8 +4,8 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-using Bet.Extensions.Http.MessageHandlers.Abstractions.Options;
 using Bet.Extensions.Http.MessageHandlers.CookieAuthentication;
+using Bet.Extensions.Resilience.Http.Abstractions.Options;
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -107,9 +107,9 @@ namespace Bet.AspNetCore.Resilience.UnitTest.MessageHandlers
                 });
             });
 
-            serviceCollection.TryAddTransient<IConfigureOptions<HttpBasicAuthClientOptions>>(sp =>
+            serviceCollection.TryAddTransient<IConfigureOptions<HttpClientBasicAuthOptions>>(sp =>
             {
-                return new ConfigureOptions<HttpBasicAuthClientOptions>((options) =>
+                return new ConfigureOptions<HttpClientBasicAuthOptions>((options) =>
                 {
                     var configuration = sp.GetRequiredService<IConfiguration>();
                     configuration.Bind("O", options);
@@ -122,7 +122,7 @@ namespace Bet.AspNetCore.Resilience.UnitTest.MessageHandlers
             {
                 var logger = sp.GetRequiredService<ILogger<CookieAuthenticationHandler>>();
 
-                var authOptions = sp.GetRequiredService<IOptions<HttpBasicAuthClientOptions>>().Value;
+                var authOptions = sp.GetRequiredService<IOptions<HttpClientBasicAuthOptions>>().Value;
 
                 var options = new CookieAuthenticationHandlerOptions { InnerHandler = _server.CreateHandler() };
 

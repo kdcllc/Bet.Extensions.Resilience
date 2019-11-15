@@ -3,22 +3,22 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 
-using Bet.Extensions.Http.MessageHandlers.Abstractions.Options;
+using Bet.Extensions.Resilience.Http.Abstractions.Options;
 
 namespace Bet.Extensions.Http.MessageHandlers.CookieAuthentication
 {
     public sealed class CookieGeneratorOptions
     {
-        public CookieGeneratorOptions(HttpBasicAuthClientOptions options)
+        public CookieGeneratorOptions(HttpClientBasicAuthOptions options)
         {
             HttpOptions = options;
         }
 
-        public HttpBasicAuthClientOptions HttpOptions { get; set; }
+        public HttpClientBasicAuthOptions HttpOptions { get; set; }
 
         public Action<HttpStatusCode, string> OnError { get; set; }
 
-        public Func<HttpBasicAuthClientOptions, HttpRequestMessage> AuthenticationRequest { get; set; } = (options) =>
+        public Func<HttpClientBasicAuthOptions, HttpRequestMessage> AuthenticationRequest { get; set; } = (options) =>
         {
             var request = new HttpRequestMessage(HttpMethod.Get, options.BaseAddress);
             request.Headers.Authorization = new AuthenticationHeaderValue("Basic", options.GetBasicAuthorizationHeaderValue());

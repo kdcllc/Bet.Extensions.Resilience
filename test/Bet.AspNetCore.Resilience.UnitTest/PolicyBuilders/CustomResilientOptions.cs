@@ -1,8 +1,8 @@
-﻿using Bet.Extensions.Resilience.Http.Options;
+﻿using Bet.Extensions.Resilience.Abstractions.Options;
 
 namespace Bet.AspNetCore.Resilience.UnitTest.PolicyBuilders
 {
-    public class CustomResilientOptions : HttpPolicyOptions
+    public class CustomResilientOptions : PolicyOptions
     {
         public int CustomCount { get; set; } = 10;
     }

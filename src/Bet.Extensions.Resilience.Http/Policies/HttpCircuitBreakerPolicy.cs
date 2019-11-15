@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Net.Http;
-
-using Bet.Extensions.Resilience.Http.Options;
+using Bet.Extensions.Resilience.Abstractions;
+using Bet.Extensions.Resilience.Abstractions.Options;
 
 using Microsoft.Extensions.Logging;
 
@@ -14,12 +14,12 @@ namespace Bet.Extensions.Resilience.Http.Policies
     /// The default circuit breaker policy.
     /// </summary>
     /// <typeparam name="TOptions"></typeparam>
-    public class HttpCircuitBreakerPolicy<TOptions> : BasePolicy<TOptions> where TOptions : HttpPolicyOptions
+    public class HttpCircuitBreakerPolicy<TOptions> : BasePolicy<HttpResponseMessage, TOptions> where TOptions : PolicyOptions
     {
         public HttpCircuitBreakerPolicy(
             string policyName,
-            IHttpPolicyConfigurator<TOptions> policyConfigurator,
-            ILogger<IHttpPolicy<TOptions>> logger) : base(policyName, policyConfigurator, logger)
+            IPolicyConfigurator<HttpResponseMessage, TOptions> policyConfigurator,
+            ILogger<IPolicyCreator<HttpResponseMessage, TOptions>> logger) : base(policyName, policyConfigurator, logger)
         {
         }
 

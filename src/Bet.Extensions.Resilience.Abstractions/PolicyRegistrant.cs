@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Bet.Extensions.Resilience.Http.Policies
+namespace Bet.Extensions.Resilience.Abstractions
 {
-    internal class HttpPolicyRegistrant
+    public sealed class PolicyRegistrant
     {
         public Dictionary<string, Type> RegisteredPolicies { get; } = new Dictionary<string, Type>();
     }

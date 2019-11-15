@@ -3,7 +3,8 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 
-using Bet.Extensions.Resilience.Http.Options;
+using Bet.Extensions.Resilience.Abstractions;
+using Bet.Extensions.Resilience.Abstractions.Options;
 
 using Microsoft.Extensions.Logging;
 
@@ -15,12 +16,12 @@ namespace Bet.Extensions.Resilience.Http.Policies
     /// Default Wait And Retry Polly Policy.
     /// </summary>
     /// <typeparam name="TOptions">The type of the options.</typeparam>
-    public class HttpWaitAndRetryPolicy<TOptions> : BasePolicy<TOptions> where TOptions : HttpPolicyOptions
+    public class HttpWaitAndRetryPolicy<TOptions> : BasePolicy<HttpResponseMessage, TOptions> where TOptions : PolicyOptions
     {
         public HttpWaitAndRetryPolicy(
             string policyName,
-            IHttpPolicyConfigurator<TOptions> policyConfigurator,
-            ILogger<IHttpPolicy<TOptions>> logger) : base(policyName, policyConfigurator, logger)
+            IPolicyConfigurator<HttpResponseMessage, TOptions> policyConfigurator,
+            ILogger<IPolicyCreator<HttpResponseMessage, TOptions>> logger) : base(policyName, policyConfigurator, logger)
         {
         }
 

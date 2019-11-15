@@ -1,25 +1,28 @@
 ﻿using System;
 
+using Bet.Extensions.Resilience.Abstractions;
+using Bet.Extensions.Resilience.Abstractions.Options;
+
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Bet.Extensions.Resilience.Http.Policies
+namespace Bet.Extensions.Resilience.Abstractions
 {
-    public class HttpPolicyRegistrator : IHttpPolicyRegistrator
+    public class DefaultPolicyRegistrator<T, TOptions> : IPolicyRegistrator where TOptions : PolicyOptions
     {
         private readonly IServiceProvider _provider;
 
-        public HttpPolicyRegistrator(IServiceProvider provider)
+        public DefaultPolicyRegistrator(IServiceProvider provider)
         {
             _provider = provider ?? throw new ArgumentNullException(nameof(provider));
         }
 
         public void ConfigurePolicies()
         {
-            var types = _provider.GetService<HttpPolicyRegistrant>();
+            var types = _provider.GetService<PolicyRegistrant>();
 
             foreach (var type in types.RegisteredPolicies)
             {
-                var builder = _provider.GetService(typeof(IHttpPolicyConfigurator<>).MakeGenericType(new Type[] { type.Value }));
+                var builder = _provider.GetService(typeof(IPolicyConfigurator<,>).MakeGenericType(new Type[] { typeof(T), type.Value }));
 
                 if (builder != null)
                 {
