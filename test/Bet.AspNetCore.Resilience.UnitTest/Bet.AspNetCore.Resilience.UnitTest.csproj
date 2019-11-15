@@ -20,44 +20,6 @@
     <PackageReference Include="xunit.runner.visualstudio" />
   </ItemGroup>
 
-  <ItemGroup Label="Upgrade related references">
-    <PackageReference Include="Microsoft.Extensions.Configuration" Version="$(NetCoreCommon)"/>
-    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="$(NetCoreCommon)" />
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="$(NetCoreCommon)"/>
-
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="$(NetCoreCommon)"/>
-    <PackageReference Include="Microsoft.Extensions.Logging.Configuration" Version="$(NetCoreCommon)"/>
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="$(NetCoreCommon)"/>
-    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="$(NetCoreCommon)"/>
-    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="$(NetCoreCommon)"/>
-    <PackageReference Include="Microsoft.Extensions.Logging.EventSource" Version="$(NetCoreCommon)"/>
-
-    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="$(NetCoreCommon)"/>
-    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="$(NetCoreCommon)"/>
-    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="$(NetCoreCommon)"/>
-    <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="$(NetCoreCommon)"/>
-    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="$(NetCoreCommon)"/>
-    <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="$(NetCoreCommon)"/>
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="$(NetCoreCommon)"/>
-    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="$(NetCoreCommon)"/>
-
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="$(NetCoreCommon)"/>
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="$(NetCoreCommon)"/>
-
-    <PackageReference Include="Microsoft.Extensions.DiagnosticAdapter" Version="$(NetCoreCommon)"/>
-    <PackageReference Include="Microsoft.Extensions.FileProviders.Abstractions" Version="$(NetCoreCommon)"/>
-    <PackageReference Include="Microsoft.Extensions.FileProviders.Physical" Version="$(NetCoreCommon)"/>
-    <PackageReference Include="Microsoft.Extensions.FileSystemGlobbing" Version="$(NetCoreCommon)"/>
-
-    <PackageReference Include="Microsoft.Extensions.Http" Version="$(NetCoreCommon)"/>
-
-    <PackageReference Include="Microsoft.Extensions.Options" Version="$(NetCoreCommon)"/>
-    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="$(NetCoreCommon)"/>
-    <PackageReference Include="Microsoft.Extensions.Options.DataAnnotations" Version="$(NetCoreCommon)"/>
-    <PackageReference Include="Microsoft.Extensions.Primitives" Version="$(NetCoreCommon)"/>
-
-  </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\..\src\Bet.AspNetCore.Hosting.Resilience\Bet.AspNetCore.Hosting.Resilience.csproj" />
     <ProjectReference Include="..\..\src\Bet.Extensions.Hosting.Resilience\Bet.Extensions.Hosting.Resilience.csproj" />

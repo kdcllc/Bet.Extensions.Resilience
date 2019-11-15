@@ -1,13 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <PropertyGroup>
     <Description>The abstraction library for Bet.Extensions.Resilience i.e. HTTP, SQL.</Description>
-    <PackageTags>DotNetCore, Resilience, Extensions</PackageTags>
+    <PackageTags>Abstractions, DotNetCore, Resilience, Extensions, Polly</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>

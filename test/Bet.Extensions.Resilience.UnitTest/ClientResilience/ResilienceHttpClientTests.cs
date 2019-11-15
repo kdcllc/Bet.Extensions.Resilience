@@ -69,10 +69,12 @@ namespace Bet.Extensions.Resilience.UnitTest.ClientResilience
         {
             // assign
             var serviceCollection = new ServiceCollection();
-
             var builder = serviceCollection.AddResilienceHttpClient<ITestClient, TestClient>();
-
+#if NETCOREAPP2_2
+            serviceCollection.AddResilienceHttpClient<ITestClient, TestClient>();
+#elif NETCOREAPP3_0
             Assert.Throws<InvalidOperationException>(() => serviceCollection.AddResilienceHttpClient<ITestClient, TestClient>());
+#endif
         }
 
         [Fact]

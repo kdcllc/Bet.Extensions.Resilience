@@ -15,6 +15,6 @@ namespace Bet.Extensions.Resilience.Abstractions.Options
         /// <summary>
         /// The number of Exceptions allowed before breaking circuit breaker. The default is 2 times.
         /// </summary>
-        public int ExceptionsAllowedBeforeBreaking { get; set; } = 2;
+        public int ExceptionsAllowedBeforeBreaking { get; set; } = 5;
     }
 }

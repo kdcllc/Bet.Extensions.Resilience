@@ -55,30 +55,28 @@ namespace Bet.AspNetCore.Resilience.UnitTest.ResilienceTypedClient
 
             services.AddSingleton<IConfiguration>(configurationBuilder.Build());
 
-            using (var server = new ResilienceTypedClientTestServerBuilder(Output).GetSimpleServer())
-            {
-                var handler = server.CreateHandler();
+            using var server = new ResilienceTypedClientTestServerBuilder(Output).GetSimpleServer();
+            var handler = server.CreateHandler();
 
-                var clientBuilder = services
-                    .AddResilienceHttpClient<ICustomTypedClientWithOptions, CustomTypedClientWithOptions>()
-                    .ConfigureHttpClientOptions<CustomHttpClientOptions>("TestHttpClient")
-                    .ConfigurePrimaryHandler((sp) => handler)
-                    .ConfigureDefaultPolicies();
+            var clientBuilder = services
+                .AddResilienceHttpClient<ICustomTypedClientWithOptions, CustomTypedClientWithOptions>()
+                .ConfigureHttpClientOptions<CustomHttpClientOptions>(optionsSectionName: "TestHttpClient")
+                .ConfigurePrimaryHandler((sp) => handler)
+                .ConfigureDefaultPolicies();
 
-                services.AddHttpDefaultResiliencePolicies();
+            services.AddHttpDefaultResiliencePolicies();
 
-                var provider = services.BuildServiceProvider();
+            var provider = services.BuildServiceProvider();
 
-                // simulates registrations for the policies.
-                var registration = provider.GetService<IHttpPolicyRegistrator>();
-                registration.ConfigurePolicies();
+            // simulates registrations for the policies.
+            var registration = provider.GetService<IHttpPolicyRegistrator>();
+            registration.ConfigurePolicies();
 
-                var client = provider.GetRequiredService<ICustomTypedClientWithOptions>();
+            var client = provider.GetRequiredService<ICustomTypedClientWithOptions>();
 
-                var result = await client.SendRequestAsync();
+            var result = await client.SendRequestAsync();
 
-                Assert.Equal(HttpStatusCode.OK, result.StatusCode);
-            }
+            Assert.Equal(HttpStatusCode.OK, result.StatusCode);
         }
 
         [Fact]

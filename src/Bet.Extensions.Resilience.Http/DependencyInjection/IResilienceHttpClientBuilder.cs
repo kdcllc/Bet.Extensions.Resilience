@@ -17,7 +17,6 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         IHttpClientBuilder HttpClientBuilder { get; }
 
-
         /// <summary>
         /// Configure <see cref="HttpClient"/> with options that have Root Section Name.
         /// </summary>
@@ -52,7 +51,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="rootSectionName">The name of the root section name for the options.</param>
         /// <param name="configureAction">The optional configuration that will be executed last. The default is null.</param>
         /// <returns></returns>
-        IResilienceHttpClientBuilder ConfigureHttpClientOptions<TOptions>(string optionsSectionName, string? rootSectionName, Action<TOptions>? configureAction = null) where TOptions : HttpClientOptions, new();
+        IResilienceHttpClientBuilder ConfigureHttpClientOptions<TOptions>(string optionsSectionName, string? rootSectionName = null, Action<TOptions>? configureAction = null) where TOptions : HttpClientOptions, new();
 
         /// <summary>
         /// Configures <see cref="HttpClient"/> Primary handler.
