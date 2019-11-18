@@ -48,7 +48,7 @@ namespace Microsoft.Extensions.DependencyInjection
             Name = builderName;
             OptionsName = options;
 
-            HttpClientBuilder = Services.AddHttpClient<TClient, TImplementation>();
+            HttpClientBuilder = Services.AddHttpClient<TClient, TImplementation>(Name);
         }
 
         /// <inheritdoc/>
@@ -112,7 +112,8 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <inheritdoc/>
         public IResilienceHttpClientBuilder ConfigurePrimaryHandler(Func<IServiceProvider, HttpMessageHandler>? handlerFactory = null)
         {
-            if (_configuredPrimaryHandler.configured)
+            if (_configuredPrimaryHandler.configured
+                && _configuredPrimaryHandler.handlerFactory != null)
             {
                 throw new InvalidOperationException("Only one primary delegating hander can be registered");
             }
@@ -120,16 +121,17 @@ namespace Microsoft.Extensions.DependencyInjection
             if (handlerFactory == null
                 && !_configuredPrimaryHandler.configured)
             {
-                _configuredPrimaryHandler.configured = true;
+                _configuredPrimaryHandler.configured = false;
                 _configuredPrimaryHandler.handlerFactory = (sp) => new HttpClientHandler();
             }
             else if (handlerFactory != null
                 && !_configuredPrimaryHandler.configured)
             {
-                _configuredPrimaryHandler.configured = true;
+                _configuredPrimaryHandler.configured = false;
                 _configuredPrimaryHandler.handlerFactory = handlerFactory;
             }
 
+            ConfigureAll();
             return this;
         }
 
@@ -159,7 +161,7 @@ namespace Microsoft.Extensions.DependencyInjection
         public IResilienceHttpClientBuilder ConfigureDefaultPolicies()
         {
             // register default policies with default options name.
-            Services.AddHttpDefaultResiliencePolicies();
+            // Services.AddHttpDefaultResiliencePolicies();
 
             // TODO: rework with policies the issue of registration.
             IAsyncPolicy<HttpResponseMessage>? TimeoutPolicy(IServiceProvider sp, HttpRequestMessage request)
@@ -271,6 +273,13 @@ namespace Microsoft.Extensions.DependencyInjection
         private void ConfigureAll()
         {
             // only configure once...
+
+            if (!_configuredPrimaryHandler.configured
+                && _configuredPrimaryHandler.handlerFactory != null)
+            {
+                _configuredPrimaryHandler.configured = true;
+                HttpClientBuilder.ConfigurePrimaryHttpMessageHandler(_configuredPrimaryHandler.handlerFactory);
+            }
 
             // http client options.
             foreach (var (configured, options) in _configurationHttpClientCollection)

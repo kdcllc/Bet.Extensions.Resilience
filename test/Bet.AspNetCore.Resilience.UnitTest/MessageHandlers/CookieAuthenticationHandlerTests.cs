@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 using Bet.Extensions.Http.MessageHandlers.CookieAuthentication;
 using Bet.Extensions.Resilience.Http.Abstractions.Options;
-
+using Bet.Extensions.Testing.Logging;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -96,7 +96,7 @@ namespace Bet.AspNetCore.Resilience.UnitTest.MessageHandlers
             var config = new ConfigurationBuilder().AddInMemoryCollection(dic).Build();
             serviceCollection.AddSingleton<IConfiguration>(config);
 
-            serviceCollection.AddLogging(builder => builder.AddProvider(new XunitLoggerProvider(Output)));
+            serviceCollection.AddLogging(builder => builder.AddXunit(Output));
 
             serviceCollection.TryAddTransient<IConfigureOptions<HttpClientOptions>>(sp =>
             {

@@ -18,6 +18,8 @@
     <PackageReference Include="Moq" />
     <PackageReference Include="xunit" />
     <PackageReference Include="xunit.runner.visualstudio" />
+    <PackageReference Include="Bet.Extensions.Testing" />
+
   </ItemGroup>
 
   <ItemGroup>

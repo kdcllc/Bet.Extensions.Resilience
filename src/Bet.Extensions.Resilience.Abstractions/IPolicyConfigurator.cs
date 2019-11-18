@@ -15,6 +15,11 @@ namespace Bet.Extensions.Resilience.Abstractions
     /// <typeparam name="TOptions"></typeparam>
     public interface IPolicyConfigurator<T, TOptions> where TOptions : PolicyOptions
     {
+
+        string ParentPolicyName { get; }
+
+        string[]? ChildrenPolicyNames { get; }
+
         /// <summary>
         /// The collection of the options for the specific configuration section.
         /// </summary>

@@ -16,9 +16,9 @@ namespace Bet.Extensions.Resilience.Http.Policies
     /// Default Wait And Retry Polly Policy.
     /// </summary>
     /// <typeparam name="TOptions">The type of the options.</typeparam>
-    public class HttpWaitAndRetryPolicy<TOptions> : BasePolicy<HttpResponseMessage, TOptions> where TOptions : PolicyOptions
+    public class HttpRetryPolicy<TOptions> : BasePolicy<HttpResponseMessage, TOptions> where TOptions : PolicyOptions
     {
-        public HttpWaitAndRetryPolicy(
+        public HttpRetryPolicy(
             string policyName,
             IPolicyConfigurator<HttpResponseMessage, TOptions> policyConfigurator,
             ILogger<IPolicyCreator<HttpResponseMessage, TOptions>> logger) : base(policyName, policyConfigurator, logger)
@@ -32,7 +32,7 @@ namespace Bet.Extensions.Resilience.Http.Policies
                .Handle<HttpRequestException>()
                .OrResult(TransientHttpStatusCodePredicate)
                    .WaitAndRetryAsync(
-                       retryCount: Options.HttpRetry.Count,
+                       retryCount: Options.Retry.Count,
                        sleepDurationProvider: OnDurationAsync,
                        onRetryAsync: OnRetryAsync);
         }
@@ -44,7 +44,7 @@ namespace Bet.Extensions.Resilience.Http.Policies
                .Handle<HttpRequestException>()
                .OrResult(TransientHttpStatusCodePredicate)
                 .WaitAndRetry(
-                    retryCount: Options.HttpRetry.Count,
+                    retryCount: Options.Retry.Count,
                     sleepDurationProvider: (retryAttempt, c) => OnDuration(retryAttempt, c),
                     onRetry: (result, timeSpan, retryAttempt, context) => OnRetry(result, timeSpan, retryAttempt, context));
         }
@@ -72,9 +72,9 @@ namespace Bet.Extensions.Resilience.Http.Policies
             context.OperationKey,
             context.CorrelationId,
             retryAttempt,
-            Options.HttpRetry.Count);
+            Options.Retry.Count);
 
-            return TimeSpan.FromSeconds(Math.Pow(Options.HttpRetry.BackoffPower, retryAttempt));
+            return TimeSpan.FromSeconds(Math.Pow(Options.Retry.BackoffPower, retryAttempt));
         }
 
         private TimeSpan OnDurationAsync(int retryAttempt, DelegateResult<HttpResponseMessage> delegateResult, Context context)
@@ -84,10 +84,10 @@ namespace Bet.Extensions.Resilience.Http.Policies
                 context.OperationKey,
                 context.CorrelationId,
                 retryAttempt,
-                Options.HttpRetry.Count,
+                Options.Retry.Count,
                 delegateResult.GetMessage());
 
-            return TimeSpan.FromSeconds(Math.Pow(Options.HttpRetry.BackoffPower, retryAttempt));
+            return TimeSpan.FromSeconds(Math.Pow(Options.Retry.BackoffPower, retryAttempt));
         }
 
         private Task OnRetryAsync(DelegateResult<HttpResponseMessage> delegateResult, TimeSpan timeElapsed, int retryNumber, Context context)

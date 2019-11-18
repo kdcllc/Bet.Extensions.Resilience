@@ -31,6 +31,9 @@ namespace Bet.Extensions.Resilience.Abstractions
         {
             _provider = provider;
 
+            ParentPolicyName = parentPolicyName;
+            ChildrenPolicyNames = childrenPolicyNames;
+
             _optionsMonitor = provider.GetRequiredService<IOptionsMonitor<TOptions>>();
             _policyRegistry = provider.GetRequiredService<IPolicyRegistry<string>>();
 
@@ -64,6 +67,10 @@ namespace Bet.Extensions.Resilience.Abstractions
         public IReadOnlyDictionary<string, Func<IAsyncPolicy<T>>> AsyncPolicyCollection => _asyncPolicyCollection.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
 
         public IReadOnlyDictionary<string, Func<ISyncPolicy<T>>> SyncPolicyCollection => _syncPolicyCollection.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+
+        public string ParentPolicyName { get; private set; }
+
+        public string[]? ChildrenPolicyNames { get; private set; }
 
         /// <inheritdoc/>
         public IPolicyConfigurator<T, TOptions> AddPolicy(

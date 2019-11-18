@@ -1,87 +1,45 @@
 ﻿using System;
-using System.Linq;
 using System.Net.Http;
 
 using Bet.Extensions.Resilience.Abstractions;
 using Bet.Extensions.Resilience.Abstractions.Options;
 using Bet.Extensions.Resilience.Http.Policies;
 
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
     public static class ServiceCollectionExtensions
     {
-        private static readonly Func<IServiceCollection, PolicyRegistrant>
-     _findPolicyBuilderIntance = (services) => services.SingleOrDefault(sd => sd.ServiceType == typeof(PolicyRegistrant))?.ImplementationInstance as PolicyRegistrant;
-
         public static IServiceCollection AddHttpResiliencePolicy(
             this IServiceCollection services,
-            Action<PolicyOptions>? configure = null,
             string policySectionName = PolicyName.DefaultPolicy,
-            string policyName = PolicyName.DefaultPolicy)
+            string policyName = PolicyName.DefaultPolicy,
+            Action<PolicyOptions>? configure = null)
         {
-            return services.AddHttpResiliencePolicy<PolicyOptions>(configure, policySectionName, policyName);
+            return services.AddHttpResiliencePolicy<PolicyOptions>(policySectionName, policyName, configure);
         }
 
         public static IServiceCollection AddHttpResiliencePolicy<TOptions>(
             this IServiceCollection services,
-            Action<TOptions>? configure = null,
             string policySectionName = PolicyName.DefaultPolicy,
-            string policyName = PolicyName.DefaultPolicy)
+            string policyName = PolicyName.DefaultPolicy,
+            Action<TOptions>? configure = null)
             where TOptions : PolicyOptions, new()
         {
-            return services.AddHttpResiliencePolicy<DefaultPolicyConfigurator<HttpResponseMessage, TOptions>, TOptions>(configure, policySectionName, policyName);
+            return services.AddHttpResiliencePolicy<DefaultPolicyConfigurator<HttpResponseMessage, TOptions>, TOptions>(policySectionName, policyName, configure: configure);
         }
 
         public static IServiceCollection AddHttpResiliencePolicy<T, TOptions>(
             this IServiceCollection services,
-            Action<TOptions>? configure = null,
             string policySectionName = PolicyName.DefaultPolicy,
             string policyName = PolicyName.DefaultPolicy,
-            string[] ? defaultPolicies = null)
+            string[] ? defaultPolicies = null,
+            Action<TOptions>? configure = null)
             where T : class, IPolicyConfigurator<HttpResponseMessage, TOptions>
             where TOptions : PolicyOptions, new()
         {
-            // adds Polly Policy registration
-            var registry = services.TryAddPolicyRegistry();
-
-            // adds DI based marker object
-            services.TryAddSingleton(new PolicyRegistrant());
-
-            // return an instant of ResilienceHttpPolicyRegistrant
-            var registrant = _findPolicyBuilderIntance(services);
-
-            if (registrant != null)
-            {
-                // only unique policy names are allowed.
-                if (registrant.RegisteredPolicies.TryGetValue(policyName, out var type))
-                {
-                    throw new ArgumentException($"{policyName} already exists");
-                }
-
-                registrant.RegisteredPolicies.Add(policyName, typeof(TOptions));
-            }
-
-            services.Configure<TOptions>(policyName, options =>
-            {
-                options.Name = policyName;
-                options.OptionsName = policySectionName;
-            });
-
-            services.AddChangeTokenOptions(policySectionName, policyName, configure);
-
-            services.AddSingleton<IPolicyConfigurator<HttpResponseMessage, TOptions>>((sp) =>
-            {
-                var provider = sp.GetRequiredService<IServiceProvider>();
-                return new DefaultPolicyConfigurator<HttpResponseMessage, TOptions>(provider, policyName, defaultPolicies);
-            });
-
-            // this service provides the initial policies registrations based on the type of the host.
-            services.TryAddScoped<IPolicyRegistrator, DefaultPolicyRegistrator<HttpResponseMessage, TOptions>>();
-
-            return services;
+            return services.AddResiliencePolicy<T, HttpResponseMessage, TOptions>(policySectionName, policyName, defaultPolicies, configure);
         }
 
         public static IServiceCollection AddHttpDefaultResiliencePolicies(
@@ -123,12 +81,12 @@ namespace Microsoft.Extensions.DependencyInjection
                     return new HttpTimeoutPolicy<TOptions>(PolicyName.TimeoutPolicy, options, logger);
                 });
 
-                services.AddScoped<IPolicyCreator<HttpResponseMessage, TOptions>, HttpWaitAndRetryPolicy<TOptions>>(sp =>
+                services.AddScoped<IPolicyCreator<HttpResponseMessage, TOptions>, HttpRetryPolicy<TOptions>>(sp =>
                 {
-                    var logger = sp.GetRequiredService<ILogger<HttpWaitAndRetryPolicy<TOptions>>>();
+                    var logger = sp.GetRequiredService<ILogger<HttpRetryPolicy<TOptions>>>();
                     var options = sp.GetRequiredService<IPolicyConfigurator<HttpResponseMessage, TOptions>>();
 
-                    return new HttpWaitAndRetryPolicy<TOptions>(PolicyName.RetryPolicy, options, logger);
+                    return new HttpRetryPolicy<TOptions>(PolicyName.RetryPolicy, options, logger);
                 });
 
                 services.AddScoped<IPolicyCreator<HttpResponseMessage, TOptions>, HttpCircuitBreakerPolicy<TOptions>>(sp =>
@@ -140,10 +98,10 @@ namespace Microsoft.Extensions.DependencyInjection
                 });
 
                 return services.AddHttpResiliencePolicy<DefaultPolicyConfigurator<HttpResponseMessage, TOptions>, TOptions>(
-                configure,
                 policySectionName,
                 policyName,
-                defaultPolicies);
+                defaultPolicies,
+                configure);
         }
     }
 }

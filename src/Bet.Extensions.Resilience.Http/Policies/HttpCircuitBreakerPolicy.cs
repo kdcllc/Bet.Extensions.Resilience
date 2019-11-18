@@ -29,8 +29,8 @@ namespace Bet.Extensions.Resilience.Http.Policies
             return HttpPolicyExtensions
                 .HandleTransientHttpError()
                 .CircuitBreakerAsync(
-                    handledEventsAllowedBeforeBreaking: Options.HttpCircuitBreaker.ExceptionsAllowedBeforeBreaking,
-                    durationOfBreak: Options.HttpCircuitBreaker.DurationOfBreak,
+                    handledEventsAllowedBeforeBreaking: Options.CircuitBreaker.ExceptionsAllowedBeforeBreaking,
+                    durationOfBreak: Options.CircuitBreaker.DurationOfBreak,
                     OnBreak,
                     OnReset);
         }
@@ -41,8 +41,8 @@ namespace Bet.Extensions.Resilience.Http.Policies
             return HttpPolicyExtensions
                 .HandleTransientHttpError()
                 .CircuitBreaker(
-                    handledEventsAllowedBeforeBreaking: Options.HttpCircuitBreaker.ExceptionsAllowedBeforeBreaking,
-                    durationOfBreak: Options.HttpCircuitBreaker.DurationOfBreak,
+                    handledEventsAllowedBeforeBreaking: Options.CircuitBreaker.ExceptionsAllowedBeforeBreaking,
+                    durationOfBreak: Options.CircuitBreaker.DurationOfBreak,
                     OnBreak,
                     OnReset);
         }

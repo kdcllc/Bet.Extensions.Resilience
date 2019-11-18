@@ -11,13 +11,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Bet.Extensions.Options" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" />
     <PackageReference Include="Polly" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Executor\" />
-  </ItemGroup>
 </Project>

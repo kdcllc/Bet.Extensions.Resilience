@@ -1,14 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
 
 using Bet.AspNetCore.Resilience.UnitTest.ResilienceTypedClient.Clients;
 using Bet.Extensions.Http.MessageHandlers;
 using Bet.Extensions.Resilience.Abstractions;
-using Bet.Extensions.Resilience.Http.Policies;
-
+using Bet.Extensions.Testing.Logging;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -37,7 +35,6 @@ namespace Bet.AspNetCore.Resilience.UnitTest.ResilienceTypedClient
 
             var dic1 = new Dictionary<string, string>()
             {
-                { "TestHttpClient:BaseAddress", "http://testserver:5000" },
                 { "TestHttpClient:Timeout", "00:05:00" },
                 { "TestHttpClient:ContentType", "application/json" },
                 { "TestHttpClient:Id", id }
@@ -47,7 +44,7 @@ namespace Bet.AspNetCore.Resilience.UnitTest.ResilienceTypedClient
 
             services.AddLogging(builder =>
             {
-                builder.AddProvider(new XunitLoggerProvider(Output));
+                builder.AddXunit(Output);
             });
 
             services.AddSingleton<IConfiguration>(configurationBuilder.Build());
@@ -57,7 +54,9 @@ namespace Bet.AspNetCore.Resilience.UnitTest.ResilienceTypedClient
 
             var clientBuilder = services
                 .AddResilienceHttpClient<ICustomTypedClientWithOptions, CustomTypedClientWithOptions>()
-                .ConfigureHttpClientOptions<CustomHttpClientOptions>(optionsSectionName: "TestHttpClient")
+                .ConfigureHttpClientOptions<CustomHttpClientOptions>(
+                    optionsSectionName: "TestHttpClient",
+                    configureAction: (op) => op.BaseAddress = server.BaseAddress)
                 .ConfigurePrimaryHandler((sp) => handler)
                 .ConfigureDefaultPolicies();
 
@@ -77,14 +76,14 @@ namespace Bet.AspNetCore.Resilience.UnitTest.ResilienceTypedClient
         }
 
         [Fact]
-        public void Test_AddClientTyped_OnlyOnePrimaryHandler()
+        public void Should_Throw_InvalideOptionException_When_More_Than_One_PrimaryHandler_Added()
         {
             // Assign
             var serviceCollection = new ServiceCollection();
 
             serviceCollection.AddLogging(builder =>
             {
-                builder.AddProvider(new XunitLoggerProvider(Output));
+                builder.AddXunit(Output);
             });
 
             using (var server = new ResilienceTypedClientTestServerBuilder(Output).GetSimpleServer())

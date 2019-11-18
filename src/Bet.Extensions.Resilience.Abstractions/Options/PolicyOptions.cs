@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Net.Http;
 
 namespace Bet.Extensions.Resilience.Abstractions.Options
 {
@@ -11,24 +10,28 @@ namespace Bet.Extensions.Resilience.Abstractions.Options
     {
         /// <summary>
         /// The timeout policy options. The default is 100 seconds or 00:01:40.
-        /// This value matches the default of <see cref="HttpClient"/>.
         /// </summary>
         public TimeSpan Timeout { get; set; } = TimeSpan.FromSeconds(100);
 
         /// <summary>
-        /// The Circuit Breaker Policy Options for <see cref="HttpResponseMessage"/>.
+        /// The Circuit Breaker Policy Options.
         /// </summary>
-        public CircuitBreakerPolicyOptions HttpCircuitBreaker { get; set; } = new CircuitBreakerPolicyOptions();
+        public CircuitBreakerPolicyOptions CircuitBreaker { get; set; } = new CircuitBreakerPolicyOptions();
 
         /// <summary>
-        /// The Retry Policy Options for <see cref="HttpResponseMessage"/>.
+        /// The Retry Policy Options.
         /// </summary>
-        public RetryPolicyOptions HttpRetry { get; set; } = new RetryPolicyOptions();
+        public RetryPolicyOptions Retry { get; set; } = new RetryPolicyOptions();
 
         /// <summary>
-        /// The Retry Policy with Jitter Options for <see cref="HttpResponseMessage"/>.
+        /// The Retry Policy with Jitter Options.
         /// </summary>
-        public RetryJitterOptions HttpJitterRetry { get; set; } = new RetryJitterOptions();
+        public RetryJitterOptions JitterRetry { get; set; } = new RetryJitterOptions();
+
+        /// <summary>
+        /// Adds Builkhead Policy Options.
+        /// </summary>
+        public BulkheadPolicyOptions Bulkhead { get; set; } = new BulkheadPolicyOptions();
 
         /// <summary>
         /// This is used for DI mapping.

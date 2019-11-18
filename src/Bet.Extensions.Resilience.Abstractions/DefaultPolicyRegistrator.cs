@@ -1,13 +1,10 @@
 ﻿using System;
 
-using Bet.Extensions.Resilience.Abstractions;
-using Bet.Extensions.Resilience.Abstractions.Options;
-
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Bet.Extensions.Resilience.Abstractions
 {
-    public class DefaultPolicyRegistrator<T, TOptions> : IPolicyRegistrator where TOptions : PolicyOptions
+    public class DefaultPolicyRegistrator<T> : IPolicyRegistrator
     {
         private readonly IServiceProvider _provider;
 

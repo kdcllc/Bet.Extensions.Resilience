@@ -1,5 +1,5 @@
 ﻿using System;
-
+using Bet.Extensions.Testing.Logging;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -33,7 +33,7 @@ namespace Bet.AspNetCore.Resilience.UnitTest.GenericHosting
                 .ConfigureLogging(logger =>
                 {
                     logger.AddDebug();
-                    logger.AddProvider(new XunitLoggerProvider(_output));
+                    logger.AddXunit(_output);
                 })
                 .ConfigureServices((context, services) =>
                 {
