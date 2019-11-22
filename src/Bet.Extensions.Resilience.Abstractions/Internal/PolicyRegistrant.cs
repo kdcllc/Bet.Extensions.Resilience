@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Bet.Extensions.Resilience.Abstractions
+namespace Bet.Extensions.Resilience.Abstractions.Internal
 {
     internal sealed class PolicyRegistrant
     {

@@ -2,9 +2,9 @@
 
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Bet.Extensions.Resilience.Abstractions
+namespace Bet.Extensions.Resilience.Abstractions.Internal
 {
-    public class DefaultPolicyRegistrator<T> : IPolicyRegistrator
+    internal class DefaultPolicyRegistrator<TResult> : IPolicyRegistrator
     {
         private readonly IServiceProvider _provider;
 
@@ -19,7 +19,7 @@ namespace Bet.Extensions.Resilience.Abstractions
 
             foreach (var type in types.RegisteredPolicies)
             {
-                var builder = _provider.GetService(typeof(IPolicyConfigurator<,>).MakeGenericType(new Type[] { typeof(T), type.Value }));
+                var builder = _provider.GetService(typeof(IPolicyConfigurator<,>).MakeGenericType(new Type[] { type.Value, typeof(TResult), }));
 
                 if (builder != null)
                 {

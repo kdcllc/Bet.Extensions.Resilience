@@ -51,6 +51,7 @@
     <PackageReference Update="Newtonsoft.Json" Version="12.0.1" />
     <PackageReference Update="Polly" Version="7.1.1" />
     <PackageReference Update="Bet.Extensions" Version="$(BetCommon)" />
+    <PackageReference Update="Bet.Extensions.Hosting" Version="$(BetCommon)" />
     <PackageReference Update="Bet.Extensions.Options" Version="$(BetCommon)" />
     <PackageReference Update="Bet.Extensions.Testing" Version="$(BetCommon)" />
   </ItemGroup>

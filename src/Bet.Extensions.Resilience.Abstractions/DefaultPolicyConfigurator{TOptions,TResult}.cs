@@ -14,11 +14,11 @@ using Polly.Registry;
 namespace Bet.Extensions.Resilience.Abstractions
 {
     /// <inheritdoc/>
-    public class DefaultPolicyConfigurator<T, TOptions> : IPolicyConfigurator<T, TOptions> where TOptions : PolicyOptions
+    public class DefaultPolicyConfigurator<TOptions, TResult> : IPolicyConfigurator<TOptions, TResult> where TOptions : PolicyOptions
     {
         private readonly IDictionary<string, TOptions> _optionsCollection = new ConcurrentDictionary<string, TOptions>();
-        private readonly IDictionary<string, Func<IAsyncPolicy<T>>> _asyncPolicyCollection = new ConcurrentDictionary<string, Func<IAsyncPolicy<T>>>();
-        private readonly IDictionary<string, Func<ISyncPolicy<T>>> _syncPolicyCollection = new ConcurrentDictionary<string, Func<ISyncPolicy<T>>>();
+        private readonly IDictionary<string, Func<IAsyncPolicy<TResult>>> _asyncPolicyCollection = new ConcurrentDictionary<string, Func<IAsyncPolicy<TResult>>>();
+        private readonly IDictionary<string, Func<ISyncPolicy<TResult>>> _syncPolicyCollection = new ConcurrentDictionary<string, Func<ISyncPolicy<TResult>>>();
 
         private readonly IOptionsMonitor<TOptions> _optionsMonitor;
         private readonly IPolicyRegistry<string> _policyRegistry;
@@ -64,18 +64,18 @@ namespace Bet.Extensions.Resilience.Abstractions
 
         public IReadOnlyDictionary<string, TOptions> OptionsCollection => _optionsCollection.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
 
-        public IReadOnlyDictionary<string, Func<IAsyncPolicy<T>>> AsyncPolicyCollection => _asyncPolicyCollection.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+        public IReadOnlyDictionary<string, Func<IAsyncPolicy<TResult>>> AsyncPolicyCollection => _asyncPolicyCollection.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
 
-        public IReadOnlyDictionary<string, Func<ISyncPolicy<T>>> SyncPolicyCollection => _syncPolicyCollection.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+        public IReadOnlyDictionary<string, Func<ISyncPolicy<TResult>>> SyncPolicyCollection => _syncPolicyCollection.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
 
         public string ParentPolicyName { get; private set; }
 
         public string[]? ChildrenPolicyNames { get; private set; }
 
         /// <inheritdoc/>
-        public IPolicyConfigurator<T, TOptions> AddPolicy(
+        public IPolicyConfigurator<TOptions, TResult> AddPolicy(
             string policyName,
-            Func<IAsyncPolicy<T>> policyFunc,
+            Func<IAsyncPolicy<TResult>> policyFunc,
             bool replaceIfExists = false)
         {
             if (!_policyRegistry.ContainsKey(policyName))
@@ -101,9 +101,9 @@ namespace Bet.Extensions.Resilience.Abstractions
         }
 
         /// <inheritdoc/>
-        public IPolicyConfigurator<T, TOptions> AddPolicy(
+        public IPolicyConfigurator<TOptions, TResult> AddPolicy(
             string policyName,
-            Func<ISyncPolicy<T>> policyFunc,
+            Func<ISyncPolicy<TResult>> policyFunc,
             bool replaceIfExists = false)
         {
             if (!_policyRegistry.ContainsKey(policyName))
@@ -130,7 +130,7 @@ namespace Bet.Extensions.Resilience.Abstractions
         /// <inheritdoc/>
         public void ConfigurePolicies()
         {
-            var registrations = _provider.GetServices(typeof(IPolicyCreator<,>).MakeGenericType(new Type[] { typeof(T), typeof(TOptions) }));
+            var registrations = _provider.GetServices(typeof(IPolicyCreator<,>).MakeGenericType(new Type[] { typeof(TOptions), typeof(TResult) }));
 
             foreach (var registration in registrations)
             {

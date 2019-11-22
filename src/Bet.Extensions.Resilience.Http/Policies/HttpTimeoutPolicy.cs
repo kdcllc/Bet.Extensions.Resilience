@@ -12,12 +12,12 @@ using Polly.Timeout;
 
 namespace Bet.Extensions.Resilience.Http.Policies
 {
-    public class HttpTimeoutPolicy<TOptions> : BasePolicy<HttpResponseMessage, TOptions> where TOptions : PolicyOptions
+    public class HttpTimeoutPolicy<TOptions> : BasePolicy<TOptions, HttpResponseMessage> where TOptions : PolicyOptions
     {
         public HttpTimeoutPolicy(
             string policyName,
-            IPolicyConfigurator<HttpResponseMessage, TOptions> policyConfigurator,
-            ILogger<IPolicyCreator<HttpResponseMessage, TOptions>> logger) : base(policyName, policyConfigurator, logger)
+            IPolicyConfigurator<TOptions, HttpResponseMessage> policyConfigurator,
+            ILogger<IPolicyCreator<TOptions, HttpResponseMessage>> logger) : base(policyName, policyConfigurator, logger)
         {
         }
 

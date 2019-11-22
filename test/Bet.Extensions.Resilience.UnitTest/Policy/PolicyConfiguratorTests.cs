@@ -62,14 +62,14 @@ namespace Bet.Extensions.Resilience.UnitTest.Policy
             services.AddOptions();
             services.AddSingleton<IConfiguration>(config);
 
-            services.AddHttpResiliencePolicy(policyOptionsName, policyName, Configure);
+            services.AddHttpResiliencePolicy(policyOptionsName, policyName, null, Configure);
 
             var sp = services.BuildServiceProvider();
 
             var optionsMonitor = sp.GetRequiredService<IOptionsMonitor<PolicyOptions>>().Get(policyName);
 
             // IPolicyConfigurator can return multiple instances.
-            var allConfigurations = sp.GetServices<IPolicyConfigurator<HttpResponseMessage, PolicyOptions>>();
+            var allConfigurations = sp.GetServices<IPolicyConfigurator<PolicyOptions, HttpResponseMessage>>();
             Assert.Single(allConfigurations);
 
             var configurator = allConfigurations.First(x => x.ParentPolicyName == policyName);
@@ -141,14 +141,14 @@ namespace Bet.Extensions.Resilience.UnitTest.Policy
             services.AddOptions();
             services.AddSingleton<IConfiguration>(config);
 
-            services.AddHttpResiliencePolicy<TestPolicyOptions>(policyOptionsName, policyName, Configure);
+            services.AddHttpResiliencePolicy<TestPolicyOptions>(policyOptionsName, policyName, null, Configure);
 
             var sp = services.BuildServiceProvider();
 
             var optionsMonitor = sp.GetRequiredService<IOptionsMonitor<TestPolicyOptions>>().Get(policyName);
 
             // IPolicyConfigurator can return multiple instances.
-            var allConfigurations = sp.GetServices<IPolicyConfigurator<HttpResponseMessage, TestPolicyOptions>>();
+            var allConfigurations = sp.GetServices<IPolicyConfigurator<TestPolicyOptions, HttpResponseMessage>>();
             Assert.Single(allConfigurations);
 
             var configurator = allConfigurations.First(x => x.ParentPolicyName == policyName);
@@ -209,7 +209,7 @@ namespace Bet.Extensions.Resilience.UnitTest.Policy
         }
 
         [Fact]
-        public void Should_Not_Allow_Two_Default_Policy_With_The_Same_Name_Throws_Argument_Exception()
+        public void Should_Not_Allow_Two_Default_Policy_With_The_Same_Name()
         {
             var services = new ServiceCollection();
 
@@ -228,8 +228,19 @@ namespace Bet.Extensions.Resilience.UnitTest.Policy
             services.AddSingleton<IConfiguration>(config);
 
             services.AddHttpDefaultResiliencePolicies();
+            services.AddHttpDefaultResiliencePolicies<TestPolicyOptions>();
 
-            Assert.Throws<ArgumentException>(() => services.AddHttpDefaultResiliencePolicies<TestPolicyOptions>());
+            var sp = services.BuildServiceProvider();
+
+            var firstOptions = sp.GetRequiredService<IOptionsMonitor<PolicyOptions>>().Get(policyOptionsName);
+
+            Assert.Equal(PolicyName.DefaultPolicy, firstOptions.Name);
+            Assert.Equal(policyOptionsName, firstOptions.OptionsName);
+
+            var secondOptions = sp.GetRequiredService<IOptionsMonitor<TestPolicyOptions>>().Get(policyOptionsName);
+
+            Assert.Equal(string.Empty, secondOptions.Name);
+            Assert.Equal(string.Empty, secondOptions.OptionsName);
         }
 
         [Fact]
@@ -287,13 +298,13 @@ namespace Bet.Extensions.Resilience.UnitTest.Policy
             Assert.True(policy.ContainsKey(PolicyName.CircuitBreakerPolicy));
             Assert.True(policy.ContainsKey(PolicyName.CircuitBreakerPolicyAsync));
 
-            var options = sp.GetRequiredService<IPolicyConfigurator<HttpResponseMessage, PolicyOptions>>();
+            var options = sp.GetRequiredService<IPolicyConfigurator<PolicyOptions, HttpResponseMessage>>();
 
             Assert.Equal(7, options.OptionsCollection.Count);
             Assert.Equal(3, options.AsyncPolicyCollection.Count);
             Assert.Equal(3, options.SyncPolicyCollection.Count);
 
-            var defaultPolicies = sp.GetServices<IPolicyCreator<HttpResponseMessage, PolicyOptions>>();
+            var defaultPolicies = sp.GetServices<IPolicyCreator<PolicyOptions, HttpResponseMessage>>();
 
             Assert.Equal(3, defaultPolicies.Count());
 

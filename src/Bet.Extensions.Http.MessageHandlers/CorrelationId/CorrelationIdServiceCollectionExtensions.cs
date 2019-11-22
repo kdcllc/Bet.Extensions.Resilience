@@ -23,7 +23,6 @@ namespace Microsoft.Extensions.DependencyInjection
 
         public static IResilienceHttpClientBuilder ConfigureCorrelationIdHandler(this IResilienceHttpClientBuilder builder)
         {
-
             return builder;
         }
     }

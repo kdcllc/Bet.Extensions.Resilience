@@ -13,9 +13,11 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
     <PackageReference Include="Microsoft.Extensions.Hosting" />
     <PackageReference Include="Microsoft.Extensions.DiagnosticAdapter" />
+    <PackageReference Include="Bet.Extensions.Hosting" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Bet.Extensions.Http.MessageHandlers\Bet.Extensions.Http.MessageHandlers.csproj" />
+    <ProjectReference Include="..\Bet.Extensions.Resilience.Http\Bet.Extensions.Resilience.Http.csproj" />
   </ItemGroup>
 </Project>

@@ -9,14 +9,14 @@ using Polly;
 namespace Bet.Extensions.Resilience.Abstractions
 {
     /// <inheritdoc/>
-    public abstract class BasePolicy<T, TOptions> : IPolicyCreator<T, TOptions> where TOptions : PolicyOptions
+    public abstract class BasePolicy<TOptions, TResult> : IPolicyCreator<TOptions, TResult> where TOptions : PolicyOptions
     {
-        private readonly IPolicyConfigurator<T, TOptions> _policyConfigurator;
+        private readonly IPolicyConfigurator<TOptions, TResult> _policyConfigurator;
 
         protected BasePolicy(
             string policyName,
-            IPolicyConfigurator<T, TOptions> policyConfigurator,
-            ILogger<IPolicyCreator<T, TOptions>> logger)
+            IPolicyConfigurator<TOptions, TResult> policyConfigurator,
+            ILogger<IPolicyCreator<TOptions, TResult>> logger)
         {
             Name = policyName;
 
@@ -32,13 +32,13 @@ namespace Bet.Extensions.Resilience.Abstractions
         /// <inheritdoc/>
         public virtual TOptions Options { get; }
 
-        protected ILogger<IPolicyCreator<T, TOptions>> Logger { get; }
+        protected ILogger<IPolicyCreator<TOptions, TResult>> Logger { get; }
 
         /// <inheritdoc/>
-        public abstract IAsyncPolicy<T> CreateAsyncPolicy();
+        public abstract IAsyncPolicy<TResult> CreateAsyncPolicy();
 
         /// <inheritdoc/>
-        public abstract ISyncPolicy<T> CreateSyncPolicy();
+        public abstract ISyncPolicy<TResult> CreateSyncPolicy();
 
         /// <inheritdoc/>
         public virtual void RegisterPolicy()

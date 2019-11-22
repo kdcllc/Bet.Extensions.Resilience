@@ -2,6 +2,7 @@
 using System.Linq;
 
 using Bet.Extensions.Resilience.Abstractions;
+using Bet.Extensions.Resilience.Abstractions.Internal;
 using Bet.Extensions.Resilience.Abstractions.Options;
 
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -17,58 +18,66 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <summary>
         /// Adds Resilience Policies based on default <see cref="PolicyOptions"/> type.
         /// </summary>
-        /// <typeparam name="TRegistrator"></typeparam>
-        /// <param name="services"></param>
-        /// <param name="policySectionName"></param>
-        /// <param name="policyName"></param>
-        /// <param name="configure"></param>
+        /// <typeparam name="TResult">The type of the policy result.</typeparam>
+        /// <param name="services">The DI services.</param>
+        /// <param name="policySectionName">The policy section name for named options.</param>
+        /// <param name="policyName">The policy name registered with <see cref="IPolicyRegistry{TKey}"/>.</param>
+        /// <param name="defaultPolicies">The list of injected options names.</param>
+        /// <param name="configure">The options configuration. The default is null.</param>
         /// <returns></returns>
-        public static IServiceCollection AddResiliencePolicy<TRegistrator>(
+        public static IServiceCollection AddResiliencePolicy<TResult>(
             this IServiceCollection services,
             string policySectionName = PolicyName.DefaultPolicy,
             string policyName = PolicyName.DefaultPolicy,
+            string[]? defaultPolicies = null,
             Action<PolicyOptions>? configure = null)
         {
-            return services.AddResiliencePolicy<TRegistrator, PolicyOptions>(policySectionName, policyName, configure);
+            return services.AddResiliencePolicy<PolicyOptions, TResult>(policySectionName, policyName, defaultPolicies, configure);
         }
 
         /// <summary>
         /// Adds Resilience Policies based on generic types provided.
         /// </summary>
-        /// <typeparam name="TRegistrator"></typeparam>
         /// <typeparam name="TOptions"></typeparam>
+        /// <typeparam name="TResult">The type of the policy result.</typeparam>
         /// <param name="services"></param>
         /// <param name="policySectionName"></param>
         /// <param name="policyName"></param>
+        /// <param name="defaultPolicies"></param>
         /// <param name="configure"></param>
         /// <returns></returns>
-        public static IServiceCollection AddResiliencePolicy<TRegistrator, TOptions>(
+        public static IServiceCollection AddResiliencePolicy<TOptions, TResult>(
             this IServiceCollection services,
             string policySectionName = PolicyName.DefaultPolicy,
             string policyName = PolicyName.DefaultPolicy,
+            string[]? defaultPolicies = null,
             Action<TOptions>? configure = null) where TOptions : PolicyOptions, new()
         {
-            return services.AddResiliencePolicy<DefaultPolicyConfigurator<TRegistrator, TOptions>, TOptions>(policySectionName, policyName, configure: configure);
+            return services.AddResiliencePolicy<DefaultPolicyConfigurator<TOptions, TResult>, TOptions, TResult>(
+                policySectionName,
+                policyName,
+                defaultPolicies,
+                configure);
         }
 
         /// <summary>
         /// Adds Resilience Policies based on generic types provided.
         /// </summary>
         /// <typeparam name="T">The policy type.</typeparam>
-        /// <typeparam name="TRegistrator">The type of the policy registrant.</typeparam>
         /// <typeparam name="TOptions">The type of the options.</typeparam>
+        /// <typeparam name="TResult">The type of the policy registrant.</typeparam>
         /// <param name="services">The DI services.</param>
         /// <param name="policySectionName">The policy section name. The default is null.</param>
         /// <param name="policyName">The policy name with <see cref="IReadOnlyPolicyRegistry{TKey}"/> collection, the default is null.</param>
-        /// <param name="defaultPolicies">The list of default policies to be registered.</param>
+        /// <param name="defaultPolicies"></param>
         /// <param name="configure">The options configurations. The default is null.</param>
         /// <returns></returns>
-        public static IServiceCollection AddResiliencePolicy<T, TRegistrator, TOptions>(
+        public static IServiceCollection AddResiliencePolicy<T, TOptions, TResult>(
             this IServiceCollection services,
             string policySectionName = PolicyName.DefaultPolicy,
             string policyName = PolicyName.DefaultPolicy,
-            string[] ? defaultPolicies = null,
-            Action<TOptions>? configure = null) where T : class, IPolicyConfigurator<TRegistrator, TOptions> where TOptions : PolicyOptions, new()
+            string[]? defaultPolicies = null,
+            Action<TOptions>? configure = null) where T : class, IPolicyConfigurator<TOptions, TResult> where TOptions : PolicyOptions, new()
         {
             // adds Polly Policy registration
             var registry = services.TryAddPolicyRegistry();
@@ -98,16 +107,43 @@ namespace Microsoft.Extensions.DependencyInjection
 
             services.AddChangeTokenOptions(policySectionName, policyName, configure);
 
-            services.AddSingleton<IPolicyConfigurator<TRegistrator, TOptions>>((sp) =>
+            services.AddSingleton<IPolicyConfigurator<TOptions, TResult>>((sp) =>
             {
                 var provider = sp.GetRequiredService<IServiceProvider>();
-                return new DefaultPolicyConfigurator<TRegistrator, TOptions>(provider, policyName, defaultPolicies);
+                return new DefaultPolicyConfigurator<TOptions, TResult>(provider, policyName, defaultPolicies);
             });
 
             // this service provides the initial policies registrations based on the type of the host.
-            services.TryAddScoped<IPolicyRegistrator, DefaultPolicyRegistrator<TRegistrator>>();
+            services.TryAddScoped<IPolicyRegistrator, DefaultPolicyRegistrator<TResult>>();
 
             return services;
+        }
+
+        /// <summary>
+        /// Verifies if the Policy can be added.
+        /// </summary>
+        /// <param name="services"></param>
+        /// <param name="policyName"></param>
+        /// <returns></returns>
+        public static bool CanAddPolicy(this IServiceCollection services, string policyName)
+        {
+            // return an instant of ResilienceHttpPolicyRegistrant
+            var registrant = _findPolicyBuilderIntance(services);
+
+            if (registrant != null)
+            {
+                // only unique policy names are allowed.
+                if (registrant.RegisteredPolicies.TryGetValue(policyName, out var type))
+                {
+                    return false;
+                }
+
+                return true;
+            }
+
+            services.TryAddSingleton(new PolicyRegistrant());
+
+            return true;
         }
 
         /// <summary>

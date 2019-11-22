@@ -6,14 +6,14 @@ using Polly;
 namespace Bet.Extensions.Resilience.Abstractions
 {
     /// <summary>
-    /// The default interface that allows for Policy Configurations framework to configure it.
+    /// The Default interface that allows for Policy Configurations framework to configure policies.
     /// </summary>
-    /// <typeparam name="T">The type for the policy.</typeparam>
-    /// <typeparam name="TOptions"></typeparam>
-    public interface IPolicyCreator<T, TOptions> where TOptions : PolicyOptions
+    /// <typeparam name="TOptions">The type of the Configuration Options.</typeparam>
+    /// <typeparam name="TResult">The return type from the policy.</typeparam>
+    public interface IPolicyCreator<TOptions, TResult> where TOptions : PolicyOptions
     {
         /// <summary>
-        /// The name of the Http Policy to be configured.
+        /// The name of the Policy to be configured.
         /// </summary>
         string Name { get; }
 
@@ -32,12 +32,12 @@ namespace Bet.Extensions.Resilience.Abstractions
         /// Create Async Polly Policy.
         /// </summary>
         /// <returns></returns>
-        IAsyncPolicy<T> CreateAsyncPolicy();
+        IAsyncPolicy<TResult> CreateAsyncPolicy();
 
         /// <summary>
         /// Create Sync Polly Policy.
         /// </summary>
         /// <returns></returns>
-        ISyncPolicy<T> CreateSyncPolicy();
+        ISyncPolicy<TResult> CreateSyncPolicy();
     }
 }

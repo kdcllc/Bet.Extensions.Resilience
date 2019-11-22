@@ -11,11 +11,10 @@ namespace Bet.Extensions.Resilience.Abstractions
     /// <summary>
     /// The resilient Polly policy builder.
     /// </summary>
-    /// <typeparam name="T">The type of the policy to be configured.</typeparam>
-    /// <typeparam name="TOptions"></typeparam>
-    public interface IPolicyConfigurator<T, TOptions> where TOptions : PolicyOptions
+    /// <typeparam name="TOptions">The configuration options type.</typeparam>
+    /// <typeparam name="TResult">The return type from the policy.</typeparam>
+    public interface IPolicyConfigurator<TOptions, TResult> where TOptions : PolicyOptions
     {
-
         string ParentPolicyName { get; }
 
         string[]? ChildrenPolicyNames { get; }
@@ -28,12 +27,12 @@ namespace Bet.Extensions.Resilience.Abstractions
         /// <summary>
         /// The collection o Async Policies.
         /// </summary>
-        IReadOnlyDictionary<string, Func<IAsyncPolicy<T>>> AsyncPolicyCollection { get; }
+        IReadOnlyDictionary<string, Func<IAsyncPolicy<TResult>>> AsyncPolicyCollection { get; }
 
         /// <summary>
         /// The collection of sync policies.
         /// </summary>
-        IReadOnlyDictionary<string, Func<ISyncPolicy<T>>> SyncPolicyCollection { get; }
+        IReadOnlyDictionary<string, Func<ISyncPolicy<TResult>>> SyncPolicyCollection { get; }
 
         /// <summary>
         /// Get the named policy option instance.
@@ -49,7 +48,7 @@ namespace Bet.Extensions.Resilience.Abstractions
         /// <param name="policyFunc">The configuration function.</param>
         /// <param name="replaceIfExists">The flag to override existing values.</param>
         /// <returns></returns>
-        IPolicyConfigurator<T, TOptions> AddPolicy(string policyName, Func<IAsyncPolicy<T>> policyFunc, bool replaceIfExists = false);
+        IPolicyConfigurator<TOptions, TResult> AddPolicy(string policyName, Func<IAsyncPolicy<TResult>> policyFunc, bool replaceIfExists = false);
 
         /// <summary>
         /// Register Sync <see cref="HttpRequestMessage"/> Policy.
@@ -58,7 +57,7 @@ namespace Bet.Extensions.Resilience.Abstractions
         /// <param name="policyFunc">The configuration function.</param>
         /// <param name="replaceIfExists">The flag to override existing values.</param>
         /// <returns></returns>
-        IPolicyConfigurator<T, TOptions> AddPolicy(string policyName, Func<ISyncPolicy<T>> policyFunc, bool replaceIfExists = false);
+        IPolicyConfigurator<TOptions, TResult> AddPolicy(string policyName, Func<ISyncPolicy<TResult>> policyFunc, bool replaceIfExists = false);
 
         /// <summary>
         /// Register the policies.

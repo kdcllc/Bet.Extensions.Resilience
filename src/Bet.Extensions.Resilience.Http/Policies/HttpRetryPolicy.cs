@@ -16,12 +16,12 @@ namespace Bet.Extensions.Resilience.Http.Policies
     /// Default Wait And Retry Polly Policy.
     /// </summary>
     /// <typeparam name="TOptions">The type of the options.</typeparam>
-    public class HttpRetryPolicy<TOptions> : BasePolicy<HttpResponseMessage, TOptions> where TOptions : PolicyOptions
+    public class HttpRetryPolicy<TOptions> : BasePolicy<TOptions, HttpResponseMessage> where TOptions : PolicyOptions
     {
         public HttpRetryPolicy(
             string policyName,
-            IPolicyConfigurator<HttpResponseMessage, TOptions> policyConfigurator,
-            ILogger<IPolicyCreator<HttpResponseMessage, TOptions>> logger) : base(policyName, policyConfigurator, logger)
+            IPolicyConfigurator<TOptions, HttpResponseMessage> policyConfigurator,
+            ILogger<IPolicyCreator<TOptions, HttpResponseMessage>> logger) : base(policyName, policyConfigurator, logger)
         {
         }
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net.Http;
+
 using Bet.Extensions.Resilience.Abstractions;
 using Bet.Extensions.Resilience.Abstractions.Options;
 
@@ -14,12 +15,12 @@ namespace Bet.Extensions.Resilience.Http.Policies
     /// The default circuit breaker policy.
     /// </summary>
     /// <typeparam name="TOptions"></typeparam>
-    public class HttpCircuitBreakerPolicy<TOptions> : BasePolicy<HttpResponseMessage, TOptions> where TOptions : PolicyOptions
+    public class HttpCircuitBreakerPolicy<TOptions> : BasePolicy<TOptions, HttpResponseMessage> where TOptions : PolicyOptions
     {
         public HttpCircuitBreakerPolicy(
             string policyName,
-            IPolicyConfigurator<HttpResponseMessage, TOptions> policyConfigurator,
-            ILogger<IPolicyCreator<HttpResponseMessage, TOptions>> logger) : base(policyName, policyConfigurator, logger)
+            IPolicyConfigurator<TOptions, HttpResponseMessage> policyConfigurator,
+            ILogger<IPolicyCreator<TOptions, HttpResponseMessage>> logger) : base(policyName, policyConfigurator, logger)
         {
         }
 

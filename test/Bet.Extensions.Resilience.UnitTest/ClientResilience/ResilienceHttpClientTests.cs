@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
-
+using Bet.Extensions.Http.MessageHandlers;
 using Bet.Extensions.Resilience.Http.Abstractions.Options;
 using Bet.Extensions.Resilience.UnitTest.ClientResilience.Clients;
 
@@ -22,7 +22,7 @@ namespace Bet.Extensions.Resilience.UnitTest.ClientResilience
         [Theory]
         [InlineData(null, null)] // default values
         [InlineData("builderName", "optionsName")] // custom values
-        public void ResilienceHttpClientBuilder_Should_Have_Set_Name_And_Options(string? name, string? optionsName)
+        public void Should_Set_Name_And_Options_For_IResilienceHttpClientBuilder(string? name, string? optionsName)
         {
             // assign
             var serviceCollection = new ServiceCollection();
@@ -42,15 +42,14 @@ namespace Bet.Extensions.Resilience.UnitTest.ClientResilience
         }
 
         [Fact]
-        public void AddResilienceTypedClient_Returns_Instance()
+        public void Should_Return_Instance_For_IResilienceHttpClientBuilder()
         {
             // assign
             var serviceCollection = new ServiceCollection();
 
+            // act
             var builder = serviceCollection.AddResilienceHttpClient<ITestClient, TestClient>();
 
-            // act
-            var services = serviceCollection.BuildServiceProvider();
 
             // assert
             Assert.Equal(nameof(ITestClient), builder.Name);
@@ -64,7 +63,7 @@ namespace Bet.Extensions.Resilience.UnitTest.ClientResilience
         }
 
         [Fact]
-        public void AddResilienceTypedClient_Throws_Exception_When_The_Same_Type_Is_Added()
+        public void Should_Throw_InvalidOpterationException_When_The_Same_Type_Is_Added()
         {
             // assign
             var serviceCollection = new ServiceCollection();
@@ -77,7 +76,7 @@ namespace Bet.Extensions.Resilience.UnitTest.ClientResilience
         }
 
         [Fact]
-        public void AddResilienceTypedClient_Configure_With_Default_Configurations()
+        public void Should_Configure_Default_Options_For_Typed_Client()
         {
             // assign
             var serviceCollection = new ServiceCollection();
@@ -129,7 +128,7 @@ namespace Bet.Extensions.Resilience.UnitTest.ClientResilience
         }
 
         [Fact]
-        public void AddResilienceTypedClient_Configure_With_RootSection_Configurations()
+        public void Should_Configure_Options_For_RootSection_Custom_Name()
         {
             // assign
             var serviceCollection = new ServiceCollection();
@@ -181,7 +180,7 @@ namespace Bet.Extensions.Resilience.UnitTest.ClientResilience
         }
 
         [Fact]
-        public void AddResilienceTypedClient_Configure_With_RootSection_And_Client_Configurations()
+        public void Should_Configure_Options_For_Custrom_RootSection_And_Client_Names()
         {
             // assign
             var serviceCollection = new ServiceCollection();
@@ -239,7 +238,7 @@ namespace Bet.Extensions.Resilience.UnitTest.ClientResilience
         }
 
         [Fact]
-        public void AddResilienceTypedClient_Configure_Custom_With_Default_Configurations()
+        public void Should_Configure_Options_With_Custom_With_Defaults()
         {
             // assign
             var serviceCollection = new ServiceCollection();
@@ -292,7 +291,7 @@ namespace Bet.Extensions.Resilience.UnitTest.ClientResilience
         }
 
         [Fact]
-        public void AddResilienceTypedClient_Configure_Custom_With_OptionName_Configurations()
+        public void Should_Configure_Options_With_Custom_OptionName()
         {
             // assign
             var serviceCollection = new ServiceCollection();
@@ -342,6 +341,18 @@ namespace Bet.Extensions.Resilience.UnitTest.ClientResilience
             Assert.Equal(1, builder.Debug().OptionsCount);
             Assert.Equal(0, builder.Debug().DelegatingHandlerCount);
             Assert.Equal(0, builder.Debug().PolicyCount);
+        }
+
+        [Fact]
+        public void Should_Throw_InvalidOperationException_When_More_Than_One_PrimaryHander_Is_Added()
+        {
+            // assign
+            var serviceCollection = new ServiceCollection();
+
+            Assert.Throws<InvalidOperationException>(() => serviceCollection
+                   .AddResilienceHttpClient<ITestClient, TestClient>()
+                   .ConfigurePrimaryHandler((sp) => new DefaultHttpClientHandler())
+                   .ConfigurePrimaryHandler((sp) => new DefaultHttpClientHandler()));
         }
     }
 }
