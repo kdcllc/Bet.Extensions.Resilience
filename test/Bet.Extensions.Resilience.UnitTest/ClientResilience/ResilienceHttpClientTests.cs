@@ -50,7 +50,6 @@ namespace Bet.Extensions.Resilience.UnitTest.ClientResilience
             // act
             var builder = serviceCollection.AddResilienceHttpClient<ITestClient, TestClient>();
 
-
             // assert
             Assert.Equal(nameof(ITestClient), builder.Name);
             Assert.Equal(nameof(TestClient), builder.OptionsName);

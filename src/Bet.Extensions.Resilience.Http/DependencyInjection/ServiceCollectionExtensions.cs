@@ -17,6 +17,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="services"></param>
         /// <param name="policySectionName"></param>
         /// <param name="policyName"></param>
+        /// <param name="policyConfig"></param>
         /// <param name="defaultPolicies"></param>
         /// <param name="configure"></param>
         /// <returns></returns>
@@ -24,10 +25,11 @@ namespace Microsoft.Extensions.DependencyInjection
             this IServiceCollection services,
             string policySectionName = PolicyName.DefaultPolicy,
             string policyName = PolicyName.DefaultPolicy,
+            Func<IServiceProvider, IPolicyCreator<PolicyOptions, HttpResponseMessage>>? policyConfig = null,
             string[]? defaultPolicies = null,
             Action<PolicyOptions>? configure = null)
         {
-            return services.AddHttpResiliencePolicy(policySectionName, policyName, defaultPolicies, configure);
+            return services.AddHttpResiliencePolicy<PolicyOptions>(policySectionName, policyName, policyConfig, defaultPolicies, configure);
         }
 
         /// <summary>
@@ -37,6 +39,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="services"></param>
         /// <param name="policySectionName"></param>
         /// <param name="policyName"></param>
+        /// <param name="policyConfig"></param>
         /// <param name="defaultPolicies"></param>
         /// <param name="configure"></param>
         /// <returns></returns>
@@ -44,12 +47,14 @@ namespace Microsoft.Extensions.DependencyInjection
             this IServiceCollection services,
             string policySectionName = PolicyName.DefaultPolicy,
             string policyName = PolicyName.DefaultPolicy,
+            Func<IServiceProvider, IPolicyCreator<TOptions, HttpResponseMessage>>? policyConfig = null,
             string[]? defaultPolicies = null,
             Action<TOptions>? configure = null) where TOptions : PolicyOptions, new()
         {
             return services.AddHttpResiliencePolicy<DefaultPolicyConfigurator<TOptions, HttpResponseMessage>, TOptions>(
                 policySectionName,
                 policyName,
+                policyConfig,
                 defaultPolicies,
                 configure);
         }
@@ -98,33 +103,50 @@ namespace Microsoft.Extensions.DependencyInjection
                     PolicyName.CircuitBreakerPolicy
                 };
 
-                services.AddScoped<IPolicyCreator<TOptions, HttpResponseMessage>, HttpTimeoutPolicy<TOptions>>(sp =>
-                {
-                    var logger = sp.GetRequiredService<ILogger<HttpTimeoutPolicy<TOptions>>>();
-                    var options = sp.GetRequiredService<IPolicyConfigurator<TOptions, HttpResponseMessage>>();
+                services.AddHttpResiliencePolicy<DefaultPolicyConfigurator<TOptions, HttpResponseMessage>, TOptions>(
+                    policySectionName,
+                    PolicyName.TimeoutPolicy,
+                    sp =>
+                    {
+                        var logger = sp.GetRequiredService<ILogger<HttpTimeoutPolicy<TOptions>>>();
+                        var options = sp.GetRequiredService<IPolicyConfigurator<TOptions, HttpResponseMessage>>();
 
-                    return new HttpTimeoutPolicy<TOptions>(PolicyName.TimeoutPolicy, options, logger);
-                });
+                        return new HttpTimeoutPolicy<TOptions>(PolicyName.TimeoutPolicy, options, logger);
+                    },
+                    null,
+                    configure);
 
-                services.AddScoped<IPolicyCreator<TOptions, HttpResponseMessage>, HttpRetryPolicy<TOptions>>(sp =>
-                {
-                    var logger = sp.GetRequiredService<ILogger<HttpRetryPolicy<TOptions>>>();
-                    var options = sp.GetRequiredService<IPolicyConfigurator<TOptions, HttpResponseMessage>>();
+                services.AddHttpResiliencePolicy<DefaultPolicyConfigurator<TOptions, HttpResponseMessage>, TOptions>(
+                        policySectionName,
+                        PolicyName.RetryPolicy,
+                        sp =>
+                        {
+                            var logger = sp.GetRequiredService<ILogger<HttpRetryPolicy<TOptions>>>();
+                            var options = sp.GetRequiredService<IPolicyConfigurator<TOptions, HttpResponseMessage>>();
 
-                    return new HttpRetryPolicy<TOptions>(PolicyName.RetryPolicy, options, logger);
-                });
+                            return new HttpRetryPolicy<TOptions>(PolicyName.RetryPolicy, options, logger);
+                        },
+                        null,
+                        configure);
 
-                services.AddScoped<IPolicyCreator<TOptions, HttpResponseMessage>, HttpCircuitBreakerPolicy<TOptions>>(sp =>
-                {
-                    var logger = sp.GetRequiredService<ILogger<HttpCircuitBreakerPolicy<TOptions>>>();
-                    var options = sp.GetRequiredService<IPolicyConfigurator<TOptions, HttpResponseMessage>>();
+                services.AddHttpResiliencePolicy<DefaultPolicyConfigurator<TOptions, HttpResponseMessage>, TOptions>(
+                        policySectionName,
+                        PolicyName.CircuitBreakerPolicy,
+                        sp =>
+                        {
+                            var logger = sp.GetRequiredService<ILogger<HttpCircuitBreakerPolicy<TOptions>>>();
+                            var options = sp.GetRequiredService<IPolicyConfigurator<TOptions, HttpResponseMessage>>();
 
-                    return new HttpCircuitBreakerPolicy<TOptions>(PolicyName.CircuitBreakerPolicy, options, logger);
-                });
+                            return new HttpCircuitBreakerPolicy<TOptions>(PolicyName.CircuitBreakerPolicy, options, logger);
+                        },
+                        null,
+                        configure);
 
+                // Default policy combines the rest of the policies.
                 return services.AddHttpResiliencePolicy<DefaultPolicyConfigurator<TOptions, HttpResponseMessage>, TOptions>(
                 policySectionName,
                 policyName,
+                null,
                 defaultPolicies,
                 configure);
         }
@@ -133,6 +155,7 @@ namespace Microsoft.Extensions.DependencyInjection
             this IServiceCollection services,
             string policySectionName = PolicyName.DefaultPolicy,
             string policyName = PolicyName.DefaultPolicy,
+            Func<IServiceProvider, IPolicyCreator<TOptions, HttpResponseMessage>>? policyConfig = null,
             string[]? defaultPolicies = null,
             Action<TOptions>? configure = null) where TPolicyConfigurator : class, IPolicyConfigurator<TOptions, HttpResponseMessage>
                                                 where TOptions : PolicyOptions, new()
@@ -140,6 +163,7 @@ namespace Microsoft.Extensions.DependencyInjection
             return services.AddResiliencePolicy<TPolicyConfigurator, TOptions, HttpResponseMessage>(
                 policySectionName,
                 policyName,
+                policyConfig,
                 defaultPolicies,
                 configure);
         }

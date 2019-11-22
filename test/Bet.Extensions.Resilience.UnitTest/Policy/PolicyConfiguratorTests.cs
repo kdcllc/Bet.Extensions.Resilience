@@ -62,7 +62,7 @@ namespace Bet.Extensions.Resilience.UnitTest.Policy
             services.AddOptions();
             services.AddSingleton<IConfiguration>(config);
 
-            services.AddHttpResiliencePolicy(policyOptionsName, policyName, null, Configure);
+            services.AddHttpResiliencePolicy(policyOptionsName, policyName, null, null, Configure);
 
             var sp = services.BuildServiceProvider();
 
@@ -141,7 +141,7 @@ namespace Bet.Extensions.Resilience.UnitTest.Policy
             services.AddOptions();
             services.AddSingleton<IConfiguration>(config);
 
-            services.AddHttpResiliencePolicy<TestPolicyOptions>(policyOptionsName, policyName, null, Configure);
+            services.AddHttpResiliencePolicy<TestPolicyOptions>(policyOptionsName, policyName, null, null, Configure);
 
             var sp = services.BuildServiceProvider();
 

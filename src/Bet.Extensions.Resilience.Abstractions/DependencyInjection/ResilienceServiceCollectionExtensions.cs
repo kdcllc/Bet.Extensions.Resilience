@@ -22,17 +22,19 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="services">The DI services.</param>
         /// <param name="policySectionName">The policy section name for named options.</param>
         /// <param name="policyName">The policy name registered with <see cref="IPolicyRegistry{TKey}"/>.</param>
-        /// <param name="defaultPolicies">The list of injected options names.</param>
+        /// <param name="policyConfig"></param>
+        /// <param name="defaultPolicies"></param>
         /// <param name="configure">The options configuration. The default is null.</param>
         /// <returns></returns>
         public static IServiceCollection AddResiliencePolicy<TResult>(
             this IServiceCollection services,
             string policySectionName = PolicyName.DefaultPolicy,
             string policyName = PolicyName.DefaultPolicy,
+            Func<IServiceProvider, IPolicyCreator<PolicyOptions, TResult>>? policyConfig = null,
             string[]? defaultPolicies = null,
             Action<PolicyOptions>? configure = null)
         {
-            return services.AddResiliencePolicy<PolicyOptions, TResult>(policySectionName, policyName, defaultPolicies, configure);
+            return services.AddResiliencePolicy<PolicyOptions, TResult>(policySectionName, policyName, policyConfig, defaultPolicies, configure);
         }
 
         /// <summary>
@@ -43,6 +45,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="services"></param>
         /// <param name="policySectionName"></param>
         /// <param name="policyName"></param>
+        /// <param name="policyConfig"></param>
         /// <param name="defaultPolicies"></param>
         /// <param name="configure"></param>
         /// <returns></returns>
@@ -50,12 +53,14 @@ namespace Microsoft.Extensions.DependencyInjection
             this IServiceCollection services,
             string policySectionName = PolicyName.DefaultPolicy,
             string policyName = PolicyName.DefaultPolicy,
+            Func<IServiceProvider, IPolicyCreator<TOptions, TResult>>? policyConfig = null,
             string[]? defaultPolicies = null,
             Action<TOptions>? configure = null) where TOptions : PolicyOptions, new()
         {
             return services.AddResiliencePolicy<DefaultPolicyConfigurator<TOptions, TResult>, TOptions, TResult>(
                 policySectionName,
                 policyName,
+                policyConfig,
                 defaultPolicies,
                 configure);
         }
@@ -69,19 +74,18 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="services">The DI services.</param>
         /// <param name="policySectionName">The policy section name. The default is null.</param>
         /// <param name="policyName">The policy name with <see cref="IReadOnlyPolicyRegistry{TKey}"/> collection, the default is null.</param>
-        /// <param name="defaultPolicies"></param>
+        /// <param name="policyConfig"></param>
+        /// <param name="childrenPolicyNames"></param>
         /// <param name="configure">The options configurations. The default is null.</param>
         /// <returns></returns>
         public static IServiceCollection AddResiliencePolicy<T, TOptions, TResult>(
             this IServiceCollection services,
             string policySectionName = PolicyName.DefaultPolicy,
             string policyName = PolicyName.DefaultPolicy,
-            string[]? defaultPolicies = null,
+            Func<IServiceProvider, IPolicyCreator<TOptions, TResult>>? policyConfig = null,
+            string[]? childrenPolicyNames = null,
             Action<TOptions>? configure = null) where T : class, IPolicyConfigurator<TOptions, TResult> where TOptions : PolicyOptions, new()
         {
-            // adds Polly Policy registration
-            var registry = services.TryAddPolicyRegistry();
-
             // adds DI based marker object
             services.TryAddSingleton(new PolicyRegistrant());
 
@@ -99,6 +103,15 @@ namespace Microsoft.Extensions.DependencyInjection
                 registrant.RegisteredPolicies.Add(policyName, typeof(TOptions));
             }
 
+            // adds Polly Policy registration
+            var registry = services.TryAddPolicyRegistry();
+
+            // configure policy creator.
+            if (policyConfig != null)
+            {
+                services.AddScoped(sp => policyConfig(sp));
+            }
+
             services.Configure<TOptions>(policyName, options =>
             {
                 options.Name = policyName;
@@ -110,7 +123,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddSingleton<IPolicyConfigurator<TOptions, TResult>>((sp) =>
             {
                 var provider = sp.GetRequiredService<IServiceProvider>();
-                return new DefaultPolicyConfigurator<TOptions, TResult>(provider, policyName, defaultPolicies);
+                return new DefaultPolicyConfigurator<TOptions, TResult>(provider, policyName, childrenPolicyNames);
             });
 
             // this service provides the initial policies registrations based on the type of the host.
