@@ -9,10 +9,38 @@ namespace Polly
 {
     public static class PolicyLoggerExtensions
     {
+        public static void LogOnTimeout<T>(this ILogger<T> logger, Context context, TimeSpan time, Exception? ex = null)
+        {
+            logger.LogError(
+                "[{timedoutPolicy}][Timed out] using operation " +
+                "key: {operationKey}; " +
+                "correlation ID: {correlationId}; " +
+                "timed out after: {totalMilliseconds}; " +
+                "with Exception: {ex}",
+                context.PolicyKey,
+                context.OperationKey,
+                context.CorrelationId,
+                time.TotalMilliseconds,
+                ex?.GetExceptionMessages());
+        }
+
+        public static void LogOnFallabck<T>(this ILogger<T> logger, Context context, string message)
+        {
+            logger.LogError(
+                "[{fallbackPolicy}][Fallback] using operation " +
+                "key: {operationKey}; " +
+                "correlation ID: {correlationId}; " +
+                "reason: {message}; ",
+                context.PolicyKey,
+                context.OperationKey,
+                context.CorrelationId,
+                message);
+        }
+
         public static void LogCircuitBreakerOnBreak<T>(this ILogger<T> logger, string message, TimeSpan time, Context context)
         {
             logger.LogWarning(
-                "[CircuitBreak Policy][OnBreak] using operation key: {operationKey}; correlation ID: {id}; duration of the break: {time}; reason: {outcome}",
+                "[CircuitBreak Policy][OnBreak] using operation key: {operationKey}; correlation ID: {id}; duration of the break: {time}; reason: {message}",
                 context.OperationKey,
                 context.CorrelationId,
                 time,
@@ -52,19 +80,7 @@ namespace Polly
             return Task.CompletedTask;
         }
 
-        public static void LogOnTimeout<T>(this ILogger<T> logger, Context context, TimeSpan time, Exception? ex = null)
-        {
-            logger.LogError(
-                "[{timedoutPolicy}][Timed out] using operation key: {operationKey}; " +
-                "correlation ID: {correlationId}; " +
-                "timed out after: {totalMilliseconds}; " +
-                "with Exception: {ex}",
-                context.PolicyKey,
-                context.OperationKey,
-                context.CorrelationId,
-                time.TotalMilliseconds,
-                ex?.GetExceptionMessages());
-        }
+
 
         public static void LogOnBulkheadRejected<T>(this ILogger<T> logger, Context context)
         {

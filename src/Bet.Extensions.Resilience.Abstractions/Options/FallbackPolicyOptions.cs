@@ -12,7 +12,7 @@
     ///     .Fallback<UserAvatar>(UserAvatar.Blank).
     ///
     /// </example>
-    public class FallbackPolicyOptions
+    public class FallbackPolicyOptions : PolicyOptions
     {
         /// <summary>
         /// The Default policy name.
@@ -25,8 +25,8 @@
         public static string DefaultNameOptionsName = DefaultName;
 
         /// <summary>
-        /// The Policy Description.
+        /// The Policy Message.
         /// </summary>
-        public string Description { get; set; } = string.Empty;
+        public string Message { get; set; } = string.Empty;
     }
 }

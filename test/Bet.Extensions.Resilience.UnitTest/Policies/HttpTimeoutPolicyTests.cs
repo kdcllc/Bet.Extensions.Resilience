@@ -1,16 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
+
 using Bet.Extensions.Resilience.Abstractions.Options;
 using Bet.Extensions.Resilience.Http;
 using Bet.Extensions.Resilience.Http.Policies;
 using Bet.Extensions.Testing.Logging;
+
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+
 using Xunit;
 using Xunit.Abstractions;
 

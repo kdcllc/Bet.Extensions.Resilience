@@ -10,6 +10,8 @@ namespace Bet.Extensions.Resilience.Http
 
         public static string DefaultHttpTimeoutPolicy = $"Http{TimeoutPolicyOptions.DefaultName}";
 
+        public static string DefaultHttpFallbackPolicyPolicy = $"Http{FallbackPolicyOptions.DefaultName}";
+
         public static string DefaultHttpRetryPolicy = $"Http{RetryPolicyOptions.DefaultName}";
 
         public static string DefaultHttpCircuitBreakerPolicy = $"Http{CircuitBreakerPolicyOptions.DefaultName}";
