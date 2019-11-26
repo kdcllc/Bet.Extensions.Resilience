@@ -3,7 +3,7 @@
 namespace Bet.Extensions.Resilience.Abstractions
 {
     /// <summary>
-    /// The default list of the Polly policies for <see cref="HttpClient"/>.
+    /// The default list of the Polly policies.
     /// </summary>
     public sealed class PolicyName
     {

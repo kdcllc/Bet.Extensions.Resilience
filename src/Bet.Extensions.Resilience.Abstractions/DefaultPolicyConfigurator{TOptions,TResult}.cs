@@ -17,8 +17,12 @@ namespace Bet.Extensions.Resilience.Abstractions
     public class DefaultPolicyConfigurator<TOptions, TResult> : IPolicyConfigurator<TOptions, TResult> where TOptions : PolicyOptions
     {
         private readonly IDictionary<string, TOptions> _optionsCollection = new ConcurrentDictionary<string, TOptions>();
-        private readonly IDictionary<string, Func<IAsyncPolicy<TResult>>> _asyncPolicyCollection = new ConcurrentDictionary<string, Func<IAsyncPolicy<TResult>>>();
-        private readonly IDictionary<string, Func<ISyncPolicy<TResult>>> _syncPolicyCollection = new ConcurrentDictionary<string, Func<ISyncPolicy<TResult>>>();
+
+        private readonly IDictionary<string, Func<IAsyncPolicy<TResult>>> _asyncPolicyCollection
+            = new ConcurrentDictionary<string, Func<IAsyncPolicy<TResult>>>();
+
+        private readonly IDictionary<string, Func<ISyncPolicy<TResult>>> _syncPolicyCollection
+            = new ConcurrentDictionary<string, Func<ISyncPolicy<TResult>>>();
 
         private readonly IOptionsMonitor<TOptions> _optionsMonitor;
         private readonly IPolicyRegistry<string> _policyRegistry;
@@ -26,24 +30,24 @@ namespace Bet.Extensions.Resilience.Abstractions
 
         public DefaultPolicyConfigurator(
             IServiceProvider provider,
-            string parentPolicyName,
-            string[] ? childrenPolicyNames = null)
+            string parentPolicyOptionName,
+            string[] ? childrenPolicyOptionNames = null)
         {
             _provider = provider;
 
-            ParentPolicyName = parentPolicyName;
-            ChildrenPolicyNames = childrenPolicyNames;
+            ParentPolicyName = parentPolicyOptionName;
+            ChildrenPolicyNames = childrenPolicyOptionNames;
 
             _optionsMonitor = provider.GetRequiredService<IOptionsMonitor<TOptions>>();
             _policyRegistry = provider.GetRequiredService<IPolicyRegistry<string>>();
 
-            _optionsCollection.Add(parentPolicyName, _optionsMonitor.Get(parentPolicyName));
+            _optionsCollection.Add(parentPolicyOptionName, _optionsMonitor.Get(parentPolicyOptionName));
 
-            if (childrenPolicyNames != null)
+            if (childrenPolicyOptionNames != null)
             {
-                foreach (var child in childrenPolicyNames)
+                foreach (var child in childrenPolicyOptionNames)
                 {
-                    _optionsCollection.Add(child, _optionsMonitor.Get(parentPolicyName));
+                    _optionsCollection.Add(child, _optionsMonitor.Get(parentPolicyOptionName));
                 }
             }
 

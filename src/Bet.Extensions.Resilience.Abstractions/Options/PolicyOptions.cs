@@ -26,7 +26,7 @@ namespace Bet.Extensions.Resilience.Abstractions.Options
         /// <summary>
         /// The Retry Policy with Jitter Options.
         /// </summary>
-        public RetryJitterOptions JitterRetry { get; set; } = new RetryJitterOptions();
+        public RetryJitterPolicyOptions JitterRetry { get; set; } = new RetryJitterPolicyOptions();
 
         /// <summary>
         /// Adds Builkhead Policy Options.

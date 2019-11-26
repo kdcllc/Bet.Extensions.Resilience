@@ -5,7 +5,7 @@ namespace Bet.Extensions.Resilience.Abstractions.Options
     /// <summary>
     /// Retry with Jitter Policy Options.
     /// </summary>
-    public class RetryJitterOptions
+    public class RetryJitterPolicyOptions
     {
         /// <summary>
         /// Maximum retries for the Retries. The default is 2.

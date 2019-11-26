@@ -37,9 +37,9 @@ namespace Bet.Extensions.Resilience.Abstractions
         /// <summary>
         /// Get the named policy option instance.
         /// </summary>
-        /// <param name="settingsName"></param>
+        /// <param name="optionsName"></param>
         /// <returns></returns>
-        TOptions GetOptions(string settingsName);
+        TOptions GetOptions(string optionsName);
 
         /// <summary>
         /// Register Async Policy.

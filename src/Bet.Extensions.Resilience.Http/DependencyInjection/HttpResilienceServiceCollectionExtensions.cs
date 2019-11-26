@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
-    public static class ServiceCollectionExtensions
+    public static class HttpResilienceServiceCollectionExtensions
     {
         /// <summary>
         /// Adds Http Resilience policies.
