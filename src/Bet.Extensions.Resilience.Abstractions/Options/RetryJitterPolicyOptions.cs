@@ -3,10 +3,21 @@
 namespace Bet.Extensions.Resilience.Abstractions.Options
 {
     /// <summary>
-    /// Retry with Jitter Policy Options.
+    /// The <see cref="Polly.Retry.RetryPolicy"/> with Jitter Policy Options.
+    /// https://github.com/App-vNext/Polly/wiki/Retry-with-jitter.
     /// </summary>
-    public class RetryJitterPolicyOptions
+    public class RetryJitterPolicyOptions : PolicyOptions
     {
+        /// <summary>
+        /// The Default policy name.
+        /// </summary>
+        public static string DefaultName = nameof(RetryJitterPolicyOptions).Substring(0, nameof(RetryJitterPolicyOptions).IndexOf("Options"));
+
+        /// <summary>
+        /// The Default policy options name.
+        /// </summary>
+        public static string DefaultNameOptionsName = DefaultName;
+
         /// <summary>
         /// Maximum retries for the Retries. The default is 2.
         /// </summary>

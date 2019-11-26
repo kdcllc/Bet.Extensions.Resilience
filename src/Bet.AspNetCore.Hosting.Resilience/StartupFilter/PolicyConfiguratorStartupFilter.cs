@@ -3,17 +3,16 @@
 using Bet.Extensions.Resilience.Abstractions;
 
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Bet.AspNetCore.Hosting.Resilience.StartupFilter
+namespace Microsoft.AspNetCore.Hosting
 {
-    public class ResilientPolicyRegistrationStartupFilter : IStartupFilter
+    public class PolicyConfiguratorStartupFilter : IStartupFilter
     {
         private readonly IServiceProvider _provider;
 
-        public ResilientPolicyRegistrationStartupFilter(IServiceProvider provider)
+        public PolicyConfiguratorStartupFilter(IServiceProvider provider)
         {
             _provider = provider ?? throw new ArgumentNullException(nameof(provider));
         }
@@ -23,10 +22,7 @@ namespace Bet.AspNetCore.Hosting.Resilience.StartupFilter
             return app =>
             {
                 var registration = _provider.GetService<IPolicyRegistrator>();
-                if (registration != null)
-                {
-                    registration.ConfigurePolicies();
-                }
+                registration?.ConfigurePolicies();
 
                 next(app);
             };

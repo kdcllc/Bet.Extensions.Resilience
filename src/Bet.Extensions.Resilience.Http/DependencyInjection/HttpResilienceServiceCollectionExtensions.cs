@@ -1,171 +1,77 @@
 ﻿using System;
 using System.Net.Http;
 
-using Bet.Extensions.Resilience.Abstractions;
 using Bet.Extensions.Resilience.Abstractions.Options;
+using Bet.Extensions.Resilience.Abstractions.Policies;
+using Bet.Extensions.Resilience.Http;
 using Bet.Extensions.Resilience.Http.Policies;
-
-using Microsoft.Extensions.Logging;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
     public static class HttpResilienceServiceCollectionExtensions
     {
         /// <summary>
-        /// Adds Http Resilience policies.
+        /// Adds Http Resilience policy.
         /// </summary>
-        /// <param name="services"></param>
-        /// <param name="policySectionName"></param>
-        /// <param name="policyName"></param>
-        /// <param name="policyConfig"></param>
-        /// <param name="defaultPolicies"></param>
-        /// <param name="configure"></param>
-        /// <returns></returns>
-        public static IServiceCollection AddHttpResiliencePolicy(
-            this IServiceCollection services,
-            string policySectionName = PolicyName.DefaultPolicy,
-            string policyName = PolicyName.DefaultPolicy,
-            Func<IServiceProvider, IPolicyCreator<PolicyOptions, HttpResponseMessage>>? policyConfig = null,
-            string[]? defaultPolicies = null,
-            Action<PolicyOptions>? configure = null)
-        {
-            return services.AddHttpResiliencePolicy<PolicyOptions>(policySectionName, policyName, policyConfig, defaultPolicies, configure);
-        }
-
-        /// <summary>
-        /// Adds Http Policies with custom options.
-        /// </summary>
+        /// <typeparam name="TType"></typeparam>
+        /// <typeparam name="TImplementation"></typeparam>
         /// <typeparam name="TOptions"></typeparam>
         /// <param name="services"></param>
-        /// <param name="policySectionName"></param>
         /// <param name="policyName"></param>
-        /// <param name="policyConfig"></param>
-        /// <param name="defaultPolicies"></param>
+        /// <param name="sectionName"></param>
+        /// <param name="policyOptionsName"></param>
         /// <param name="configure"></param>
-        /// <returns></returns>
-        public static IServiceCollection AddHttpResiliencePolicy<TOptions>(
+        /// <param name="serviceLifetime"></param>
+        public static IServiceCollection AddHttpResiliencePolicy<TType, TImplementation, TOptions>(
             this IServiceCollection services,
-            string policySectionName = PolicyName.DefaultPolicy,
-            string policyName = PolicyName.DefaultPolicy,
-            Func<IServiceProvider, IPolicyCreator<TOptions, HttpResponseMessage>>? policyConfig = null,
-            string[]? defaultPolicies = null,
-            Action<TOptions>? configure = null) where TOptions : PolicyOptions, new()
+            string policyName,
+            string sectionName,
+            string? policyOptionsName = default,
+            Action<TOptions>? configure = default,
+            ServiceLifetime serviceLifetime = ServiceLifetime.Transient)
+            where TType : IPolicy<TOptions, HttpResponseMessage>
+            where TImplementation : BasePolicy<TOptions, HttpResponseMessage>
+            where TOptions : PolicyOptions, new()
         {
-            return services.AddHttpResiliencePolicy<DefaultPolicyConfigurator<TOptions, HttpResponseMessage>, TOptions>(
-                policySectionName,
+            return services.AddResiliencePolicy<TType, TImplementation, TOptions, HttpResponseMessage>(
                 policyName,
-                policyConfig,
-                defaultPolicies,
-                configure);
+                sectionName,
+                policyOptionsName,
+                configure,
+                serviceLifetime);
         }
 
         /// <summary>
         /// Add Default Http Policies.
         /// </summary>
-        /// <param name="services"></param>
-        /// <param name="configure"></param>
-        /// <param name="policySectionName"></param>
-        /// <param name="policyName"></param>
         /// <returns></returns>
         public static IServiceCollection AddHttpDefaultResiliencePolicies(
             this IServiceCollection services,
-            Action<PolicyOptions>? configure = null,
-            string policySectionName = PolicyName.DefaultPolicy,
-            string policyName = PolicyName.DefaultPolicy)
+            string policyName = HttpPolicyName.DefaultHttpPolicy,
+            string sectionName = HttpPolicyName.DefaultHttpPolicyOptionsName)
         {
-            return services.AddHttpDefaultResiliencePolicies<PolicyOptions>(configure, policySectionName, policyName);
-        }
-
-        /// <summary>
-        /// Adds Http Policies to the global Polly registry.
-        /// </summary>
-        /// <typeparam name="TOptions"></typeparam>
-        /// <param name="services"></param>
-        /// <param name="configure"></param>
-        /// <param name="policySectionName"></param>
-        /// <param name="policyName"></param>
-        /// <returns></returns>
-        public static IServiceCollection AddHttpDefaultResiliencePolicies<TOptions>(
-            this IServiceCollection services,
-            Action<TOptions>? configure = null,
-            string policySectionName = PolicyName.DefaultPolicy,
-            string policyName = PolicyName.DefaultPolicy) where TOptions : PolicyOptions, new()
-        {
-                if (!services.CanAddPolicy(policyName))
-                {
-                    return services;
-                }
-
-                var defaultPolicies = new string[]
-                {
-                    PolicyName.TimeoutPolicy,
-                    PolicyName.RetryPolicy,
-                    PolicyName.CircuitBreakerPolicy
-                };
-
-                services.AddHttpResiliencePolicy<DefaultPolicyConfigurator<TOptions, HttpResponseMessage>, TOptions>(
-                    policySectionName,
-                    PolicyName.TimeoutPolicy,
-                    sp =>
-                    {
-                        var logger = sp.GetRequiredService<ILogger<HttpTimeoutPolicy<TOptions>>>();
-                        var options = sp.GetRequiredService<IPolicyConfigurator<TOptions, HttpResponseMessage>>();
-
-                        return new HttpTimeoutPolicy<TOptions>(PolicyName.TimeoutPolicy, options, logger);
-                    },
-                    null,
-                    configure);
-
-                services.AddHttpResiliencePolicy<DefaultPolicyConfigurator<TOptions, HttpResponseMessage>, TOptions>(
-                        policySectionName,
-                        PolicyName.RetryPolicy,
-                        sp =>
-                        {
-                            var logger = sp.GetRequiredService<ILogger<HttpRetryPolicy<TOptions>>>();
-                            var options = sp.GetRequiredService<IPolicyConfigurator<TOptions, HttpResponseMessage>>();
-
-                            return new HttpRetryPolicy<TOptions>(PolicyName.RetryPolicy, options, logger);
-                        },
-                        null,
-                        configure);
-
-                services.AddHttpResiliencePolicy<DefaultPolicyConfigurator<TOptions, HttpResponseMessage>, TOptions>(
-                        policySectionName,
-                        PolicyName.CircuitBreakerPolicy,
-                        sp =>
-                        {
-                            var logger = sp.GetRequiredService<ILogger<HttpCircuitBreakerPolicy<TOptions>>>();
-                            var options = sp.GetRequiredService<IPolicyConfigurator<TOptions, HttpResponseMessage>>();
-
-                            return new HttpCircuitBreakerPolicy<TOptions>(PolicyName.CircuitBreakerPolicy, options, logger);
-                        },
-                        null,
-                        configure);
-
-                // Default policy combines the rest of the policies.
-                return services.AddHttpResiliencePolicy<DefaultPolicyConfigurator<TOptions, HttpResponseMessage>, TOptions>(
-                policySectionName,
-                policyName,
+            services.AddHttpResiliencePolicy<IHttpTimeoutPolicy<TimeoutPolicyOptions, HttpResponseMessage>, HttpTimeoutPolicy<TimeoutPolicyOptions, HttpResponseMessage>, TimeoutPolicyOptions>(
+                HttpPolicyName.DefaultHttpTimeoutPolicy,
+                sectionName,
+                HttpPolicyName.DefaultHttpTimeoutPolicy,
                 null,
-                defaultPolicies,
-                configure);
-        }
+                ServiceLifetime.Transient);
 
-        public static IServiceCollection AddHttpResiliencePolicy<TPolicyConfigurator, TOptions>(
-            this IServiceCollection services,
-            string policySectionName = PolicyName.DefaultPolicy,
-            string policyName = PolicyName.DefaultPolicy,
-            Func<IServiceProvider, IPolicyCreator<TOptions, HttpResponseMessage>>? policyConfig = null,
-            string[]? defaultPolicies = null,
-            Action<TOptions>? configure = null) where TPolicyConfigurator : class, IPolicyConfigurator<TOptions, HttpResponseMessage>
-                                                where TOptions : PolicyOptions, new()
-        {
-            return services.AddResiliencePolicy<TPolicyConfigurator, TOptions, HttpResponseMessage>(
-                policySectionName,
-                policyName,
-                policyConfig,
-                defaultPolicies,
-                configure);
+            services.AddHttpResiliencePolicy<IHttpRetryPolicy<RetryPolicyOptions, HttpResponseMessage>, HttpRetryPolicy<RetryPolicyOptions, HttpResponseMessage>, RetryPolicyOptions>(
+                    HttpPolicyName.DefaultHttpRetryPolicy,
+                    sectionName,
+                    HttpPolicyName.DefaultHttpRetryPolicy,
+                    null,
+                    ServiceLifetime.Transient);
+
+            services.AddHttpResiliencePolicy<IHttpCircuitBreakerPolicy<CircuitBreakerPolicyOptions, HttpResponseMessage>, HttpCircuitBreakerPolicy<CircuitBreakerPolicyOptions, HttpResponseMessage>, CircuitBreakerPolicyOptions>(
+                    HttpPolicyName.DefaultHttpRetryPolicy,
+                    sectionName,
+                    HttpPolicyName.DefaultHttpRetryPolicy,
+                    null,
+                    ServiceLifetime.Transient);
+
+            return services;
         }
     }
 }

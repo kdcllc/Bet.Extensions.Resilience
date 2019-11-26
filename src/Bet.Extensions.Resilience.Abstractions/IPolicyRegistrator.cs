@@ -1,7 +1,7 @@
 ﻿namespace Bet.Extensions.Resilience.Abstractions
 {
     /// <summary>
-    /// <see cref="Polly"/> policies registration mechanism.
+    /// <see cref="Polly"/> policies registration mechanism for application on start.
     /// </summary>
     public interface IPolicyRegistrator
     {

@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 
 using Bet.Extensions.Resilience.Abstractions;
 using Bet.Extensions.Resilience.Abstractions.Options;
+using Bet.Extensions.Resilience.Abstractions.Policies;
 
 using Microsoft.Extensions.Logging;
 
@@ -12,17 +13,23 @@ using Polly.Timeout;
 
 namespace Bet.Extensions.Resilience.Http.Policies
 {
-    public class HttpTimeoutPolicy<TOptions> : BasePolicy<TOptions, HttpResponseMessage> where TOptions : PolicyOptions
+    public class HttpTimeoutPolicy<TOptions, TResult> :
+        BasePolicy<TOptions, HttpResponseMessage>,
+        IHttpTimeoutPolicy<TOptions, HttpResponseMessage> where TOptions : TimeoutPolicyOptions
     {
+        private readonly ILogger<IPolicy<TOptions>> _logger;
+
         public HttpTimeoutPolicy(
-            string policyName,
-            IPolicyConfigurator<TOptions, HttpResponseMessage> policyConfigurator,
-            ILogger<IPolicyCreator<TOptions, HttpResponseMessage>> logger) : base(policyName, policyConfigurator, logger)
+            PolicyOptions policyOptions,
+            IPolicyOptionsConfigurator<TOptions> policyOptionsConfigurator,
+            IPolicyRegistryConfigurator registryConfigurator,
+            ILogger<IPolicy<TOptions>> logger) : base(policyOptions, policyOptionsConfigurator, registryConfigurator, logger)
         {
+            _logger = logger;
         }
 
         /// <inheritdoc/>
-        public override IAsyncPolicy<HttpResponseMessage> CreateAsyncPolicy()
+        public override IAsyncPolicy<HttpResponseMessage> GetAsyncPolicy()
         {
             return Policy
                 .TimeoutAsync(
@@ -33,7 +40,7 @@ namespace Bet.Extensions.Resilience.Http.Policies
 
             Task OnTimeoutAsync(Context context, TimeSpan span, Task task, Exception exception)
             {
-                Logger.LogInformation(
+                _logger.LogInformation(
                     "[Timeout Policy] OperationKey: {OperationKey}; CorrelationId: {CorrelationId}; Timed out after:: {TotalMilliseconds}",
                     context.OperationKey,
                     context.CorrelationId,
@@ -43,7 +50,7 @@ namespace Bet.Extensions.Resilience.Http.Policies
         }
 
         /// <inheritdoc/>
-        public override ISyncPolicy<HttpResponseMessage> CreateSyncPolicy()
+        public override ISyncPolicy<HttpResponseMessage> GetSyncPolicy()
         {
             return Policy
                 .Timeout(
@@ -54,7 +61,7 @@ namespace Bet.Extensions.Resilience.Http.Policies
 
             void OnTimeout(Context context, TimeSpan span, Task task, Exception exception)
             {
-                Logger.LogInformation(
+                _logger.LogInformation(
                     "[Timeout Policy] OperationKey: {OperationKey}; CorrelationId: {CorrelationId}; Timed out after:: {TotalMilliseconds}",
                     context.OperationKey,
                     context.CorrelationId,
