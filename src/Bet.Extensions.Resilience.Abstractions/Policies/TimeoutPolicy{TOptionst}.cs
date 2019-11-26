@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+
 using Bet.Extensions.Resilience.Abstractions.Options;
 
 using Microsoft.Extensions.Logging;
@@ -34,27 +35,28 @@ namespace Bet.Extensions.Resilience.Abstractions.Policies
         /// <inheritdoc/>
         public override IAsyncPolicy GetAsyncPolicy()
         {
-            return Policy.TimeoutAsync(
-                Options.Timeout,
-                TimeoutStrategy.Pessimistic,
-                OnTimeoutAsync)
-                .WithPolicyKey(PolicyOptions.Name);
-
-            Task OnTimeoutAsync(Context context, TimeSpan span, Task task)
-            {
-                _logger.LogOnTimeout(context, span);
-                return Task.CompletedTask;
-            }
+            return Policy
+                .TimeoutAsync(Options.Timeout, TimeoutStrategy.Pessimistic, OnTimeoutAsync)
+                .WithPolicyKey($"{PolicyOptions.Name}{PolicyNameSuffix}");
         }
 
         /// <inheritdoc/>
         public override ISyncPolicy GetSyncPolicy()
         {
-            return Policy.Timeout(
-                Options.Timeout,
-                TimeoutStrategy.Pessimistic,
-                (context, span, task) => _logger.LogOnTimeout(context, span))
+            return Policy
+                .Timeout(Options.Timeout, TimeoutStrategy.Pessimistic, OnTimeout)
                 .WithPolicyKey(PolicyOptions.Name);
+        }
+
+        public void OnTimeout(Context context, TimeSpan timeout, Task abandonedTask, Exception ex)
+        {
+            _logger.LogOnTimeout(context, timeout, ex);
+        }
+
+        public virtual Task OnTimeoutAsync(Context context, TimeSpan timeout, Task abandonedTask, Exception ex)
+        {
+            _logger.LogOnTimeout(context, timeout, ex);
+            return Task.CompletedTask;
         }
     }
 }

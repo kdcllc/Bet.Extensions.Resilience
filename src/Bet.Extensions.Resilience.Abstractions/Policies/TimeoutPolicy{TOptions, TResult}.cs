@@ -10,6 +10,11 @@ using Polly.Timeout;
 
 namespace Bet.Extensions.Resilience.Abstractions.Policies
 {
+    /// <summary>
+    /// The default <see cref="TimeoutPolicy"/> implementation.
+    /// </summary>
+    /// <typeparam name="TOptions"></typeparam>
+    /// <typeparam name="TResult"></typeparam>
     public class TimeoutPolicy<TOptions, TResult> :
                 BasePolicy<TOptions, TResult>,
                 ITimeoutPolicy<TOptions, TResult> where TOptions : TimeoutPolicyOptions
@@ -35,27 +40,28 @@ namespace Bet.Extensions.Resilience.Abstractions.Policies
         /// <inheritdoc/>
         public override IAsyncPolicy<TResult> GetAsyncPolicy()
         {
-            return Policy.TimeoutAsync<TResult>(
-                Options.Timeout,
-                TimeoutStrategy.Pessimistic,
-                OnTimeoutAsync)
+            return Policy
+                .TimeoutAsync<TResult>(Options.Timeout, TimeoutStrategy.Pessimistic, OnTimeoutAsync)
                 .WithPolicyKey(PolicyOptions.Name);
-
-            Task OnTimeoutAsync(Context context, TimeSpan span, Task task)
-            {
-                _logger.LogOnTimeout(context, span);
-                return Task.CompletedTask;
-            }
         }
 
         /// <inheritdoc/>
         public override ISyncPolicy<TResult> GetSyncPolicy()
         {
-            return Policy.Timeout<TResult>(
-                Options.Timeout,
-                TimeoutStrategy.Pessimistic,
-                (context, span, task) => _logger.LogOnTimeout(context, span))
+            return Policy
+                .Timeout<TResult>(Options.Timeout, TimeoutStrategy.Pessimistic, OnTimeout)
                 .WithPolicyKey(PolicyOptions.Name);
+        }
+
+        public void OnTimeout(Context context, TimeSpan timeout, Task abandonedTask, Exception ex)
+        {
+            _logger.LogOnTimeout(context, timeout, ex);
+        }
+
+        public virtual Task OnTimeoutAsync(Context context, TimeSpan timeout, Task abandonedTask, Exception ex)
+        {
+            _logger.LogOnTimeout(context, timeout, ex);
+            return Task.CompletedTask;
         }
     }
 }

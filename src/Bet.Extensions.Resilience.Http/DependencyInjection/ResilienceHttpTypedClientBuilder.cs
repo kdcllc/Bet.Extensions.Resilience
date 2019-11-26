@@ -161,7 +161,8 @@ namespace Microsoft.Extensions.DependencyInjection
         public IResilienceHttpClientBuilder ConfigureDefaultPolicies()
         {
             // register default policies with default options name.
-            Services.AddHttpDefaultResiliencePolicies();
+            // TODO: rework the issue with registration of the default policies
+            //Services.AddHttpDefaultResiliencePolicies();
 
             // TODO: rework with policies the issue of registration.
             IAsyncPolicy<HttpResponseMessage>? TimeoutPolicy(IServiceProvider sp, HttpRequestMessage request)

@@ -65,13 +65,18 @@ namespace Microsoft.Extensions.DependencyInjection
                     ServiceLifetime.Transient);
 
             services.AddHttpResiliencePolicy<IHttpCircuitBreakerPolicy<CircuitBreakerPolicyOptions, HttpResponseMessage>, HttpCircuitBreakerPolicy<CircuitBreakerPolicyOptions, HttpResponseMessage>, CircuitBreakerPolicyOptions>(
-                    HttpPolicyName.DefaultHttpRetryPolicy,
+                    HttpPolicyName.DefaultHttpCircuitBreakerPolicy,
                     sectionName,
-                    HttpPolicyName.DefaultHttpRetryPolicy,
+                    HttpPolicyName.DefaultHttpCircuitBreakerPolicy,
                     null,
                     ServiceLifetime.Transient);
 
             return services;
+        }
+
+        private static bool IsAdded<T>(this IServiceCollection services)
+        {
+            return true;
         }
     }
 }

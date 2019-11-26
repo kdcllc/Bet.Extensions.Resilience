@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
-
+using Bet.Extensions.Resilience.Abstractions;
 using Bet.Extensions.Resilience.Abstractions.Options;
 
 using Microsoft.Extensions.Logging;
@@ -52,13 +52,18 @@ namespace Polly
             return Task.CompletedTask;
         }
 
-        public static void LogOnTimeout<T>(this ILogger<T> logger, Context context, TimeSpan time)
+        public static void LogOnTimeout<T>(this ILogger<T> logger, Context context, TimeSpan time, Exception? ex = null)
         {
             logger.LogError(
-                "[Timeout Policy][Timed out] using operation key: {operationKey}; correlation ID: {correlationId}; timed out after: {totalMilliseconds}",
+                "[{timedoutPolicy}][Timed out] using operation key: {operationKey}; " +
+                "correlation ID: {correlationId}; " +
+                "timed out after: {totalMilliseconds}; " +
+                "with Exception: {ex}",
+                context.PolicyKey,
                 context.OperationKey,
                 context.CorrelationId,
-                time.TotalMilliseconds);
+                time.TotalMilliseconds,
+                ex?.GetExceptionMessages());
         }
 
         public static void LogOnBulkheadRejected<T>(this ILogger<T> logger, Context context)

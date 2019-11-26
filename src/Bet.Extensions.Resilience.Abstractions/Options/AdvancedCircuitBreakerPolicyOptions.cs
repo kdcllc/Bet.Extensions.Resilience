@@ -6,12 +6,12 @@ namespace Bet.Extensions.Resilience.Abstractions.Options
     /// The <see cref="Polly.CircuitBreaker.AsyncCircuitBreakerPolicy"/> Policy Options.
     /// https://github.com/App-vNext/Polly/wiki/Advanced-Circuit-Breaker.
     /// </summary>
-    public class AdvancedCircuitBreakerOptions
+    public class AdvancedCircuitBreakerPolicyOptions
     {
         /// <summary>
         /// The Default policy name.
         /// </summary>
-        public static string DefaultName = nameof(AdvancedCircuitBreakerOptions).Substring(0, nameof(AdvancedCircuitBreakerOptions).IndexOf("Options"));
+        public static string DefaultName = nameof(AdvancedCircuitBreakerPolicyOptions).Substring(0, nameof(AdvancedCircuitBreakerPolicyOptions).IndexOf("Options"));
 
         /// <summary>
         /// The Default policy options name.
