@@ -24,7 +24,8 @@
 
         /// <summary>
         /// The maximum number of actions that may be queuing (waiting to acquire an execution slot) at any time. (optional).
+        /// The default is null.
         /// </summary>
-        public int MaxQueuedItems { get; set; } = 100;
+        public int? MaxQueuedItems { get; set; } = default;
     }
 }

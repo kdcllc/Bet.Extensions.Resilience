@@ -25,26 +25,68 @@ namespace Bet.Extensions.Resilience.Abstractions.Policies
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
+        public Func<ILogger<IPolicy<TOptions>>, TOptions, Action<Context>> OnBulkheadRejected { get; set; } = (logger, options) =>
+        {
+            return (context) =>
+            {
+                logger.LogOnBulkheadRejected(context, options);
+            };
+        };
+
+        public Func<ILogger<IPolicy<TOptions>>, TOptions, Func<Context, Task>> OnBulkheadRejectedAsync { get; set; } = (logger, options) =>
+        {
+            return (context) =>
+            {
+                logger.LogOnBulkheadRejected(context, options);
+                return Task.CompletedTask;
+            };
+        };
+
         public override IAsyncPolicy GetAsyncPolicy()
         {
-            return Policy.BulkheadAsync(
-                Options.MaxParallelization,
-                Options.MaxQueuedItems,
-                ctx =>
-                {
-                    _logger.LogOnBulkheadRejected(ctx);
-                    return Task.CompletedTask;
-                })
-                .WithPolicyKey(PolicyOptions.Name);
+            if (OnBulkheadRejectedAsync == null)
+            {
+                throw new InvalidOperationException($"Please configure {nameof(OnBulkheadRejectedAsync)} property");
+            }
+
+            if (Options.MaxQueuedItems.HasValue)
+            {
+                return Policy
+                    .BulkheadAsync(
+                        Options.MaxParallelization,
+                        Options.MaxQueuedItems.Value,
+                        OnBulkheadRejectedAsync(_logger, Options))
+                    .WithPolicyKey($"{PolicyOptions.Name}{PolicyNameSuffix}");
+            }
+
+            return Policy
+                .BulkheadAsync(
+                    Options.MaxParallelization,
+                    OnBulkheadRejectedAsync(_logger, Options))
+                .WithPolicyKey($"{PolicyOptions.Name}{PolicyNameSuffix}");
         }
 
         public override ISyncPolicy GetSyncPolicy()
         {
+            if (OnBulkheadRejected == null)
+            {
+                throw new InvalidOperationException($"Please configure {nameof(OnBulkheadRejected)} property");
+            }
+
+            if (Options.MaxQueuedItems.HasValue)
+            {
+                return Policy
+                    .Bulkhead(
+                        Options.MaxParallelization,
+                        Options.MaxQueuedItems.Value,
+                        OnBulkheadRejected(_logger, Options))
+                    .WithPolicyKey(PolicyOptions.Name);
+            }
+
             return Policy.Bulkhead(
-                 Options.MaxParallelization,
-                 Options.MaxQueuedItems,
-                 _logger.LogOnBulkheadRejected)
-                .WithPolicyKey(PolicyOptions.Name);
+                                 Options.MaxParallelization,
+                                 OnBulkheadRejected(_logger, Options))
+                             .WithPolicyKey(PolicyOptions.Name);
         }
     }
 }

@@ -45,6 +45,12 @@ namespace Bet.Extensions.Resilience.Abstractions.Policies
 
         public override IAsyncPolicy<TResult> GetAsyncPolicy()
         {
+            if (FallbackActionAsync == null
+                || OnFallbackAsync == null)
+            {
+                throw new InvalidOperationException($"Please configure {nameof(FallbackActionAsync)} and {nameof(OnFallbackAsync)} properties");
+            }
+
             return Policy<TResult>
 
                 // Polly timeout policy exception
@@ -71,6 +77,12 @@ namespace Bet.Extensions.Resilience.Abstractions.Policies
 
         public override ISyncPolicy<TResult> GetSyncPolicy()
         {
+            if (FallbackAction == null
+                || OnFallback == null)
+            {
+                throw new InvalidOperationException($"Please configure {nameof(FallbackAction)} and {nameof(OnFallback)} properties");
+            }
+
             return Policy<TResult>
 
                 // Polly timeout policy exception

@@ -30,6 +30,10 @@ namespace Bet.Extensions.Resilience.Http.Policies
             IPolicyRegistryConfigurator registryConfigurator,
             ILogger<IPolicy<TOptions>> logger) : base(policyOptions, policyOptionsConfigurator, registryConfigurator, logger)
         {
+        }
+
+        public override IAsyncPolicy<HttpResponseMessage> GetAsyncPolicy()
+        {
             FallbackActionAsync = (logger, options) =>
             {
                 return (ex, context, token) =>
@@ -43,12 +47,21 @@ namespace Bet.Extensions.Resilience.Http.Policies
             {
                 return (result, context) =>
                 {
+                    // refactor logger and options
+                    var x = options.Message;
+
                     logger.LogOnFallabck(context, result.GetMessage());
 
                     return Task.CompletedTask;
                 };
             };
 
+            // execute policy.
+            return base.GetAsyncPolicy();
+        }
+
+        public override ISyncPolicy<HttpResponseMessage> GetSyncPolicy()
+        {
             FallbackAction = (logger, options) =>
             {
                 return (result, context, token) =>
@@ -65,6 +78,8 @@ namespace Bet.Extensions.Resilience.Http.Policies
                     logger.LogOnFallabck(context, result.GetMessage());
                 };
             };
+
+            return base.GetSyncPolicy();
         }
     }
 }

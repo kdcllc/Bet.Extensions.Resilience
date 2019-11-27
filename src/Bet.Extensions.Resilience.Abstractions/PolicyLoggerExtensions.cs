@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+
 using Bet.Extensions.Resilience.Abstractions;
 using Bet.Extensions.Resilience.Abstractions.Options;
 
@@ -14,7 +15,7 @@ namespace Polly
             logger.LogError(
                 "[{timedoutPolicy}][Timed out] using operation " +
                 "key: {operationKey}; " +
-                "correlation ID: {correlationId}; " +
+                "correlation id: {correlationId}; " +
                 "timed out after: {totalMilliseconds}; " +
                 "with Exception: {ex}",
                 context.PolicyKey,
@@ -29,12 +30,27 @@ namespace Polly
             logger.LogError(
                 "[{fallbackPolicy}][Fallback] using operation " +
                 "key: {operationKey}; " +
-                "correlation ID: {correlationId}; " +
+                "correlation id: {correlationId}; " +
                 "reason: {message}; ",
                 context.PolicyKey,
                 context.OperationKey,
                 context.CorrelationId,
                 message);
+        }
+
+        public static void LogOnBulkheadRejected<T>(this ILogger<T> logger, Context context, BulkheadPolicyOptions options)
+        {
+            logger.LogError(
+                "[{bulkheadPolicy}][Rejected] using policy " +
+                "operation key: {operationKey}; " +
+                "correlation id: {correlationId} " +
+                "MaxParallelization: {maxParallelization} " +
+                "MaxQueuedItems: {maxQueuedItems}",
+                context.PolicyKey,
+                context.OperationKey,
+                context.CorrelationId,
+                options.MaxParallelization,
+                options.MaxQueuedItems);
         }
 
         public static void LogCircuitBreakerOnBreak<T>(this ILogger<T> logger, string message, TimeSpan time, Context context)
@@ -78,17 +94,6 @@ namespace Polly
                 message);
 
             return Task.CompletedTask;
-        }
-
-
-
-        public static void LogOnBulkheadRejected<T>(this ILogger<T> logger, Context context)
-        {
-            logger.LogError(
-                "[Bulkhead Policy][Rejected] using policy key: {PolicyKey}; operation key: {OperationKey}; correlation id: {CorrelationId}",
-                context.PolicyKey,
-                context.OperationKey,
-                context.CorrelationId);
         }
     }
 }

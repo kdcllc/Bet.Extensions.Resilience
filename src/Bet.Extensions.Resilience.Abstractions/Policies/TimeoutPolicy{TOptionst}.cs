@@ -32,31 +32,47 @@ namespace Bet.Extensions.Resilience.Abstractions.Policies
             _logger = logger;
         }
 
+        public Func<ILogger<IPolicy<TOptions>>, TOptions, Func<Context, TimeSpan, Task, Exception, Task>> OnTimeoutAsync { get; set; } = (logger, options) =>
+        {
+            return (context, timeout, abandonedTask, ex) =>
+            {
+                logger.LogOnTimeout(context, timeout, ex);
+                return Task.CompletedTask;
+            };
+        };
+
+        public Func<ILogger<IPolicy<TOptions>>, TOptions, Action<Context, TimeSpan, Task, Exception>> OnTimeout { get; set; } = (logger, options) =>
+        {
+            return (context, timeout, abandonedTask, ex) =>
+            {
+                logger.LogOnTimeout(context, timeout, ex);
+            };
+        };
+
         /// <inheritdoc/>
         public override IAsyncPolicy GetAsyncPolicy()
         {
+            if (OnTimeoutAsync == null)
+            {
+                throw new InvalidOperationException($"Please configure {nameof(OnTimeoutAsync)} property");
+            }
+
             return Policy
-                .TimeoutAsync(Options.Timeout, TimeoutStrategy.Pessimistic, OnTimeoutAsync)
+                .TimeoutAsync(Options.Timeout, TimeoutStrategy.Pessimistic, OnTimeoutAsync(_logger, Options))
                 .WithPolicyKey($"{PolicyOptions.Name}{PolicyNameSuffix}");
         }
 
         /// <inheritdoc/>
         public override ISyncPolicy GetSyncPolicy()
         {
+            if (OnTimeout == null)
+            {
+                throw new InvalidOperationException($"Please configure {nameof(OnTimeout)} property");
+            }
+
             return Policy
-                .Timeout(Options.Timeout, TimeoutStrategy.Pessimistic, OnTimeout)
+                .Timeout(Options.Timeout, TimeoutStrategy.Pessimistic, OnTimeout(_logger, Options))
                 .WithPolicyKey(PolicyOptions.Name);
-        }
-
-        public void OnTimeout(Context context, TimeSpan timeout, Task abandonedTask, Exception ex)
-        {
-            _logger.LogOnTimeout(context, timeout, ex);
-        }
-
-        public virtual Task OnTimeoutAsync(Context context, TimeSpan timeout, Task abandonedTask, Exception ex)
-        {
-            _logger.LogOnTimeout(context, timeout, ex);
-            return Task.CompletedTask;
         }
     }
 }
