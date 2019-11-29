@@ -47,13 +47,13 @@ namespace Bet.Extensions.Resilience.UnitTest.Policies
             var config = new ConfigurationBuilder().AddInMemoryCollection(dic).Build();
             services.AddSingleton<IConfiguration>(config);
 
-            services.AddHttpResiliencePolicy<IHttpTimeoutPolicy<TimeoutPolicyOptions, HttpResponseMessage>, HttpTimeoutPolicy<TimeoutPolicyOptions, HttpResponseMessage>, TimeoutPolicyOptions>(
+            services.AddHttpResiliencePolicy<IHttpTimeoutPolicy<TimeoutPolicyOptions>, HttpTimeoutPolicy<TimeoutPolicyOptions>, TimeoutPolicyOptions>(
                 policyOptionsName,
                 policyOptionsName);
 
             var sp = services.BuildServiceProvider();
 
-            var policy = sp.GetRequiredService<IHttpTimeoutPolicy<TimeoutPolicyOptions, HttpResponseMessage>>();
+            var policy = sp.GetRequiredService<IHttpTimeoutPolicy<TimeoutPolicyOptions>>();
             Assert.NotNull(policy);
 
             async Task<HttpResponseMessage> TimedOutTask()
@@ -89,13 +89,13 @@ namespace Bet.Extensions.Resilience.UnitTest.Policies
             var config = new ConfigurationBuilder().AddInMemoryCollection(dic).Build();
             services.AddSingleton<IConfiguration>(config);
 
-            services.AddHttpResiliencePolicy<IHttpTimeoutPolicy<TimeoutPolicyOptions, HttpResponseMessage>, HttpTimeoutPolicy<TimeoutPolicyOptions, HttpResponseMessage>, TimeoutPolicyOptions>(
+            services.AddHttpResiliencePolicy<IHttpTimeoutPolicy<TimeoutPolicyOptions>, HttpTimeoutPolicy<TimeoutPolicyOptions>, TimeoutPolicyOptions>(
                 policyOptionsName,
                 policyOptionsName);
 
             var sp = services.BuildServiceProvider();
 
-            var policy = sp.GetRequiredService<IHttpTimeoutPolicy<TimeoutPolicyOptions, HttpResponseMessage>>();
+            var policy = sp.GetRequiredService<IHttpTimeoutPolicy<TimeoutPolicyOptions>>();
             Assert.NotNull(policy);
 
             var result = await policy.GetAsyncPolicy().ExecuteAsync(async () =>

@@ -50,21 +50,21 @@ namespace Microsoft.Extensions.DependencyInjection
             string policyName = HttpPolicyName.DefaultHttpPolicy,
             string sectionName = HttpPolicyName.DefaultHttpPolicyOptionsName)
         {
-            services.AddHttpResiliencePolicy<IHttpTimeoutPolicy<TimeoutPolicyOptions, HttpResponseMessage>, HttpTimeoutPolicy<TimeoutPolicyOptions, HttpResponseMessage>, TimeoutPolicyOptions>(
+            services.AddHttpResiliencePolicy<IHttpTimeoutPolicy<TimeoutPolicyOptions>, HttpTimeoutPolicy<TimeoutPolicyOptions>, TimeoutPolicyOptions>(
                 HttpPolicyName.DefaultHttpTimeoutPolicy,
                 sectionName,
                 HttpPolicyName.DefaultHttpTimeoutPolicy,
                 null,
                 ServiceLifetime.Transient);
 
-            services.AddHttpResiliencePolicy<IHttpRetryPolicy<RetryPolicyOptions, HttpResponseMessage>, HttpRetryPolicy<RetryPolicyOptions, HttpResponseMessage>, RetryPolicyOptions>(
+            services.AddHttpResiliencePolicy<IHttpRetryPolicy<RetryPolicyOptions>, HttpRetryPolicy<RetryPolicyOptions>, RetryPolicyOptions>(
                     HttpPolicyName.DefaultHttpRetryPolicy,
                     sectionName,
                     HttpPolicyName.DefaultHttpRetryPolicy,
                     null,
                     ServiceLifetime.Transient);
 
-            services.AddHttpResiliencePolicy<IHttpCircuitBreakerPolicy<CircuitBreakerPolicyOptions, HttpResponseMessage>, HttpCircuitBreakerPolicy<CircuitBreakerPolicyOptions, HttpResponseMessage>, CircuitBreakerPolicyOptions>(
+            services.AddHttpResiliencePolicy<IHttpCircuitBreakerPolicy<CircuitBreakerPolicyOptions>, HttpCircuitBreakerPolicy<CircuitBreakerPolicyOptions>, CircuitBreakerPolicyOptions>(
                     HttpPolicyName.DefaultHttpCircuitBreakerPolicy,
                     sectionName,
                     HttpPolicyName.DefaultHttpCircuitBreakerPolicy,

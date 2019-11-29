@@ -17,9 +17,9 @@ namespace Bet.Extensions.Resilience.Http.Policies
     /// </summary>
     /// <typeparam name="TOptions"></typeparam>
     /// <typeparam name="TResult"></typeparam>
-    public class HttpCircuitBreakerPolicy<TOptions, TResult> :
+    public class HttpCircuitBreakerPolicy<TOptions> :
         BasePolicy<TOptions, HttpResponseMessage>,
-        IHttpCircuitBreakerPolicy<TOptions, HttpResponseMessage>
+        IHttpCircuitBreakerPolicy<TOptions>
         where TOptions : CircuitBreakerPolicyOptions
     {
         private readonly ILogger<IPolicy<TOptions>> _logger;

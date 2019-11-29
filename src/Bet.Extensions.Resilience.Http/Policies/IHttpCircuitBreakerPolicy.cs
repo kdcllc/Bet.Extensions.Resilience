@@ -5,8 +5,8 @@ using Bet.Extensions.Resilience.Abstractions.Policies;
 
 namespace Bet.Extensions.Resilience.Http.Policies
 {
-    public interface IHttpCircuitBreakerPolicy<TOptions, TResult> :
-        IPolicy<TOptions, HttpResponseMessage> where TOptions : PolicyOptions where TResult : HttpResponseMessage
+    public interface IHttpCircuitBreakerPolicy<TOptions> :
+        IPolicy<TOptions, HttpResponseMessage> where TOptions : PolicyOptions
     {
     }
 }

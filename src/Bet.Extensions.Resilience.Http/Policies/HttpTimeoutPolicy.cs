@@ -8,12 +8,12 @@ using Microsoft.Extensions.Logging;
 
 namespace Bet.Extensions.Resilience.Http.Policies
 {
-    public class HttpTimeoutPolicy<TOptions, TResult> :
+    public class HttpTimeoutPolicy<TOptions> :
         TimeoutPolicy<TOptions, HttpResponseMessage>,
-        IHttpTimeoutPolicy<TOptions, HttpResponseMessage> where TOptions : TimeoutPolicyOptions
+        IHttpTimeoutPolicy<TOptions> where TOptions : TimeoutPolicyOptions
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="HttpTimeoutPolicy{TOptions, TResult}"/> class.
+        /// Initializes a new instance of the <see cref="HttpTimeoutPolicy{TOptions}"/> class.
         /// </summary>
         /// <param name="policyOptions"></param>
         /// <param name="policyOptionsConfigurator"></param>

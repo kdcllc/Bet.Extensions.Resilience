@@ -48,20 +48,20 @@ namespace Bet.Extensions.Resilience.UnitTest.Policies
             var config = new ConfigurationBuilder().AddInMemoryCollection(dic).Build();
             services.AddSingleton<IConfiguration>(config);
 
-            services.AddHttpResiliencePolicy<IHttpTimeoutPolicy<TimeoutPolicyOptions, HttpResponseMessage>, HttpTimeoutPolicy<TimeoutPolicyOptions, HttpResponseMessage>, TimeoutPolicyOptions>(
+            services.AddHttpResiliencePolicy<IHttpTimeoutPolicy<TimeoutPolicyOptions>, HttpTimeoutPolicy<TimeoutPolicyOptions>, TimeoutPolicyOptions>(
                 HttpPolicyName.DefaultHttpTimeoutPolicy,
                 HttpPolicyName.DefaultHttpTimeoutPolicy);
 
-            services.AddHttpResiliencePolicy<IHttpFallbackPolicy<HttpFallbackPolicyOptions, HttpResponseMessage>, HttpFallbackPolicy<HttpFallbackPolicyOptions, HttpResponseMessage>, HttpFallbackPolicyOptions>(
+            services.AddHttpResiliencePolicy<IHttpFallbackPolicy<HttpFallbackPolicyOptions>, HttpFallbackPolicy<HttpFallbackPolicyOptions>, HttpFallbackPolicyOptions>(
                 HttpPolicyName.DefaultHttpFallbackPolicyPolicy,
                 HttpPolicyName.DefaultHttpFallbackPolicyPolicy);
 
             var sp = services.BuildServiceProvider();
 
-            var fallbackPolicy = sp.GetRequiredService<IHttpFallbackPolicy<HttpFallbackPolicyOptions, HttpResponseMessage>>().GetAsyncPolicy();
+            var fallbackPolicy = sp.GetRequiredService<IHttpFallbackPolicy<HttpFallbackPolicyOptions>>().GetAsyncPolicy();
             Assert.NotNull(fallbackPolicy);
 
-            var timeoutPolicy = sp.GetRequiredService<IHttpTimeoutPolicy<TimeoutPolicyOptions, HttpResponseMessage>>().GetAsyncPolicy();
+            var timeoutPolicy = sp.GetRequiredService<IHttpTimeoutPolicy<TimeoutPolicyOptions>>().GetAsyncPolicy();
             Assert.NotNull(timeoutPolicy);
 
             var policy = fallbackPolicy.WrapAsync(timeoutPolicy);
