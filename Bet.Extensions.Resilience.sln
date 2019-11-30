@@ -44,7 +44,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bet.AspNetCore.Hosting.Resi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bet.Extensions.Resilience.UnitTest", "test\Bet.Extensions.Resilience.UnitTest\Bet.Extensions.Resilience.UnitTest.csproj", "{32FCD106-30FC-4458-966B-DBB0E0637DE2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bet.Extensions.Resilience.Http.Abstractions", "src\Bet.Extensions.Resilience.Http.Abstractions\Bet.Extensions.Resilience.Http.Abstractions.csproj", "{FD239D35-D490-4817-98C8-16C86A1470AD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bet.Extensions.Resilience.Http.Abstractions", "src\Bet.Extensions.Resilience.Http.Abstractions\Bet.Extensions.Resilience.Http.Abstractions.csproj", "{FD239D35-D490-4817-98C8-16C86A1470AD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bet.Extensions.Resilience.SqlClient", "src\Bet.Extensions.Resilience.SqlClient\Bet.Extensions.Resilience.SqlClient.csproj", "{8679A0B2-F65B-4F01-AA54-9158495F9714}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -88,6 +90,10 @@ Global
 		{FD239D35-D490-4817-98C8-16C86A1470AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FD239D35-D490-4817-98C8-16C86A1470AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FD239D35-D490-4817-98C8-16C86A1470AD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8679A0B2-F65B-4F01-AA54-9158495F9714}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8679A0B2-F65B-4F01-AA54-9158495F9714}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8679A0B2-F65B-4F01-AA54-9158495F9714}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8679A0B2-F65B-4F01-AA54-9158495F9714}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -102,6 +108,7 @@ Global
 		{3BADFB16-FD25-45EF-8F05-6694116BB2A2} = {32C6BDF4-6EEB-4C13-B084-AB554A2ACDAC}
 		{32FCD106-30FC-4458-966B-DBB0E0637DE2} = {23BB98BA-5F4A-4220-BE4D-5604E58F56E5}
 		{FD239D35-D490-4817-98C8-16C86A1470AD} = {32C6BDF4-6EEB-4C13-B084-AB554A2ACDAC}
+		{8679A0B2-F65B-4F01-AA54-9158495F9714} = {32C6BDF4-6EEB-4C13-B084-AB554A2ACDAC}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {23EAFD8A-DAB7-43F6-86D1-9F6C6A81F6D0}

@@ -54,10 +54,12 @@
     <PackageReference Update="Bet.Extensions.Hosting" Version="$(BetCommon)" />
     <PackageReference Update="Bet.Extensions.Options" Version="$(BetCommon)" />
     <PackageReference Update="Bet.Extensions.Testing" Version="$(BetCommon)" />
+    <PackageReference Update="Microsoft.Data.SqlClient" Version="1.1.0" />
+    <PackageReference Update="System.Data.SqlClient" Version="4.7.0" />
   </ItemGroup>
 
   <ItemGroup Label="SourceLink">
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0-beta2-19462-01" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
   </ItemGroup>
 
   <ItemGroup Label="Analyzers">
