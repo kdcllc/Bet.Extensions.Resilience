@@ -1,17 +1,29 @@
 ﻿using System;
+
 using Bet.Extensions.Resilience.Abstractions.Options;
+
+using Microsoft.Extensions.Logging;
+
 using Polly;
+using Polly.CircuitBreaker;
 
 namespace Bet.Extensions.Resilience.Abstractions.Policies
 {
     public interface ICircuitBreakerPolicy<TOptions> : IPolicy<TOptions> where TOptions : PolicyOptions
     {
+        Func<ILogger<IPolicy<TOptions>>, TOptions, Action<Exception, CircuitState, TimeSpan, Context>> OnBreak { get; set; }
+
+        Func<ILogger<IPolicy<TOptions>>, TOptions, Action<Context>> OnReset { get; set; }
+
+        Func<ILogger<IPolicy<TOptions>>, TOptions, Action> OnHalfOpen { get; set; }
     }
 
     public interface ICircuitBreakerPolicy<TOptions, TResult> : IPolicy<TOptions, TResult> where TOptions : PolicyOptions
     {
-        void OnBreak(DelegateResult<TResult> delegateResult, TimeSpan breakSpan, Context context);
+        Func<ILogger<IPolicy<TOptions>>, TOptions, Action<DelegateResult<TResult>, CircuitState, TimeSpan, Context>> OnBreak { get; set; }
 
-        void OnReset(Context context);
+        Func<ILogger<IPolicy<TOptions>>, TOptions, Action<Context>> OnReset { get; set; }
+
+        Func<ILogger<IPolicy<TOptions>>, TOptions, Action> OnHalfOpen { get; set; }
     }
 }

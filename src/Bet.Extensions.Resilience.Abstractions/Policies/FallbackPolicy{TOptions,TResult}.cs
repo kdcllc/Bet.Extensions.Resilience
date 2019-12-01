@@ -35,20 +35,34 @@ namespace Bet.Extensions.Resilience.Abstractions.Policies
             _logger = logger;
         }
 
-        public Func<ILogger<IPolicy<TOptions>>, TOptions, Func<DelegateResult<TResult>, Context, CancellationToken, Task<TResult>>> FallbackActionAsync { get; set; }
+        public Func<ILogger<IPolicy<TOptions>>, TOptions, Func<DelegateResult<TResult>, Context, CancellationToken, Task<TResult>>> FallBackActionAsync { get; set; } = (logger, options) =>
+        {
+            return (outcome, context, token) =>
+            {
+                logger.LogOnFallabck(context, outcome.GetExceptionMessages());
+                return Task.FromResult(outcome.Result);
+            };
+        };
 
-        public Func<ILogger<IPolicy<TOptions>>, TOptions, Func<DelegateResult<TResult>, Context, Task>> OnFallbackAsync { get; set; }
+        public Func<ILogger<IPolicy<TOptions>>, TOptions, Func<DelegateResult<TResult>, Context, Task>> OnFallbackAsync { get; set; } = (logger, options) => (outcome, context) => Task.CompletedTask;
 
-        public Func<ILogger<IPolicy<TOptions>>, TOptions, Func<DelegateResult<TResult>, Context, CancellationToken, TResult>> FallbackAction { get; set; }
+        public Func<ILogger<IPolicy<TOptions>>, TOptions, Func<DelegateResult<TResult>, Context, CancellationToken, TResult>> FallBackAction { get; set; } = (logger, options) =>
+        {
+            return (outcome, context, token) =>
+            {
+                logger.LogOnFallabck(context, outcome.GetExceptionMessages());
+                return outcome.Result;
+            };
+        };
 
-        public Func<ILogger<IPolicy<TOptions>>, TOptions, Action<DelegateResult<TResult>, Context>> OnFallback { get; set; }
+        public Func<ILogger<IPolicy<TOptions>>, TOptions, Action<DelegateResult<TResult>, Context>> OnFallback { get; set; } = (logger, options) => (outcome, context) => { };
 
         public override IAsyncPolicy<TResult> GetAsyncPolicy()
         {
-            if (FallbackActionAsync == null
+            if (FallBackActionAsync == null
                 || OnFallbackAsync == null)
             {
-                throw new InvalidOperationException($"Please configure {nameof(FallbackActionAsync)} and {nameof(OnFallbackAsync)} properties");
+                throw new InvalidOperationException($"Please configure {nameof(FallBackActionAsync)} and {nameof(OnFallbackAsync)} properties");
             }
 
             return Policy<TResult>
@@ -70,17 +84,17 @@ namespace Bet.Extensions.Resilience.Abstractions.Policies
                 // failed bulkhead policy
                 .Or<BulkheadRejectedException>()
 
-                .FallbackAsync(FallbackActionAsync(_logger, Options), OnFallbackAsync(_logger, Options))
+                .FallbackAsync(FallBackActionAsync(_logger, Options), OnFallbackAsync(_logger, Options))
 
                 .WithPolicyKey($"{PolicyOptions.Name}{PolicyNameSuffix}");
         }
 
         public override ISyncPolicy<TResult> GetSyncPolicy()
         {
-            if (FallbackAction == null
+            if (FallBackAction == null
                 || OnFallback == null)
             {
-                throw new InvalidOperationException($"Please configure {nameof(FallbackAction)} and {nameof(OnFallback)} properties");
+                throw new InvalidOperationException($"Please configure {nameof(FallBackAction)} and {nameof(OnFallback)} properties");
             }
 
             return Policy<TResult>
@@ -102,7 +116,7 @@ namespace Bet.Extensions.Resilience.Abstractions.Policies
                 // failed bulkhead policy
                 .Or<BulkheadRejectedException>()
 
-                .Fallback(fallbackAction: FallbackAction(_logger, Options), onFallback: OnFallback(_logger, Options))
+                .Fallback(fallbackAction: FallBackAction(_logger, Options), onFallback: OnFallback(_logger, Options))
 
                 .WithPolicyKey(PolicyOptions.Name);
         }

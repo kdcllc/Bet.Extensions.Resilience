@@ -18,97 +18,74 @@ namespace Bet.Extensions.Resilience.Http.Policies
     /// </summary>
     /// <typeparam name="TOptions">The type of the options.</typeparam>
     public class HttpRetryPolicy<TOptions> :
-        BasePolicy<TOptions, HttpResponseMessage>,
+        RetryPolicy<TOptions, HttpResponseMessage>,
         IHttpRetryPolicy<TOptions>
         where TOptions : RetryPolicyOptions
     {
-        private readonly ILogger<IPolicy<TOptions>> _logger;
-
+        /// <summary>
+        /// Initializes a new instance of the <see cref="HttpRetryPolicy{TOptions}"/> class.
+        /// </summary>
+        /// <param name="policyOptions"></param>
+        /// <param name="policyOptionsConfigurator"></param>
+        /// <param name="registryConfigurator"></param>
+        /// <param name="logger"></param>
         public HttpRetryPolicy(
             PolicyOptions policyOptions,
             IPolicyOptionsConfigurator<TOptions> policyOptionsConfigurator,
             IPolicyRegistryConfigurator registryConfigurator,
             ILogger<IPolicy<TOptions>> logger) : base(policyOptions, policyOptionsConfigurator, registryConfigurator, logger)
         {
-            _logger = logger;
+            OnDuration = (logger, options) =>
+            {
+                return (attempt, outcome, context) =>
+                {
+                    logger.LogRetryOnDuration(attempt, context, options, outcome.GetMessage());
+                    return TimeSpan.FromSeconds(Math.Pow(options.BackoffPower, attempt));
+                };
+            };
         }
 
         /// <inheritdoc/>
         public override IAsyncPolicy<HttpResponseMessage> GetAsyncPolicy()
         {
+            OnRetryAsync = (logger, options) =>
+            {
+                return (outcome, time, attempt, context) =>
+                {
+                    logger.LogRetryOnRetry(time, attempt, context, options, outcome.GetMessage());
+                    return Task.CompletedTask;
+                };
+            };
+
             return Policy<HttpResponseMessage>
                .Handle<HttpRequestException>()
                .OrResult(TransientHttpStatusCodePredicate)
                    .WaitAndRetryAsync(
                        retryCount: Options.Count,
-                       sleepDurationProvider: OnDurationAsync,
-                       onRetryAsync: OnRetryAsync);
+                       sleepDurationProvider: OnDuration(Logger, Options),
+                       onRetryAsync: OnRetryAsync(Logger, Options));
         }
 
         /// <inheritdoc/>
         public override ISyncPolicy<HttpResponseMessage> GetSyncPolicy()
         {
+            OnRetry = (logger, options) =>
+            {
+                return (outcome, time, attempt, context) => logger.LogRetryOnRetry(time, attempt, context, options, outcome.GetMessage());
+            };
+
             return Policy<HttpResponseMessage>
                .Handle<HttpRequestException>()
                .OrResult(TransientHttpStatusCodePredicate)
                 .WaitAndRetry(
                     retryCount: Options.Count,
-                    sleepDurationProvider: (retryAttempt, c) => OnDuration(retryAttempt, c),
-                    onRetry: (result, timeSpan, retryAttempt, context) => OnRetry(result, timeSpan, retryAttempt, context));
+                    sleepDurationProvider: OnDuration(Logger, Options),
+                    onRetry: OnRetry(Logger, Options));
         }
 
         private bool TransientHttpStatusCodePredicate(HttpResponseMessage response)
         {
             return (int)response.StatusCode >= 500 || response.StatusCode == HttpStatusCode.RequestTimeout;
-        }
-
-        private void OnRetry(DelegateResult<HttpResponseMessage> delegateResult, TimeSpan timeElapsed, int retryAttempt, Context context)
-        {
-            _logger.LogInformation(
-                "[Retry Policy][OnRetryAsync] OperationKey: {OperationKey}; CorrelationId: {CorrelationId}; TimeElapsed: {TimeElapsed}; Retries: {retryNumber}; ExceptionMessage: {ExceptionMessage}",
-                context.OperationKey,
-                context.CorrelationId,
-                timeElapsed,
-                retryAttempt,
-                delegateResult.GetMessage());
-        }
-
-        private TimeSpan OnDuration(int retryAttempt, Context context)
-        {
-            _logger.LogWarning(
-            "[Retry Policy][OnDuration] OperationKey: {OperationKey}; CorrelationIdd: {CorrelationId}; Retry {RetryNumber} of total retries {TotalRetries};",
-            context.OperationKey,
-            context.CorrelationId,
-            retryAttempt,
-            Options.Count);
-
-            return TimeSpan.FromSeconds(Math.Pow(Options.BackoffPower, retryAttempt));
-        }
-
-        private TimeSpan OnDurationAsync(int retryAttempt, DelegateResult<HttpResponseMessage> delegateResult, Context context)
-        {
-            _logger.LogWarning(
-                "[Retry Policy][OnDuration] OperationKey: {OperationKey}; CorrelationIdd: {CorrelationId}; Retry {RetryNumber} of total retries {TotalRetries}; ExceptionMessage: {ExceptionMessage}",
-                context.OperationKey,
-                context.CorrelationId,
-                retryAttempt,
-                Options.Count,
-                delegateResult.GetMessage());
-
-            return TimeSpan.FromSeconds(Math.Pow(Options.BackoffPower, retryAttempt));
-        }
-
-        private Task OnRetryAsync(DelegateResult<HttpResponseMessage> delegateResult, TimeSpan timeElapsed, int retryNumber, Context context)
-        {
-            _logger.LogInformation(
-                "[Retry Policy][OnRetryAsync] OperationKey: {OperationKey}; CorrelationId: {CorrelationId}; TimeElapsed: {TimeElapsed}; Retries: {retryNumber}; ExceptionMessage: {ExceptionMessage}",
-                context.OperationKey,
-                context.CorrelationId,
-                timeElapsed,
-                retryNumber,
-                delegateResult.GetMessage());
-
-            return Task.CompletedTask;
         }
     }
 }

@@ -19,8 +19,6 @@ namespace Bet.Extensions.Resilience.Abstractions.Policies
         IBulkheadPolicy<TOptions, TResult>
         where TOptions : BulkheadPolicyOptions
     {
-        private readonly ILogger<IPolicy<TOptions>> _logger;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="BulkheadPolicy{TOptions, TResult}"/> class.
         /// </summary>
@@ -34,7 +32,6 @@ namespace Bet.Extensions.Resilience.Abstractions.Policies
             IPolicyRegistryConfigurator registryConfigurator,
             ILogger<IPolicy<TOptions>> logger) : base(policyOptions, policyOptionsConfigurator, registryConfigurator, logger)
         {
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         public Func<ILogger<IPolicy<TOptions>>, TOptions, Action<Context>> OnBulkheadRejected { get; set; } = (logger, options) =>
@@ -67,14 +64,14 @@ namespace Bet.Extensions.Resilience.Abstractions.Policies
                     .BulkheadAsync<TResult>(
                         Options.MaxParallelization,
                         Options.MaxQueuedItems.Value,
-                        OnBulkheadRejectedAsync(_logger, Options))
+                        OnBulkheadRejectedAsync(Logger, Options))
                     .WithPolicyKey($"{PolicyOptions.Name}{PolicyNameSuffix}");
             }
 
             return Policy
                 .BulkheadAsync<TResult>(
                     Options.MaxParallelization,
-                    OnBulkheadRejectedAsync(_logger, Options))
+                    OnBulkheadRejectedAsync(Logger, Options))
                 .WithPolicyKey($"{PolicyOptions.Name}{PolicyNameSuffix}");
         }
 
@@ -91,13 +88,13 @@ namespace Bet.Extensions.Resilience.Abstractions.Policies
                     .Bulkhead<TResult>(
                         Options.MaxParallelization,
                         Options.MaxQueuedItems.Value,
-                        OnBulkheadRejected(_logger, Options))
+                        OnBulkheadRejected(Logger, Options))
                     .WithPolicyKey(PolicyOptions.Name);
             }
 
             return Policy.Bulkhead<TResult>(
                                  Options.MaxParallelization,
-                                 OnBulkheadRejected(_logger, Options))
+                                 OnBulkheadRejected(Logger, Options))
                              .WithPolicyKey(PolicyOptions.Name);
         }
     }

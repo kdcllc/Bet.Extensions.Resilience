@@ -1,5 +1,4 @@
-﻿using System;
-using System.Net.Http;
+﻿using System.Net.Http;
 
 using Bet.Extensions.Resilience.Abstractions;
 using Bet.Extensions.Resilience.Abstractions.Options;
@@ -13,24 +12,34 @@ using Polly.Extensions.Http;
 namespace Bet.Extensions.Resilience.Http.Policies
 {
     /// <summary>
-    /// The default circuit breaker policy.
+    /// The default http circuit breaker policy.
     /// </summary>
     /// <typeparam name="TOptions"></typeparam>
-    /// <typeparam name="TResult"></typeparam>
     public class HttpCircuitBreakerPolicy<TOptions> :
-        BasePolicy<TOptions, HttpResponseMessage>,
+        CircuitBreakerPolicy<TOptions, HttpResponseMessage>,
         IHttpCircuitBreakerPolicy<TOptions>
         where TOptions : CircuitBreakerPolicyOptions
     {
-        private readonly ILogger<IPolicy<TOptions>> _logger;
-
+        /// <summary>
+        /// Initializes a new instance of the <see cref="HttpCircuitBreakerPolicy{TOptions}"/> class.
+        /// </summary>
+        /// <param name="policyOptions"></param>
+        /// <param name="policyOptionsConfigurator"></param>
+        /// <param name="registryConfigurator"></param>
+        /// <param name="logger"></param>
         public HttpCircuitBreakerPolicy(
             PolicyOptions policyOptions,
             IPolicyOptionsConfigurator<TOptions> policyOptionsConfigurator,
             IPolicyRegistryConfigurator registryConfigurator,
             ILogger<IPolicy<TOptions>> logger) : base(policyOptions, policyOptionsConfigurator, registryConfigurator, logger)
         {
-            _logger = logger;
+            OnBreak = (logger, options) =>
+            {
+                return (outcome, state, time, context) =>
+                {
+                    logger.LogCircuitBreakerOnBreak(time, context, state, options, outcome.GetMessage());
+                };
+            };
         }
 
         /// <inheritdoc/>
@@ -41,8 +50,9 @@ namespace Bet.Extensions.Resilience.Http.Policies
                 .CircuitBreakerAsync(
                     handledEventsAllowedBeforeBreaking: Options.ExceptionsAllowedBeforeBreaking,
                     durationOfBreak: Options.DurationOfBreak,
-                    OnBreak,
-                    OnReset);
+                    OnBreak(Logger, Options),
+                    OnReset(Logger, Options),
+                    OnHalfOpen(Logger, Options));
         }
 
         /// <inheritdoc/>
@@ -53,26 +63,9 @@ namespace Bet.Extensions.Resilience.Http.Policies
                 .CircuitBreaker(
                     handledEventsAllowedBeforeBreaking: Options.ExceptionsAllowedBeforeBreaking,
                     durationOfBreak: Options.DurationOfBreak,
-                    OnBreak,
-                    OnReset);
-        }
-
-        private void OnBreak(DelegateResult<HttpResponseMessage> delegateResult, TimeSpan breakSpan, Context context)
-        {
-            _logger.LogWarning(
-                "[CircuitBreak Policy][OnBreak] OperationKey: {OperationKey}; CorrelationId: {CorrelationId}; Duration of the break: {DurationOfBreak}; Reason:{ExceptionMessage}",
-                context.OperationKey,
-                context.CorrelationId,
-                breakSpan,
-                delegateResult.GetMessage());
-        }
-
-        private void OnReset(Context context)
-        {
-            _logger.LogInformation(
-                "[CircuitBreak Policy][OnReset] OperationKey: {operationKey}; CorrelationId: {CorrelationId}",
-                context.OperationKey,
-                context.CorrelationId);
+                    OnBreak(Logger, Options),
+                    OnReset(Logger, Options),
+                    OnHalfOpen(Logger, Options));
         }
     }
 }

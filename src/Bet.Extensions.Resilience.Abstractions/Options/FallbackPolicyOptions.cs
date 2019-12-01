@@ -7,7 +7,7 @@
     /// </summary>
     /// <example>
     ///
-    ///  Policy<UserAvatar>
+    ///  Policy.<UserAvatar>
     ///     .Handle<Whatever>()
     ///     .Fallback<UserAvatar>(UserAvatar.Blank).
     ///

@@ -17,7 +17,6 @@ namespace Bet.Extensions.Resilience.Abstractions.Policies
     {
         private readonly IPolicyOptionsConfigurator<TOptions> _policyOptionsConfigurator;
         private readonly IPolicyRegistryConfigurator _registryConfigurator;
-        private readonly ILogger<IPolicy<TOptions>> _logger;
         private readonly IDisposable _changeTokenRegistration;
 
         /// <summary>
@@ -37,7 +36,7 @@ namespace Bet.Extensions.Resilience.Abstractions.Policies
 
             _policyOptionsConfigurator = policyOptionsConfigurator ?? throw new ArgumentNullException(nameof(policyOptionsConfigurator));
             _registryConfigurator = registryConfigurator ?? throw new ArgumentNullException(nameof(registryConfigurator));
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            Logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
             // re-register the policies.
             _changeTokenRegistration = ChangeToken.OnChange(
@@ -60,6 +59,8 @@ namespace Bet.Extensions.Resilience.Abstractions.Policies
         /// <inheritdoc/>
         public virtual TOptions Options => _policyOptionsConfigurator.GetOptions(PolicyOptions.OptionsName);
 
+        public virtual ILogger<IPolicy<TOptions>> Logger { get; }
+
         /// <inheritdoc/>
         public abstract IAsyncPolicy GetAsyncPolicy();
 
@@ -72,11 +73,11 @@ namespace Bet.Extensions.Resilience.Abstractions.Policies
             var policyName = $"{PolicyOptions.Name}";
 
             _registryConfigurator.AddPolicy(policyName, GetSyncPolicy, true);
-            _logger.LogDebug("[Configured][Polly Policy] - {policyName}", policyName);
+            Logger.LogDebug("[Configured][Polly Policy] - {policyName}", policyName);
 
             var asyncPolicy = $"{policyName}{PolicyNameSuffix}";
             _registryConfigurator.AddPolicy(asyncPolicy, GetAsyncPolicy, true);
-            _logger.LogDebug("[Configured][Polly Policy] - {policyName}", asyncPolicy);
+            Logger.LogDebug("[Configured][Polly Policy] - {policyName}", asyncPolicy);
         }
 
         /// <inheritdoc/>

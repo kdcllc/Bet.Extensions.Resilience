@@ -1,4 +1,5 @@
 ﻿using System;
+using Polly;
 
 namespace Bet.Extensions.Resilience.Abstractions
 {
@@ -13,6 +14,11 @@ namespace Bet.Extensions.Resilience.Abstractions
             }
 
             return ex.Message + $"{Environment.NewLine}Inner Exception: {baseException.Message}";
+        }
+
+        public static string GetExceptionMessages<TResult>(this DelegateResult<TResult> result)
+        {
+            return result?.Exception?.Message ?? "reason missing";
         }
     }
 }

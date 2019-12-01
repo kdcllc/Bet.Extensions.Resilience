@@ -1,35 +1,51 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-using Bet.Extensions.Resilience.Abstractions;
 using Bet.Extensions.Resilience.Abstractions.Options;
 
 using Microsoft.Extensions.Logging;
+
+using Polly.CircuitBreaker;
 
 namespace Polly
 {
     public static class PolicyLoggerExtensions
     {
-        public static void LogOnTimeout<T>(this ILogger<T> logger, Context context, TimeSpan time, Exception? ex = null)
+        /// <summary>
+        /// Logs message for <see cref="Polly.Timeout.TimeoutPolicy"/>.
+        /// </summary>
+        /// <typeparam name="T">The type of the logger.</typeparam>
+        /// <param name="logger">The logger.</param>
+        /// <param name="context">The polly context.</param>
+        /// <param name="time">The timeout that expired.</param>
+        /// <param name="message">The message to log.</param>
+        public static void LogOnTimeout<T>(this ILogger<T> logger, Context context, TimeSpan time, string message)
         {
             logger.LogError(
-                "[{timedoutPolicy}][Timed out] using operation " +
-                "key: {operationKey}; " +
+                "[{timedoutPolicy}][Timed out] using " +
+                "operation key: {operationKey}; " +
                 "correlation id: {correlationId}; " +
                 "timed out after: {totalMilliseconds}; " +
-                "with Exception: {ex}",
+                "reason: {message}",
                 context.PolicyKey,
                 context.OperationKey,
                 context.CorrelationId,
                 time.TotalMilliseconds,
-                ex?.GetExceptionMessages());
+                message);
         }
 
+        /// <summary>
+        /// Logs message for <see cref="Polly.Fallback.FallbackPolicy"/>.
+        /// </summary>
+        /// <typeparam name="T">The type of the logger.</typeparam>
+        /// <param name="logger">The logger.</param>
+        /// <param name="context">The polly context.</param>
+        /// <param name="message">The message to log.</param>
         public static void LogOnFallabck<T>(this ILogger<T> logger, Context context, string message)
         {
             logger.LogError(
-                "[{fallbackPolicy}][Fallback] using operation " +
-                "key: {operationKey}; " +
+                "[{fallbackPolicy}][Fallback] using " +
+                "operation key: {operationKey}; " +
                 "correlation id: {correlationId}; " +
                 "reason: {message}; ",
                 context.PolicyKey,
@@ -38,6 +54,13 @@ namespace Polly
                 message);
         }
 
+        /// <summary>
+        /// Logs message for <see cref="Polly.Bulkhead.BulkheadPolicy"/>.
+        /// </summary>
+        /// <typeparam name="T">The type of the logger.</typeparam>
+        /// <param name="logger">The logger.</param>
+        /// <param name="context">The polly context.</param>
+        /// <param name="options">The options.</param>
         public static void LogOnBulkheadRejected<T>(this ILogger<T> logger, Context context, BulkheadPolicyOptions options)
         {
             logger.LogError(
@@ -53,28 +76,84 @@ namespace Polly
                 options.MaxQueuedItems);
         }
 
-        public static void LogCircuitBreakerOnBreak<T>(this ILogger<T> logger, string message, TimeSpan time, Context context)
+        /// <summary>
+        /// Logs message for <see cref="Polly.CircuitBreaker.CircuitBreakerPolicy"/>.
+        /// </summary>
+        /// <typeparam name="T">The type of the logger.</typeparam>
+        /// <param name="logger">The logger.</param>
+        /// <param name="time">The time of the break.</param>
+        /// <param name="context">The polly context.</param>
+        /// <param name="circuitState">The circuit state.</param>
+        /// <param name="options">The options for the policy.</param>
+        /// <param name="message">The message to log.</param>
+        public static void LogCircuitBreakerOnBreak<T>(
+            this ILogger<T> logger,
+            TimeSpan time,
+            Context context,
+            CircuitState circuitState,
+            CircuitBreakerPolicyOptions options,
+            string message)
         {
             logger.LogWarning(
-                "[CircuitBreak Policy][OnBreak] using operation key: {operationKey}; correlation ID: {id}; duration of the break: {time}; reason: {message}",
+                "[{circuitBreakerPolicy}][OnBreak] using " +
+                "operation key: {operationKey}; " +
+                "correlation id: {id}; " +
+                "duration of the break: {time}; " +
+                "exceptions allowed before breaking: {allowedExceptions} " +
+                "circuit state: {circuitState}; " +
+                "reason: {message}",
+                context.PolicyKey,
                 context.OperationKey,
                 context.CorrelationId,
                 time,
+                options.ExceptionsAllowedBeforeBreaking,
+                circuitState,
                 message);
         }
 
-        public static void LogCircuitBreakerOnReset<T>(this ILogger<T> logger, Context context)
+        /// <summary>
+        /// Logs message for <see cref="Polly.CircuitBreaker.CircuitBreakerPolicy"/>.
+        /// </summary>
+        /// <typeparam name="T">The type of the logger.</typeparam>
+        /// <param name="logger">The logger.</param>
+        /// <param name="context">The polly context.</param>
+        /// <param name="options">The policy options.</param>
+        public static void LogCircuitBreakerOnReset<T>(this ILogger<T> logger, Context context, CircuitBreakerPolicyOptions options)
         {
             logger.LogInformation(
-                "[CircuitBreak Policy][OnReset] using operation key: {operationKey}; correlation ID: {id}",
+                "[{circuitBreakerPolicy}][OnReset] using " +
+                "operation key: {operationKey}; " +
+                "correlation id: {id}",
+                "exceptions allowed before breaking: {allowedExceptions} " +
+                context.PolicyKey,
                 context.OperationKey,
-                context.CorrelationId);
+                context.CorrelationId,
+                options.ExceptionsAllowedBeforeBreaking);
         }
 
-        public static void LogRetryOnDuration<T>(this ILogger<T> logger, int retryAttempt, string message, Context context, RetryPolicyOptions options)
+        /// <summary>
+        /// Logs message for <see cref="Polly.Retry.RetryPolicy"/>.
+        /// </summary>
+        /// <typeparam name="T">The type of the logger.</typeparam>
+        /// <param name="logger">The logger.</param>
+        /// <param name="retryAttempt">The current retry attempt count.</param>
+        /// <param name="context">The polly context.</param>
+        /// <param name="options">The policy options.</param>
+        /// <param name="message">The message to log.</param>
+        public static void LogRetryOnDuration<T>(
+            this ILogger<T> logger,
+            int retryAttempt,
+            Context context,
+            RetryPolicyOptions options,
+            string message)
         {
             logger.LogInformation(
-                "[Retry Policy][OnDuration] using operation key: {operationKey}; correlation ID: {id}; retry {retryNumber} of {totalRetries}; exception: {exception}",
+                "[{retryPolicy}][OnDuration] using " +
+                "operation key: {operationKey}; " +
+                "correlation id: {id}; " +
+                "retry {retryNumber} of {totalRetries}; " +
+                "reason: {message}",
+                context.PolicyKey,
                 context.OperationKey,
                 context.CorrelationId,
                 retryAttempt,
@@ -82,15 +161,38 @@ namespace Polly
                 message);
         }
 
-        public static Task LogRetryOnRetry<T>(this ILogger<T> logger, string message, TimeSpan time, int retryAttempt, Context context, int retryCount)
+        /// <summary>
+        /// Logs message for <see cref="Polly.Retry.RetryPolicy"/>.
+        /// </summary>
+        /// <typeparam name="T">The type of the logger.</typeparam>
+        /// <param name="logger">The logger.</param>
+        /// <param name="time">The elapse time.</param>
+        /// <param name="retryAttempt">The current retry attempt count.</param>
+        /// <param name="context">The polly context.</param>
+        /// <param name="options">The policy options.</param>
+        /// <param name="message">The message to log.</param>
+        /// <returns></returns>
+        public static Task LogRetryOnRetry<T>(
+            this ILogger<T> logger,
+            TimeSpan time,
+            int retryAttempt,
+            Context context,
+            RetryPolicyOptions options,
+            string message)
         {
             logger.LogWarning(
-                "[Retry Policy][OnRetry] using operation key: {operationKey}; correlation ID: {id}; time elapsed: {time}; retry {retryAttempt} of {retryCount}; exception: {exception}",
+                "[{retryPolicy}][OnRetry] using " +
+                "operation key: {operationKey}; " +
+                "correlation id: {id}; " +
+                "time elapsed: {time}; " +
+                "retry {retryAttempt} of {retryCount}; " +
+                "reason: {message}",
+                context.PolicyKey,
                 context.OperationKey,
                 context.CorrelationId,
                 time,
                 retryAttempt,
-                retryCount,
+                options.Count,
                 message);
 
             return Task.CompletedTask;

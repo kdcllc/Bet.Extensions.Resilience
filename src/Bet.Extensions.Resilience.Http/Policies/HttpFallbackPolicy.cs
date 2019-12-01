@@ -34,7 +34,7 @@ namespace Bet.Extensions.Resilience.Http.Policies
 
         public override IAsyncPolicy<HttpResponseMessage> GetAsyncPolicy()
         {
-            FallbackActionAsync = (logger, options) =>
+            FallBackActionAsync = (logger, options) =>
             {
                 return (ex, context, token) =>
                 {
@@ -62,7 +62,7 @@ namespace Bet.Extensions.Resilience.Http.Policies
 
         public override ISyncPolicy<HttpResponseMessage> GetSyncPolicy()
         {
-            FallbackAction = (logger, options) =>
+            FallBackAction = (logger, options) =>
             {
                 return (result, context, token) =>
                 {

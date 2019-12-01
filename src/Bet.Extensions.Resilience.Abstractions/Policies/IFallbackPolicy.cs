@@ -16,18 +16,18 @@ namespace Bet.Extensions.Resilience.Abstractions.Policies
 
         Func<ILogger<IPolicy<TOptions>>, TOptions, Action<Exception, Context>> OnFallback { get; set; }
 
-        Func<ILogger<IPolicy<TOptions>>, TOptions, Func<Exception, Context, CancellationToken, Task>> FallbackActionAsync { get; set; }
+        Func<ILogger<IPolicy<TOptions>>, TOptions, Func<Exception, Context, CancellationToken, Task>> FallBackActionAsync { get; set; }
 
         Func<ILogger<IPolicy<TOptions>>, TOptions, Func<Exception, Context, Task>> OnFallbackAsync { get; set; }
     }
 
     public interface IFallbackPolicy<TOptions, TResult> : IPolicy<TOptions, TResult> where TOptions : PolicyOptions
     {
-        Func<ILogger<IPolicy<TOptions>>, TOptions, Func<DelegateResult<TResult>, Context, CancellationToken, Task<TResult>>> FallbackActionAsync { get; set; }
+        Func<ILogger<IPolicy<TOptions>>, TOptions, Func<DelegateResult<TResult>, Context, CancellationToken, Task<TResult>>> FallBackActionAsync { get; set; }
 
         Func<ILogger<IPolicy<TOptions>>, TOptions, Func<DelegateResult<TResult>, Context, Task>> OnFallbackAsync { get; set; }
 
-        Func<ILogger<IPolicy<TOptions>>, TOptions, Func<DelegateResult<TResult>, Context, CancellationToken, TResult>> FallbackAction { get; set; }
+        Func<ILogger<IPolicy<TOptions>>, TOptions, Func<DelegateResult<TResult>, Context, CancellationToken, TResult>> FallBackAction { get; set; }
 
         Func<ILogger<IPolicy<TOptions>>, TOptions, Action<DelegateResult<TResult>, Context>> OnFallback { get; set; }
     }

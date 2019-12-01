@@ -19,8 +19,6 @@ namespace Bet.Extensions.Resilience.Abstractions.Policies
                 BasePolicy<TOptions, TResult>,
                 ITimeoutPolicy<TOptions, TResult> where TOptions : TimeoutPolicyOptions
     {
-        private readonly ILogger<IPolicy<TOptions>> _logger;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="TimeoutPolicy{TOptions, TResult}"/> class.
         /// </summary>
@@ -34,14 +32,13 @@ namespace Bet.Extensions.Resilience.Abstractions.Policies
             IPolicyRegistryConfigurator registryConfigurator,
             ILogger<IPolicy<TOptions>> logger) : base(policyOptions, policyOptionsConfigurator, registryConfigurator, logger)
         {
-            _logger = logger;
         }
 
         public Func<ILogger<IPolicy<TOptions>>, TOptions, Func<Context, TimeSpan, Task, Exception, Task>> OnTimeoutAsync { get; set; } = (logger, options) =>
         {
             return (context, timeout, abandonedTask, ex) =>
             {
-                logger.LogOnTimeout(context, timeout, ex);
+                logger.LogOnTimeout(context, timeout, ex.GetExceptionMessages());
                 return Task.CompletedTask;
             };
         };
@@ -50,7 +47,7 @@ namespace Bet.Extensions.Resilience.Abstractions.Policies
         {
             return (context, timeout, abandonedTask, ex) =>
             {
-                logger.LogOnTimeout(context, timeout, ex);
+                logger.LogOnTimeout(context, timeout, ex.GetExceptionMessages());
             };
         };
 
@@ -63,7 +60,7 @@ namespace Bet.Extensions.Resilience.Abstractions.Policies
             }
 
             return Policy
-                .TimeoutAsync<TResult>(Options.Timeout, TimeoutStrategy.Pessimistic, OnTimeoutAsync(_logger, Options))
+                .TimeoutAsync<TResult>(Options.Timeout, TimeoutStrategy.Pessimistic, OnTimeoutAsync(Logger, Options))
                 .WithPolicyKey($"{PolicyOptions.Name}{PolicyNameSuffix}");
         }
 
@@ -76,7 +73,7 @@ namespace Bet.Extensions.Resilience.Abstractions.Policies
             }
 
             return Policy
-                .Timeout<TResult>(Options.Timeout, TimeoutStrategy.Pessimistic, OnTimeout(_logger, Options))
+                .Timeout<TResult>(Options.Timeout, TimeoutStrategy.Pessimistic, OnTimeout(Logger, Options))
                 .WithPolicyKey(PolicyOptions.Name);
         }
     }
