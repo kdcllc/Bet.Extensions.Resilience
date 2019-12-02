@@ -30,11 +30,11 @@ namespace Bet.Extensions.Resilience.Abstractions.Policies
             PolicyOptions policyOptions,
             IPolicyOptionsConfigurator<TOptions> policyOptionsConfigurator,
             IPolicyRegistryConfigurator registryConfigurator,
-            ILogger<IPolicy<TOptions>> logger) : base(policyOptions, policyOptionsConfigurator, registryConfigurator, logger)
+            ILogger<IPolicy<TOptions, TResult>> logger) : base(policyOptions, policyOptionsConfigurator, registryConfigurator, logger)
         {
         }
 
-        public Func<ILogger<IPolicy<TOptions>>, TOptions, Func<Context, TimeSpan, Task, Exception, Task>> OnTimeoutAsync { get; set; } = (logger, options) =>
+        public Func<ILogger<IPolicy<TOptions, TResult>>, TOptions, Func<Context, TimeSpan, Task, Exception, Task>> OnTimeoutAsync { get; set; } = (logger, options) =>
         {
             return (context, timeout, abandonedTask, ex) =>
             {
@@ -43,7 +43,7 @@ namespace Bet.Extensions.Resilience.Abstractions.Policies
             };
         };
 
-        public Func<ILogger<IPolicy<TOptions>>, TOptions, Action<Context, TimeSpan, Task, Exception>> OnTimeout { get; set; } = (logger, options) =>
+        public Func<ILogger<IPolicy<TOptions, TResult>>, TOptions, Action<Context, TimeSpan, Task, Exception>> OnTimeout { get; set; } = (logger, options) =>
         {
             return (context, timeout, abandonedTask, ex) =>
             {

@@ -36,10 +36,5 @@ namespace Bet.Extensions.Resilience.Abstractions.Policies
         /// </summary>
         /// <returns></returns>
         TOptions Options { get; }
-
-        /// <summary>
-        /// Common Logger.
-        /// </summary>
-        ILogger<IPolicy<TOptions>> Logger { get; }
-    }
+     }
 }

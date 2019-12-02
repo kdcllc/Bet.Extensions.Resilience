@@ -98,7 +98,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
             // adds policy to DI with IPolicy Interface which allows for on start policy registrations.
             services.Add(ServiceDescriptor.Describe(
-                typeof(IPolicy<TOptions>),
+                typeof(IPolicy<TOptions, TResult>),
                 sp => sp.CreatePolicyInsance<TImplementation, TOptions, TResult>(policyOptions),
                 serviceLifetime));
 
@@ -326,7 +326,7 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             var policyOptionsConfigurator = sp.GetRequiredService<IPolicyOptionsConfigurator<TOptions>>();
             var registryConfigurator = sp.GetRequiredService<IPolicyRegistryConfigurator>();
-            var logger = sp.GetRequiredService<ILogger<IPolicy<TOptions>>>();
+            var logger = sp.GetRequiredService<ILogger<IPolicy<TOptions, TResult>>>();
 
             return ActivatorUtilities.CreateInstance<TImplementation>(sp, policyOptions, policyOptionsConfigurator, registryConfigurator, logger);
         }

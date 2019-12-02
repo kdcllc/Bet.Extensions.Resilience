@@ -13,7 +13,6 @@ namespace Bet.Extensions.Resilience.Abstractions.Internal
     internal class DefaultPolicyRegistryConfigurator : IPolicyRegistryConfigurator
     {
         private readonly IPolicyRegistry<string> _policyRegistry;
-        private readonly PolicyRegistrant _policyRegistrant;
         private readonly ILogger<DefaultPolicyRegistryConfigurator> _logger;
         private readonly IServiceProvider _provider;
 
@@ -25,7 +24,6 @@ namespace Bet.Extensions.Resilience.Abstractions.Internal
         {
             _provider = provider ?? throw new ArgumentNullException(nameof(provider));
             _policyRegistry = policyRegistry ?? throw new ArgumentNullException(nameof(policyRegistry));
-            _policyRegistrant = policyRegistrant ?? throw new ArgumentNullException(nameof(policyRegistrant));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 

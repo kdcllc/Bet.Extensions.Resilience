@@ -31,7 +31,7 @@ namespace Bet.Extensions.Resilience.Abstractions.Policies
             PolicyOptions policyOptions,
             IPolicyOptionsConfigurator<TOptions> policyOptionsConfigurator,
             IPolicyRegistryConfigurator registryConfigurator,
-            ILogger<IPolicy<TOptions>> logger)
+            ILogger<IPolicy<TOptions, TResult>> logger)
         {
             if (policyOptions is null)
             {
@@ -65,7 +65,7 @@ namespace Bet.Extensions.Resilience.Abstractions.Policies
         /// <inheritdoc/>
         public virtual TOptions Options => _policyOptionsConfigurator.GetOptions(PolicyOptions.OptionsName);
 
-        public virtual ILogger<IPolicy<TOptions>> Logger { get; }
+        public virtual ILogger<IPolicy<TOptions, TResult>> Logger { get; }
 
         /// <inheritdoc/>
         public abstract IAsyncPolicy<TResult> GetAsyncPolicy();
@@ -77,12 +77,12 @@ namespace Bet.Extensions.Resilience.Abstractions.Policies
         public virtual void ConfigurePolicy()
         {
             var policyName = $"{PolicyOptions.Name}";
-            _registryConfigurator.AddPolicy(policyName, GetSyncPolicy, true);
+            _registryConfigurator.AddPolicy(policyName, () => GetSyncPolicy(), true);
             Logger.LogDebug("[Configured][Polly Policy] - {policyName}", policyName);
 
             var asyncPolicy = $"{policyName}{PolicyNameSuffix}";
 
-            _registryConfigurator.AddPolicy(asyncPolicy, GetAsyncPolicy, true);
+            _registryConfigurator.AddPolicy(asyncPolicy, () => GetAsyncPolicy(), true);
             Logger.LogDebug("[Configured][Polly Policy] - {policyName}", asyncPolicy);
         }
 

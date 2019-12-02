@@ -30,11 +30,11 @@ namespace Bet.Extensions.Resilience.Abstractions.Policies
             PolicyOptions policyOptions,
             IPolicyOptionsConfigurator<TOptions> policyOptionsConfigurator,
             IPolicyRegistryConfigurator registryConfigurator,
-            ILogger<IPolicy<TOptions>> logger) : base(policyOptions, policyOptionsConfigurator, registryConfigurator, logger)
+            ILogger<IPolicy<TOptions, TResult>> logger) : base(policyOptions, policyOptionsConfigurator, registryConfigurator, logger)
         {
         }
 
-        public Func<ILogger<IPolicy<TOptions>>, TOptions, Action<Context>> OnBulkheadRejected { get; set; } = (logger, options) =>
+        public Func<ILogger<IPolicy<TOptions, TResult>>, TOptions, Action<Context>> OnBulkheadRejected { get; set; } = (logger, options) =>
         {
             return (context) =>
             {
@@ -42,7 +42,7 @@ namespace Bet.Extensions.Resilience.Abstractions.Policies
             };
         };
 
-        public Func<ILogger<IPolicy<TOptions>>, TOptions, Func<Context, Task>> OnBulkheadRejectedAsync { get; set; } = (logger, options) =>
+        public Func<ILogger<IPolicy<TOptions, TResult>>, TOptions, Func<Context, Task>> OnBulkheadRejectedAsync { get; set; } = (logger, options) =>
         {
             return (context) =>
             {

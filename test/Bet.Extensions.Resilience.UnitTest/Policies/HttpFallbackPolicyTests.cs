@@ -4,15 +4,15 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 
-using Bet.Extensions.Resilience.Abstractions.Options;
-using Bet.Extensions.Resilience.Http;
 using Bet.Extensions.Resilience.Http.Options;
 using Bet.Extensions.Resilience.Http.Policies;
 using Bet.Extensions.Testing.Logging;
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+
 using Polly;
+
 using Xunit;
 using Xunit.Abstractions;
 
@@ -40,28 +40,28 @@ namespace Bet.Extensions.Resilience.UnitTest.Policies
 
             var dic = new Dictionary<string, string>
             {
-                { $"{HttpPolicyName.DefaultHttpTimeoutPolicy}:Timeout", "00:00:01" },
-                { $"{HttpPolicyName.DefaultHttpFallbackPolicyPolicy}:Message", "Hello" },
-                { $"{HttpPolicyName.DefaultHttpFallbackPolicyPolicy}:StatusCode", "400" },
+                { $"{HttpTimeoutPolicyOptions.DefaultName}:Timeout", "00:00:01" },
+                { $"{HttpFallbackPolicyOptions.DefaultName}:Message", "Hello" },
+                { $"{HttpFallbackPolicyOptions.DefaultName}:StatusCode", "400" },
             };
 
             var config = new ConfigurationBuilder().AddInMemoryCollection(dic).Build();
             services.AddSingleton<IConfiguration>(config);
 
-            services.AddHttpResiliencePolicy<IHttpTimeoutPolicy<TimeoutPolicyOptions>, HttpTimeoutPolicy<TimeoutPolicyOptions>, TimeoutPolicyOptions>(
-                HttpPolicyName.DefaultHttpTimeoutPolicy,
-                HttpPolicyName.DefaultHttpTimeoutPolicy);
+            services.AddHttpResiliencePolicy<IHttpTimeoutPolicy, HttpTimeoutPolicy, HttpTimeoutPolicyOptions>(
+                HttpTimeoutPolicyOptions.DefaultName,
+                HttpTimeoutPolicyOptions.DefaultName);
 
-            services.AddHttpResiliencePolicy<IHttpFallbackPolicy<HttpFallbackPolicyOptions>, HttpFallbackPolicy<HttpFallbackPolicyOptions>, HttpFallbackPolicyOptions>(
-                HttpPolicyName.DefaultHttpFallbackPolicyPolicy,
-                HttpPolicyName.DefaultHttpFallbackPolicyPolicy);
+            services.AddHttpResiliencePolicy<IHttpFallbackPolicy, HttpFallbackPolicy, HttpFallbackPolicyOptions>(
+                HttpFallbackPolicyOptions.DefaultName,
+                HttpFallbackPolicyOptions.DefaultName);
 
             var sp = services.BuildServiceProvider();
 
-            var fallbackPolicy = sp.GetRequiredService<IHttpFallbackPolicy<HttpFallbackPolicyOptions>>().GetAsyncPolicy();
+            var fallbackPolicy = sp.GetRequiredService<IHttpFallbackPolicy>().GetAsyncPolicy();
             Assert.NotNull(fallbackPolicy);
 
-            var timeoutPolicy = sp.GetRequiredService<IHttpTimeoutPolicy<TimeoutPolicyOptions>>().GetAsyncPolicy();
+            var timeoutPolicy = sp.GetRequiredService<IHttpTimeoutPolicy>().GetAsyncPolicy();
             Assert.NotNull(timeoutPolicy);
 
             var policy = fallbackPolicy.WrapAsync(timeoutPolicy);

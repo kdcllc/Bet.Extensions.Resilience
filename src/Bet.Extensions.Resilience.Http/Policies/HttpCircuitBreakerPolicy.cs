@@ -3,6 +3,7 @@
 using Bet.Extensions.Resilience.Abstractions;
 using Bet.Extensions.Resilience.Abstractions.Options;
 using Bet.Extensions.Resilience.Abstractions.Policies;
+using Bet.Extensions.Resilience.Http.Options;
 
 using Microsoft.Extensions.Logging;
 
@@ -15,13 +16,12 @@ namespace Bet.Extensions.Resilience.Http.Policies
     /// The default http circuit breaker policy.
     /// </summary>
     /// <typeparam name="TOptions"></typeparam>
-    public class HttpCircuitBreakerPolicy<TOptions> :
-        CircuitBreakerPolicy<TOptions, HttpResponseMessage>,
-        IHttpCircuitBreakerPolicy<TOptions>
-        where TOptions : CircuitBreakerPolicyOptions
+    public class HttpCircuitBreakerPolicy :
+        CircuitBreakerPolicy<HttpCircuitBreakerPolicyOptions, HttpResponseMessage>,
+        IHttpCircuitBreakerPolicy
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="HttpCircuitBreakerPolicy{TOptions}"/> class.
+        /// Initializes a new instance of the <see cref="HttpCircuitBreakerPolicy"/> class.
         /// </summary>
         /// <param name="policyOptions"></param>
         /// <param name="policyOptionsConfigurator"></param>
@@ -29,9 +29,9 @@ namespace Bet.Extensions.Resilience.Http.Policies
         /// <param name="logger"></param>
         public HttpCircuitBreakerPolicy(
             PolicyOptions policyOptions,
-            IPolicyOptionsConfigurator<TOptions> policyOptionsConfigurator,
+            IPolicyOptionsConfigurator<HttpCircuitBreakerPolicyOptions> policyOptionsConfigurator,
             IPolicyRegistryConfigurator registryConfigurator,
-            ILogger<IPolicy<TOptions>> logger) : base(policyOptions, policyOptionsConfigurator, registryConfigurator, logger)
+            ILogger<IPolicy<HttpCircuitBreakerPolicyOptions, HttpResponseMessage>> logger) : base(policyOptions, policyOptionsConfigurator, registryConfigurator, logger)
         {
             OnBreak = (logger, options) =>
             {
@@ -52,7 +52,8 @@ namespace Bet.Extensions.Resilience.Http.Policies
                     durationOfBreak: Options.DurationOfBreak,
                     OnBreak(Logger, Options),
                     OnReset(Logger, Options),
-                    OnHalfOpen(Logger, Options));
+                    OnHalfOpen(Logger, Options))
+                   .WithPolicyKey($"{PolicyOptions.Name}{PolicyNameSuffix}");
         }
 
         /// <inheritdoc/>
@@ -65,7 +66,8 @@ namespace Bet.Extensions.Resilience.Http.Policies
                     durationOfBreak: Options.DurationOfBreak,
                     OnBreak(Logger, Options),
                     OnReset(Logger, Options),
-                    OnHalfOpen(Logger, Options));
+                    OnHalfOpen(Logger, Options))
+                    .WithPolicyKey(PolicyOptions.Name);
         }
     }
 }

@@ -4,6 +4,7 @@ using System.Net.Http;
 using Bet.Extensions.Resilience.Abstractions.Options;
 using Bet.Extensions.Resilience.Abstractions.Policies;
 using Bet.Extensions.Resilience.Http;
+using Bet.Extensions.Resilience.Http.Options;
 using Bet.Extensions.Resilience.Http.Policies;
 
 namespace Microsoft.Extensions.DependencyInjection
@@ -47,36 +48,31 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <returns></returns>
         public static IServiceCollection AddHttpDefaultResiliencePolicies(
             this IServiceCollection services,
-            string policyName = HttpPolicyName.DefaultHttpPolicy,
-            string sectionName = HttpPolicyName.DefaultHttpPolicyOptionsName)
+            string policyName = HttpPolicyNames.DefaultHttpPolicy,
+            string sectionName = HttpPolicyNames.DefaultHttpPolicyOptionsName)
         {
-            services.AddHttpResiliencePolicy<IHttpTimeoutPolicy<TimeoutPolicyOptions>, HttpTimeoutPolicy<TimeoutPolicyOptions>, TimeoutPolicyOptions>(
-                HttpPolicyName.DefaultHttpTimeoutPolicy,
+            services.AddHttpResiliencePolicy<IHttpTimeoutPolicy, HttpTimeoutPolicy, HttpTimeoutPolicyOptions>(
+                HttpTimeoutPolicyOptions.DefaultName,
                 sectionName,
-                HttpPolicyName.DefaultHttpTimeoutPolicy,
+                HttpTimeoutPolicyOptions.DefaultName,
                 null,
                 ServiceLifetime.Transient);
 
-            services.AddHttpResiliencePolicy<IHttpRetryPolicy<RetryPolicyOptions>, HttpRetryPolicy<RetryPolicyOptions>, RetryPolicyOptions>(
-                    HttpPolicyName.DefaultHttpRetryPolicy,
+            services.AddHttpResiliencePolicy<IHttpRetryPolicy, HttpRetryPolicy, HttpRetryPolicyOptions>(
+                    HttpRetryPolicyOptions.DefaultName,
                     sectionName,
-                    HttpPolicyName.DefaultHttpRetryPolicy,
+                    HttpRetryPolicyOptions.DefaultName,
                     null,
                     ServiceLifetime.Transient);
 
-            services.AddHttpResiliencePolicy<IHttpCircuitBreakerPolicy<CircuitBreakerPolicyOptions>, HttpCircuitBreakerPolicy<CircuitBreakerPolicyOptions>, CircuitBreakerPolicyOptions>(
-                    HttpPolicyName.DefaultHttpCircuitBreakerPolicy,
+            services.AddHttpResiliencePolicy<IHttpCircuitBreakerPolicy, HttpCircuitBreakerPolicy, HttpCircuitBreakerPolicyOptions>(
+                    HttpCircuitBreakerPolicyOptions.DefaultName,
                     sectionName,
-                    HttpPolicyName.DefaultHttpCircuitBreakerPolicy,
+                    HttpCircuitBreakerPolicyOptions.DefaultName,
                     null,
                     ServiceLifetime.Transient);
 
             return services;
-        }
-
-        private static bool IsAdded<T>(this IServiceCollection services)
-        {
-            return true;
         }
     }
 }

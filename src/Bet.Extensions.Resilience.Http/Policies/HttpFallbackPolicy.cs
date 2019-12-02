@@ -13,12 +13,12 @@ using Polly;
 
 namespace Bet.Extensions.Resilience.Http.Policies
 {
-    public class HttpFallbackPolicy<TOptions>
-        : FallbackPolicy<TOptions, HttpResponseMessage>,
-        IHttpFallbackPolicy<TOptions> where TOptions : HttpFallbackPolicyOptions
+    public class HttpFallbackPolicy
+        : FallbackPolicy<HttpFallbackPolicyOptions, HttpResponseMessage>,
+        IHttpFallbackPolicy
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="HttpFallbackPolicy{TOptions}"/> class.
+        /// Initializes a new instance of the <see cref="HttpFallbackPolicy"/> class.
         /// </summary>
         /// <param name="policyOptions"></param>
         /// <param name="policyOptionsConfigurator"></param>
@@ -26,9 +26,9 @@ namespace Bet.Extensions.Resilience.Http.Policies
         /// <param name="logger"></param>
         public HttpFallbackPolicy(
             PolicyOptions policyOptions,
-            IPolicyOptionsConfigurator<TOptions> policyOptionsConfigurator,
+            IPolicyOptionsConfigurator<HttpFallbackPolicyOptions> policyOptionsConfigurator,
             IPolicyRegistryConfigurator registryConfigurator,
-            ILogger<IPolicy<TOptions>> logger) : base(policyOptions, policyOptionsConfigurator, registryConfigurator, logger)
+            ILogger<IPolicy<HttpFallbackPolicyOptions, HttpResponseMessage>> logger) : base(policyOptions, policyOptionsConfigurator, registryConfigurator, logger)
         {
         }
 

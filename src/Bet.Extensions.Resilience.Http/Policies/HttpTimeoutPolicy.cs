@@ -3,17 +3,18 @@
 using Bet.Extensions.Resilience.Abstractions;
 using Bet.Extensions.Resilience.Abstractions.Options;
 using Bet.Extensions.Resilience.Abstractions.Policies;
+using Bet.Extensions.Resilience.Http.Options;
 
 using Microsoft.Extensions.Logging;
 
 namespace Bet.Extensions.Resilience.Http.Policies
 {
-    public class HttpTimeoutPolicy<TOptions> :
-        TimeoutPolicy<TOptions, HttpResponseMessage>,
-        IHttpTimeoutPolicy<TOptions> where TOptions : TimeoutPolicyOptions
+    public class HttpTimeoutPolicy :
+        TimeoutPolicy<HttpTimeoutPolicyOptions, HttpResponseMessage>,
+        IHttpTimeoutPolicy
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="HttpTimeoutPolicy{TOptions}"/> class.
+        /// Initializes a new instance of the <see cref="HttpTimeoutPolicy"/> class.
         /// </summary>
         /// <param name="policyOptions"></param>
         /// <param name="policyOptionsConfigurator"></param>
@@ -21,9 +22,9 @@ namespace Bet.Extensions.Resilience.Http.Policies
         /// <param name="logger"></param>
         public HttpTimeoutPolicy(
             PolicyOptions policyOptions,
-            IPolicyOptionsConfigurator<TOptions> policyOptionsConfigurator,
+            IPolicyOptionsConfigurator<HttpTimeoutPolicyOptions> policyOptionsConfigurator,
             IPolicyRegistryConfigurator registryConfigurator,
-            ILogger<IPolicy<TOptions>> logger) : base(policyOptions, policyOptionsConfigurator, registryConfigurator, logger)
+            ILogger<IPolicy<HttpTimeoutPolicyOptions, HttpResponseMessage>> logger) : base(policyOptions, policyOptionsConfigurator, registryConfigurator, logger)
         {
         }
     }

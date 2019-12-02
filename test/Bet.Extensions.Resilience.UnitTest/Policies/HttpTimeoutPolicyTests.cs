@@ -4,8 +4,8 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 
-using Bet.Extensions.Resilience.Abstractions.Options;
 using Bet.Extensions.Resilience.Http;
+using Bet.Extensions.Resilience.Http.Options;
 using Bet.Extensions.Resilience.Http.Policies;
 using Bet.Extensions.Testing.Logging;
 
@@ -29,7 +29,7 @@ namespace Bet.Extensions.Resilience.UnitTest.Policies
         [Fact]
         public async Task HttpTimeoutPolicy_With_Result_Async_Should_Throw_TimeoutRejectedException()
         {
-            var policyOptionsName = HttpPolicyName.DefaultHttpTimeoutPolicy;
+            var policyOptionsName = HttpTimeoutPolicyOptions.DefaultName;
 
             var services = new ServiceCollection();
 
@@ -47,13 +47,13 @@ namespace Bet.Extensions.Resilience.UnitTest.Policies
             var config = new ConfigurationBuilder().AddInMemoryCollection(dic).Build();
             services.AddSingleton<IConfiguration>(config);
 
-            services.AddHttpResiliencePolicy<IHttpTimeoutPolicy<TimeoutPolicyOptions>, HttpTimeoutPolicy<TimeoutPolicyOptions>, TimeoutPolicyOptions>(
+            services.AddHttpResiliencePolicy<IHttpTimeoutPolicy, HttpTimeoutPolicy, HttpTimeoutPolicyOptions>(
                 policyOptionsName,
                 policyOptionsName);
 
             var sp = services.BuildServiceProvider();
 
-            var policy = sp.GetRequiredService<IHttpTimeoutPolicy<TimeoutPolicyOptions>>();
+            var policy = sp.GetRequiredService<IHttpTimeoutPolicy>();
             Assert.NotNull(policy);
 
             async Task<HttpResponseMessage> TimedOutTask()
@@ -71,7 +71,7 @@ namespace Bet.Extensions.Resilience.UnitTest.Policies
         [Fact]
         public async Task HttpTimeoutPolicy_With_Result_Async_Should_Succeeded()
         {
-            var policyOptionsName = HttpPolicyName.DefaultHttpTimeoutPolicy;
+            var policyOptionsName = HttpTimeoutPolicyOptions.DefaultName;
 
             var services = new ServiceCollection();
 
@@ -89,13 +89,13 @@ namespace Bet.Extensions.Resilience.UnitTest.Policies
             var config = new ConfigurationBuilder().AddInMemoryCollection(dic).Build();
             services.AddSingleton<IConfiguration>(config);
 
-            services.AddHttpResiliencePolicy<IHttpTimeoutPolicy<TimeoutPolicyOptions>, HttpTimeoutPolicy<TimeoutPolicyOptions>, TimeoutPolicyOptions>(
+            services.AddHttpResiliencePolicy<IHttpTimeoutPolicy, HttpTimeoutPolicy, HttpTimeoutPolicyOptions>(
                 policyOptionsName,
                 policyOptionsName);
 
             var sp = services.BuildServiceProvider();
 
-            var policy = sp.GetRequiredService<IHttpTimeoutPolicy<TimeoutPolicyOptions>>();
+            var policy = sp.GetRequiredService<IHttpTimeoutPolicy>();
             Assert.NotNull(policy);
 
             var result = await policy.GetAsyncPolicy().ExecuteAsync(async () =>

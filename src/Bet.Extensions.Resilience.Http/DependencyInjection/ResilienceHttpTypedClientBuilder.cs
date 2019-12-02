@@ -7,6 +7,7 @@ using System.Net.Http.Headers;
 using Bet.Extensions.Resilience.Abstractions.Options;
 using Bet.Extensions.Resilience.Http;
 using Bet.Extensions.Resilience.Http.Abstractions.Options;
+using Bet.Extensions.Resilience.Http.Options;
 using Bet.Extensions.Resilience.Http.Policies;
 
 using Microsoft.Extensions.Configuration;
@@ -167,7 +168,7 @@ namespace Microsoft.Extensions.DependencyInjection
             // TODO: rework with policies the issue of registration.
             IAsyncPolicy<HttpResponseMessage>? TimeoutPolicy(IServiceProvider sp, HttpRequestMessage request)
             {
-                var policy = sp.GetServices<IHttpTimeoutPolicy<TimeoutPolicyOptions>>()?.FirstOrDefault(x => x.PolicyOptions.Name == HttpPolicyName.DefaultHttpTimeoutPolicy);
+                var policy = sp.GetServices<IHttpTimeoutPolicy>()?.FirstOrDefault(x => x.PolicyOptions.Name == HttpTimeoutPolicyOptions.DefaultName);
                 return policy?.GetAsyncPolicy();
             }
 
@@ -175,7 +176,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
             IAsyncPolicy<HttpResponseMessage>? RetryPolicy(IServiceProvider sp, HttpRequestMessage request)
             {
-                var policy = sp.GetServices<IHttpRetryPolicy<RetryPolicyOptions>>()?.FirstOrDefault(x => x.PolicyOptions.Name == HttpPolicyName.DefaultHttpRetryPolicy);
+                var policy = sp.GetServices<IHttpRetryPolicy>()?.FirstOrDefault(x => x.PolicyOptions.Name == HttpRetryPolicyOptions.DefaultName);
                 return policy?.GetAsyncPolicy();
             }
 
@@ -183,7 +184,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
             IAsyncPolicy<HttpResponseMessage>? CircuitBreakerPolicy(IServiceProvider sp, HttpRequestMessage request)
             {
-                var policy = sp.GetServices<IHttpCircuitBreakerPolicy<CircuitBreakerPolicyOptions>>()?.FirstOrDefault(x => x.PolicyOptions.Name == HttpPolicyName.DefaultHttpCircuitBreakerPolicy);
+                var policy = sp.GetServices<IHttpCircuitBreakerPolicy>()?.FirstOrDefault(x => x.PolicyOptions.Name == HttpCircuitBreakerPolicyOptions.DefaultName);
                 return policy?.GetAsyncPolicy();
             }
 
@@ -274,7 +275,6 @@ namespace Microsoft.Extensions.DependencyInjection
         private void ConfigureAll()
         {
             // only configure once...
-
             if (!_configuredPrimaryHandler.configured
                 && _configuredPrimaryHandler.handlerFactory != null)
             {

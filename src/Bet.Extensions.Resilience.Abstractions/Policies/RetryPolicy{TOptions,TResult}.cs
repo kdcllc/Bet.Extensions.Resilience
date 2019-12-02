@@ -17,11 +17,11 @@ namespace Bet.Extensions.Resilience.Abstractions.Policies
             PolicyOptions policyOptions,
             IPolicyOptionsConfigurator<TOptions> policyOptionsConfigurator,
             IPolicyRegistryConfigurator registryConfigurator,
-            ILogger<IPolicy<TOptions>> logger) : base(policyOptions, policyOptionsConfigurator, registryConfigurator, logger)
+            ILogger<IPolicy<TOptions, TResult>> logger) : base(policyOptions, policyOptionsConfigurator, registryConfigurator, logger)
         {
         }
 
-        public Func<ILogger<IPolicy<TOptions>>, TOptions, Func<int, DelegateResult<TResult>, Context, TimeSpan>> OnDuration { get; set; } = (logger, options) =>
+        public Func<ILogger<IPolicy<TOptions, TResult>>, TOptions, Func<int, DelegateResult<TResult>, Context, TimeSpan>> OnDuration { get; set; } = (logger, options) =>
         {
             return (attempt, outcome, context) =>
             {
@@ -30,7 +30,7 @@ namespace Bet.Extensions.Resilience.Abstractions.Policies
             };
         };
 
-        public Func<ILogger<IPolicy<TOptions>>, TOptions, Func<DelegateResult<TResult>, TimeSpan, int, Context, Task>> OnRetryAsync { get; set; } = (logger, options) =>
+        public Func<ILogger<IPolicy<TOptions, TResult>>, TOptions, Func<DelegateResult<TResult>, TimeSpan, int, Context, Task>> OnRetryAsync { get; set; } = (logger, options) =>
         {
             return (outcome, time, attempt, context) =>
             {
@@ -39,7 +39,7 @@ namespace Bet.Extensions.Resilience.Abstractions.Policies
             };
         };
 
-        public Func<ILogger<IPolicy<TOptions>>, TOptions, Action<DelegateResult<TResult>, TimeSpan, int, Context>> OnRetry { get; set; } = (logger, options) =>
+        public Func<ILogger<IPolicy<TOptions, TResult>>, TOptions, Action<DelegateResult<TResult>, TimeSpan, int, Context>> OnRetry { get; set; } = (logger, options) =>
         {
             return (outcome, time, attempt, context) => logger.LogRetryOnRetry(time, attempt, context, options, outcome.GetExceptionMessages());
         };

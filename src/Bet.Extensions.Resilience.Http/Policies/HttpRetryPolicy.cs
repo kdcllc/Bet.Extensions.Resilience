@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Bet.Extensions.Resilience.Abstractions;
 using Bet.Extensions.Resilience.Abstractions.Options;
 using Bet.Extensions.Resilience.Abstractions.Policies;
+using Bet.Extensions.Resilience.Http.Options;
 
 using Microsoft.Extensions.Logging;
 
@@ -17,13 +18,12 @@ namespace Bet.Extensions.Resilience.Http.Policies
     /// Default Wait And Retry Polly Policy.
     /// </summary>
     /// <typeparam name="TOptions">The type of the options.</typeparam>
-    public class HttpRetryPolicy<TOptions> :
-        RetryPolicy<TOptions, HttpResponseMessage>,
-        IHttpRetryPolicy<TOptions>
-        where TOptions : RetryPolicyOptions
+    public class HttpRetryPolicy :
+        RetryPolicy<HttpRetryPolicyOptions, HttpResponseMessage>,
+        IHttpRetryPolicy
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="HttpRetryPolicy{TOptions}"/> class.
+        /// Initializes a new instance of the <see cref="HttpRetryPolicy"/> class.
         /// </summary>
         /// <param name="policyOptions"></param>
         /// <param name="policyOptionsConfigurator"></param>
@@ -31,9 +31,9 @@ namespace Bet.Extensions.Resilience.Http.Policies
         /// <param name="logger"></param>
         public HttpRetryPolicy(
             PolicyOptions policyOptions,
-            IPolicyOptionsConfigurator<TOptions> policyOptionsConfigurator,
+            IPolicyOptionsConfigurator<HttpRetryPolicyOptions> policyOptionsConfigurator,
             IPolicyRegistryConfigurator registryConfigurator,
-            ILogger<IPolicy<TOptions>> logger) : base(policyOptions, policyOptionsConfigurator, registryConfigurator, logger)
+            ILogger<IPolicy<HttpRetryPolicyOptions, HttpResponseMessage>> logger) : base(policyOptions, policyOptionsConfigurator, registryConfigurator, logger)
         {
             OnDuration = (logger, options) =>
             {
@@ -60,10 +60,15 @@ namespace Bet.Extensions.Resilience.Http.Policies
             return Policy<HttpResponseMessage>
                .Handle<HttpRequestException>()
                .OrResult(TransientHttpStatusCodePredicate)
+
+               // HttpStatusCode.TooManyRequests if not specific logic is applied for the retries.
+               .OrResult(x => (int)x.StatusCode == 429)
+
                    .WaitAndRetryAsync(
                        retryCount: Options.Count,
                        sleepDurationProvider: OnDuration(Logger, Options),
-                       onRetryAsync: OnRetryAsync(Logger, Options));
+                       onRetryAsync: OnRetryAsync(Logger, Options))
+                .WithPolicyKey($"{PolicyOptions.Name}{PolicyNameSuffix}");
         }
 
         /// <inheritdoc/>
@@ -80,7 +85,8 @@ namespace Bet.Extensions.Resilience.Http.Policies
                 .WaitAndRetry(
                     retryCount: Options.Count,
                     sleepDurationProvider: OnDuration(Logger, Options),
-                    onRetry: OnRetry(Logger, Options));
+                    onRetry: OnRetry(Logger, Options))
+                 .WithPolicyKey(PolicyOptions.Name);
         }
 
         private bool TransientHttpStatusCodePredicate(HttpResponseMessage response)

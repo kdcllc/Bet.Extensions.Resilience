@@ -72,11 +72,11 @@ namespace Bet.Extensions.Resilience.Abstractions.Policies
         {
             var policyName = $"{PolicyOptions.Name}";
 
-            _registryConfigurator.AddPolicy(policyName, GetSyncPolicy, true);
+            _registryConfigurator.AddPolicy(policyName, () => GetSyncPolicy(), true);
             Logger.LogDebug("[Configured][Polly Policy] - {policyName}", policyName);
 
             var asyncPolicy = $"{policyName}{PolicyNameSuffix}";
-            _registryConfigurator.AddPolicy(asyncPolicy, GetAsyncPolicy, true);
+            _registryConfigurator.AddPolicy(asyncPolicy, () => GetAsyncPolicy(), true);
             Logger.LogDebug("[Configured][Polly Policy] - {policyName}", asyncPolicy);
         }
 

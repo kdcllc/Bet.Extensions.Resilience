@@ -17,11 +17,11 @@ namespace Bet.Extensions.Resilience.Abstractions.Policies
             PolicyOptions policyOptions,
             IPolicyOptionsConfigurator<TOptions> policyOptionsConfigurator,
             IPolicyRegistryConfigurator registryConfigurator,
-            ILogger<IPolicy<TOptions>> logger) : base(policyOptions, policyOptionsConfigurator, registryConfigurator, logger)
+            ILogger<IPolicy<TOptions, TResult>> logger) : base(policyOptions, policyOptionsConfigurator, registryConfigurator, logger)
         {
         }
 
-        public Func<ILogger<IPolicy<TOptions>>, TOptions, Action<DelegateResult<TResult>, CircuitState, TimeSpan, Context>> OnBreak { get; set; } = (logger, options) =>
+        public Func<ILogger<IPolicy<TOptions, TResult>>, TOptions, Action<DelegateResult<TResult>, CircuitState, TimeSpan, Context>> OnBreak { get; set; } = (logger, options) =>
         {
             return (outcome, state, time, context) =>
             {
@@ -30,7 +30,7 @@ namespace Bet.Extensions.Resilience.Abstractions.Policies
         };
 
         /// <inheritdoc/>
-        public Func<ILogger<IPolicy<TOptions>>, TOptions, Action<Context>> OnReset { get; set; } = (logger, options) =>
+        public Func<ILogger<IPolicy<TOptions, TResult>>, TOptions, Action<Context>> OnReset { get; set; } = (logger, options) =>
         {
             return (context) =>
             {
@@ -39,7 +39,7 @@ namespace Bet.Extensions.Resilience.Abstractions.Policies
         };
 
         /// <inheritdoc/>
-        public Func<ILogger<IPolicy<TOptions>>, TOptions, Action> OnHalfOpen { get; set; } = (logger, options) =>
+        public Func<ILogger<IPolicy<TOptions, TResult>>, TOptions, Action> OnHalfOpen { get; set; } = (logger, options) =>
         {
             return () =>
             {

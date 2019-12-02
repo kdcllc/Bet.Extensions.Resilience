@@ -1,12 +1,12 @@
 ﻿using System.Net.Http;
 
-using Bet.Extensions.Resilience.Abstractions.Options;
 using Bet.Extensions.Resilience.Abstractions.Policies;
+using Bet.Extensions.Resilience.Http.Options;
 
 namespace Bet.Extensions.Resilience.Http.Policies
 {
-    public interface IHttpTimeoutPolicy<TOptions> :
-        IPolicy<TOptions, HttpResponseMessage> where TOptions : PolicyOptions
+    public interface IHttpTimeoutPolicy :
+        IPolicy<HttpTimeoutPolicyOptions, HttpResponseMessage>
     {
     }
 }

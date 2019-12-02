@@ -20,10 +20,10 @@ namespace Bet.Extensions.Resilience.Abstractions.Policies
 
     public interface ICircuitBreakerPolicy<TOptions, TResult> : IPolicy<TOptions, TResult> where TOptions : PolicyOptions
     {
-        Func<ILogger<IPolicy<TOptions>>, TOptions, Action<DelegateResult<TResult>, CircuitState, TimeSpan, Context>> OnBreak { get; set; }
+        Func<ILogger<IPolicy<TOptions, TResult>>, TOptions, Action<DelegateResult<TResult>, CircuitState, TimeSpan, Context>> OnBreak { get; set; }
 
-        Func<ILogger<IPolicy<TOptions>>, TOptions, Action<Context>> OnReset { get; set; }
+        Func<ILogger<IPolicy<TOptions, TResult>>, TOptions, Action<Context>> OnReset { get; set; }
 
-        Func<ILogger<IPolicy<TOptions>>, TOptions, Action> OnHalfOpen { get; set; }
+        Func<ILogger<IPolicy<TOptions, TResult>>, TOptions, Action> OnHalfOpen { get; set; }
     }
 }

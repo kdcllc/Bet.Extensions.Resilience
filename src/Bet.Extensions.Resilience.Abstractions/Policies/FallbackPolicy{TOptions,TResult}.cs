@@ -17,8 +17,6 @@ namespace Bet.Extensions.Resilience.Abstractions.Policies
         BasePolicy<TOptions, TResult>,
         IFallbackPolicy<TOptions, TResult> where TOptions : FallbackPolicyOptions
     {
-        private readonly ILogger<IPolicy<TOptions>> _logger;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="FallbackPolicy{TOptions, TResult}"/> class.
         /// </summary>
@@ -30,12 +28,11 @@ namespace Bet.Extensions.Resilience.Abstractions.Policies
             PolicyOptions policyOptions,
             IPolicyOptionsConfigurator<TOptions> policyOptionsConfigurator,
             IPolicyRegistryConfigurator registryConfigurator,
-            ILogger<IPolicy<TOptions>> logger) : base(policyOptions, policyOptionsConfigurator, registryConfigurator, logger)
+            ILogger<IPolicy<TOptions, TResult>> logger) : base(policyOptions, policyOptionsConfigurator, registryConfigurator, logger)
         {
-            _logger = logger;
         }
 
-        public Func<ILogger<IPolicy<TOptions>>, TOptions, Func<DelegateResult<TResult>, Context, CancellationToken, Task<TResult>>> FallBackActionAsync { get; set; } = (logger, options) =>
+        public Func<ILogger<IPolicy<TOptions, TResult>>, TOptions, Func<DelegateResult<TResult>, Context, CancellationToken, Task<TResult>>> FallBackActionAsync { get; set; } = (logger, options) =>
         {
             return (outcome, context, token) =>
             {
@@ -44,9 +41,9 @@ namespace Bet.Extensions.Resilience.Abstractions.Policies
             };
         };
 
-        public Func<ILogger<IPolicy<TOptions>>, TOptions, Func<DelegateResult<TResult>, Context, Task>> OnFallbackAsync { get; set; } = (logger, options) => (outcome, context) => Task.CompletedTask;
+        public Func<ILogger<IPolicy<TOptions, TResult>>, TOptions, Func<DelegateResult<TResult>, Context, Task>> OnFallbackAsync { get; set; } = (logger, options) => (outcome, context) => Task.CompletedTask;
 
-        public Func<ILogger<IPolicy<TOptions>>, TOptions, Func<DelegateResult<TResult>, Context, CancellationToken, TResult>> FallBackAction { get; set; } = (logger, options) =>
+        public Func<ILogger<IPolicy<TOptions, TResult>>, TOptions, Func<DelegateResult<TResult>, Context, CancellationToken, TResult>> FallBackAction { get; set; } = (logger, options) =>
         {
             return (outcome, context, token) =>
             {
@@ -55,7 +52,7 @@ namespace Bet.Extensions.Resilience.Abstractions.Policies
             };
         };
 
-        public Func<ILogger<IPolicy<TOptions>>, TOptions, Action<DelegateResult<TResult>, Context>> OnFallback { get; set; } = (logger, options) => (outcome, context) => { };
+        public Func<ILogger<IPolicy<TOptions, TResult>>, TOptions, Action<DelegateResult<TResult>, Context>> OnFallback { get; set; } = (logger, options) => (outcome, context) => { };
 
         public override IAsyncPolicy<TResult> GetAsyncPolicy()
         {
@@ -84,7 +81,7 @@ namespace Bet.Extensions.Resilience.Abstractions.Policies
                 // failed bulkhead policy
                 .Or<BulkheadRejectedException>()
 
-                .FallbackAsync(FallBackActionAsync(_logger, Options), OnFallbackAsync(_logger, Options))
+                .FallbackAsync(FallBackActionAsync(Logger, Options), OnFallbackAsync(Logger, Options))
 
                 .WithPolicyKey($"{PolicyOptions.Name}{PolicyNameSuffix}");
         }
@@ -116,7 +113,7 @@ namespace Bet.Extensions.Resilience.Abstractions.Policies
                 // failed bulkhead policy
                 .Or<BulkheadRejectedException>()
 
-                .Fallback(fallbackAction: FallBackAction(_logger, Options), onFallback: OnFallback(_logger, Options))
+                .Fallback(fallbackAction: FallBackAction(Logger, Options), onFallback: OnFallback(Logger, Options))
 
                 .WithPolicyKey(PolicyOptions.Name);
         }

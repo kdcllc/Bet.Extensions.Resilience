@@ -46,7 +46,7 @@ namespace Bet.Extensions.Resilience.Abstractions.Policies
         /// The Task parameter will be null if the executed
         /// action responded co-operatively to cancellation before the policy timed it out.
         /// </summary>
-        Func<ILogger<IPolicy<TOptions>>, TOptions, Func<Context, TimeSpan, Task, Exception, Task>> OnTimeoutAsync { get; set; }
+        Func<ILogger<IPolicy<TOptions, TResult>>, TOptions, Func<Context, TimeSpan, Task, Exception, Task>> OnTimeoutAsync { get; set; }
 
         /// <summary>
         /// The time out sync action.
@@ -55,6 +55,6 @@ namespace Bet.Extensions.Resilience.Abstractions.Policies
         /// action responded co-operatively to cancellation before the policy timed it out.
         /// The captured <see cref="Exception"/> of the canceled timed-out action.
         /// </summary>
-        Func<ILogger<IPolicy<TOptions>>, TOptions, Action<Context, TimeSpan, Task, Exception>> OnTimeout { get; set; }
+        Func<ILogger<IPolicy<TOptions, TResult>>, TOptions, Action<Context, TimeSpan, Task, Exception>> OnTimeout { get; set; }
     }
 }

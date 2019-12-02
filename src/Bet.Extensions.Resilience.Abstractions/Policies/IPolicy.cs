@@ -1,5 +1,7 @@
 ﻿using Bet.Extensions.Resilience.Abstractions.Options;
 
+using Microsoft.Extensions.Logging;
+
 namespace Bet.Extensions.Resilience.Abstractions.Policies
 {
     /// <summary>
@@ -10,6 +12,10 @@ namespace Bet.Extensions.Resilience.Abstractions.Policies
     public interface IPolicy<TOptions>
         : IPolicyDescriptor<TOptions>, IPolicyConfigurator<TOptions> where TOptions : PolicyOptions
     {
+        /// <summary>
+        /// Common Logger.
+        /// </summary>
+        ILogger<IPolicy<TOptions>> Logger { get; }
     }
 
     /// <summary>
@@ -21,5 +27,9 @@ namespace Bet.Extensions.Resilience.Abstractions.Policies
     public interface IPolicy<TOptions, TResult>
         : IPolicyDescriptor<TOptions>, IPolicyConfigurator<TOptions, TResult> where TOptions : PolicyOptions
     {
+        /// <summary>
+        /// Common Logger.
+        /// </summary>
+        ILogger<IPolicy<TOptions, TResult>> Logger { get; }
     }
 }
