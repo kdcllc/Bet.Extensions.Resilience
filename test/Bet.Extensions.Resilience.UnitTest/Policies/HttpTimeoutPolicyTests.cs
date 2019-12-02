@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-
+using Bet.Extensions.Resilience.Abstractions;
 using Bet.Extensions.Resilience.Http;
 using Bet.Extensions.Resilience.Http.Options;
 using Bet.Extensions.Resilience.Http.Policies;
@@ -11,7 +11,8 @@ using Bet.Extensions.Testing.Logging;
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-
+using Polly;
+using Polly.Registry;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -99,6 +100,52 @@ namespace Bet.Extensions.Resilience.UnitTest.Policies
             Assert.NotNull(policy);
 
             var result = await policy.GetAsyncPolicy().ExecuteAsync(async () =>
+            {
+                await Task.Delay(TimeSpan.FromSeconds(1));
+                return await Task.FromResult(new HttpResponseMessage(HttpStatusCode.BadRequest));
+            });
+
+            Assert.Equal(HttpStatusCode.BadRequest, result.StatusCode);
+        }
+
+        [Fact]
+        public async Task HttpTimeoutPolicy_Registry_With_Result_Async_Should_Succeeded()
+        {
+            var policyOptionsName = HttpTimeoutPolicyOptions.DefaultName;
+
+            var services = new ServiceCollection();
+
+            // logger is required for policies.
+            services.AddLogging(builder =>
+            {
+                builder.AddXunit(_output);
+            });
+
+            var dic = new Dictionary<string, string>
+            {
+                { $"{policyOptionsName}:Timeout", "00:00:02" },
+            };
+
+            var config = new ConfigurationBuilder().AddInMemoryCollection(dic).Build();
+            services.AddSingleton<IConfiguration>(config);
+
+            services.AddHttpResiliencePolicy<IHttpTimeoutPolicy, HttpTimeoutPolicy, HttpTimeoutPolicyOptions>(
+                policyOptionsName,
+                policyOptionsName);
+
+            var sp = services.BuildServiceProvider();
+
+            // register policy with global registry
+            var registar = sp.GetRequiredService<IPolicyRegistrator>();
+            Assert.NotNull(registar);
+            registar.ConfigurePolicies();
+
+            var registry = sp.GetRequiredService<IReadOnlyPolicyRegistry<string>>();
+
+            var policy = registry.Get<IAsyncPolicy<HttpResponseMessage>>($"{policyOptionsName}Async");
+            Assert.NotNull(policy);
+
+            var result = await policy.ExecuteAsync(async () =>
             {
                 await Task.Delay(TimeSpan.FromSeconds(1));
                 return await Task.FromResult(new HttpResponseMessage(HttpStatusCode.BadRequest));

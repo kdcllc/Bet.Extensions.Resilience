@@ -15,7 +15,6 @@ namespace Bet.Extensions.Resilience.Http.Policies
     /// <summary>
     /// The default http circuit breaker policy.
     /// </summary>
-    /// <typeparam name="TOptions"></typeparam>
     public class HttpCircuitBreakerPolicy :
         CircuitBreakerPolicy<HttpCircuitBreakerPolicyOptions, HttpResponseMessage>,
         IHttpCircuitBreakerPolicy

@@ -48,8 +48,8 @@ namespace Bet.Extensions.Resilience.WebApp.Sample
                 // configurations for options becomes IChavahClient
                 // .AddHttpClient<IChavahClient, ChavahClient>()
                 .ConfigureOptions<HttpClientOptions>()
-                .AddPolicyHandlerFromRegistry(HttpCircuitBreakerPolicyOptions.DefaultName)
-                .AddPolicyHandlerFromRegistry(HttpRetryPolicyOptions.DefaultName);
+                .AddPolicyHandlerFromRegistry($"{HttpCircuitBreakerPolicyOptions.DefaultName}Async")
+                .AddPolicyHandlerFromRegistry($"{HttpRetryPolicyOptions.DefaultName}Async");
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

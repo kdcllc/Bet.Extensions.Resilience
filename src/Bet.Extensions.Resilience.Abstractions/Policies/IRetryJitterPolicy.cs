@@ -2,11 +2,11 @@
 
 namespace Bet.Extensions.Resilience.Abstractions.Policies
 {
-    public interface IRetryJitterPolicy<TOptions> : IPolicy<TOptions> where TOptions : PolicyOptions
+    public interface IRetryJitterPolicy : IPolicy<RetryJitterPolicyOptions>
     {
     }
 
-    public interface IRetryJitterPolicy<TOptions, TResult> : IPolicy<TOptions, TResult> where TOptions : PolicyOptions
+    public interface IRetryJitterPolicy<TResult> : IPolicy<RetryJitterPolicyOptions, TResult>
     {
     }
 }
