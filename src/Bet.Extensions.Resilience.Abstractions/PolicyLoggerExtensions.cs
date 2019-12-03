@@ -138,13 +138,13 @@ namespace Polly
         /// <param name="logger">The logger.</param>
         /// <param name="retryAttempt">The current retry attempt count.</param>
         /// <param name="context">The polly context.</param>
-        /// <param name="options">The policy options.</param>
+        /// <param name="numberOfRetries">The total number of the retries possible.</param>
         /// <param name="message">The message to log.</param>
         public static void LogRetryOnDuration<T>(
             this ILogger<T> logger,
             int retryAttempt,
             Context context,
-            RetryPolicyOptions options,
+            int numberOfRetries,
             string message)
         {
             logger.LogInformation(
@@ -157,7 +157,7 @@ namespace Polly
                 context.OperationKey,
                 context.CorrelationId,
                 retryAttempt,
-                options.Count,
+                numberOfRetries,
                 message);
         }
 
@@ -169,7 +169,7 @@ namespace Polly
         /// <param name="time">The elapse time.</param>
         /// <param name="retryAttempt">The current retry attempt count.</param>
         /// <param name="context">The polly context.</param>
-        /// <param name="options">The policy options.</param>
+        /// <param name="numberOfRetries">The total number of the retries possible.</param>
         /// <param name="message">The message to log.</param>
         /// <returns></returns>
         public static Task LogRetryOnRetry<T>(
@@ -177,7 +177,7 @@ namespace Polly
             TimeSpan time,
             int retryAttempt,
             Context context,
-            RetryPolicyOptions options,
+            int numberOfRetries,
             string message)
         {
             logger.LogWarning(
@@ -192,7 +192,7 @@ namespace Polly
                 context.CorrelationId,
                 time,
                 retryAttempt,
-                options.Count,
+                numberOfRetries,
                 message);
 
             return Task.CompletedTask;

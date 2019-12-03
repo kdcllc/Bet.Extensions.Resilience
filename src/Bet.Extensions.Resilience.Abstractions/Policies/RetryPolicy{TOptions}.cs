@@ -25,7 +25,7 @@ namespace Bet.Extensions.Resilience.Abstractions.Policies
         {
             return (attempt, outcome, context) =>
             {
-                logger.LogRetryOnDuration(attempt, context, options, outcome.GetExceptionMessages());
+                logger.LogRetryOnDuration(attempt, context, options.Count, outcome.GetExceptionMessages());
                 return TimeSpan.FromSeconds(Math.Pow(options.BackoffPower, attempt));
             };
         };
@@ -34,14 +34,14 @@ namespace Bet.Extensions.Resilience.Abstractions.Policies
         {
             return (outcome, time, attempt, context) =>
             {
-                logger.LogRetryOnRetry(time, attempt, context, options, outcome.GetExceptionMessages());
+                logger.LogRetryOnRetry(time, attempt, context, options.Count, outcome.GetExceptionMessages());
                 return Task.CompletedTask;
             };
         };
 
         public Func<ILogger<IPolicy<TOptions>>, TOptions, Action<Exception, TimeSpan, int, Context>> OnRetry { get; set; } = (logger, options) =>
         {
-            return (outcome, time, attempt, context) => logger.LogRetryOnRetry(time, attempt, context, options, outcome.GetExceptionMessages());
+            return (outcome, time, attempt, context) => logger.LogRetryOnRetry(time, attempt, context, options.Count, outcome.GetExceptionMessages());
         };
 
         public override IAsyncPolicy GetAsyncPolicy()
@@ -64,7 +64,7 @@ namespace Bet.Extensions.Resilience.Abstractions.Policies
         public override ISyncPolicy GetSyncPolicy()
         {
             if (OnDuration == null
-               || OnRetryAsync == null)
+               || OnRetry == null)
             {
                 throw new InvalidOperationException($"Please configure {nameof(OnDuration)} and {nameof(OnRetry)} properties");
             }

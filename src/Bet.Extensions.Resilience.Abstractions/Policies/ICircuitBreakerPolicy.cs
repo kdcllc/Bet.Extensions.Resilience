@@ -9,7 +9,7 @@ using Polly.CircuitBreaker;
 
 namespace Bet.Extensions.Resilience.Abstractions.Policies
 {
-    public interface ICircuitBreakerPolicy<TOptions> : IPolicy<TOptions> where TOptions : PolicyOptions
+    public interface ICircuitBreakerPolicy<TOptions> : IPolicy<TOptions> where TOptions : CircuitBreakerPolicyOptions
     {
         Func<ILogger<IPolicy<TOptions>>, TOptions, Action<Exception, CircuitState, TimeSpan, Context>> OnBreak { get; set; }
 
@@ -18,7 +18,7 @@ namespace Bet.Extensions.Resilience.Abstractions.Policies
         Func<ILogger<IPolicy<TOptions>>, TOptions, Action> OnHalfOpen { get; set; }
     }
 
-    public interface ICircuitBreakerPolicy<TOptions, TResult> : IPolicy<TOptions, TResult> where TOptions : PolicyOptions
+    public interface ICircuitBreakerPolicy<TOptions, TResult> : IPolicy<TOptions, TResult> where TOptions : CircuitBreakerPolicyOptions
     {
         Func<ILogger<IPolicy<TOptions, TResult>>, TOptions, Action<DelegateResult<TResult>, CircuitState, TimeSpan, Context>> OnBreak { get; set; }
 

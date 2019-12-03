@@ -9,19 +9,19 @@ using Polly;
 
 namespace Bet.Extensions.Resilience.Abstractions.Policies
 {
-    public class RetryJitterPolicy<TOptions> :
-                BasePolicy<TOptions>,
-                IRetryJitterPolicy<TOptions> where TOptions : RetryJitterPolicyOptions
+    public class RetryJitterPolicy<TOptions, TResult> :
+                        BasePolicy<TOptions, TResult>,
+                        IRetryJitterPolicy<TOptions, TResult> where TOptions : RetryJitterPolicyOptions
     {
         public RetryJitterPolicy(
             PolicyOptions policyOptions,
             IPolicyOptionsConfigurator<TOptions> policyOptionsConfigurator,
             IPolicyRegistryConfigurator registryConfigurator,
-            ILogger<IPolicy<TOptions>> logger) : base(policyOptions, policyOptionsConfigurator, registryConfigurator, logger)
+            ILogger<IPolicy<TOptions, TResult>> logger) : base(policyOptions, policyOptionsConfigurator, registryConfigurator, logger)
         {
         }
 
-        public Func<ILogger<IPolicy<TOptions>>, TOptions, Func<Exception, TimeSpan, int, Context, Task>> OnRetryAsync { get; set; } = (logger, options) =>
+        public Func<ILogger<IPolicy<TOptions, TResult>>, TOptions, Func<DelegateResult<TResult>, TimeSpan, int, Context, Task>> OnRetryAsync { get; set; } = (logger, options) =>
         {
             return (outcome, time, attempt, context) =>
             {
@@ -30,12 +30,12 @@ namespace Bet.Extensions.Resilience.Abstractions.Policies
             };
         };
 
-        public Func<ILogger<IPolicy<TOptions>>, TOptions, Action<Exception, TimeSpan, int, Context>> OnRetry { get; set; } = (logger, options) =>
+        public Func<ILogger<IPolicy<TOptions, TResult>>, TOptions, Action<DelegateResult<TResult>, TimeSpan, int, Context>> OnRetry { get; set; } = (logger, options) =>
         {
             return (outcome, time, attempt, context) => logger.LogRetryOnRetry(time, attempt, context, options.MaxRetries, outcome.GetExceptionMessages());
         };
 
-        public override IAsyncPolicy GetAsyncPolicy()
+        public override IAsyncPolicy<TResult> GetAsyncPolicy()
         {
             if (OnRetryAsync == null)
             {
@@ -43,7 +43,7 @@ namespace Bet.Extensions.Resilience.Abstractions.Policies
             }
 
             var delay = Backoff.DecorrelatedJitter(Options.MaxRetries, Options.SeedDelay, Options.MaxDelay);
-            return Policy
+            return Policy<TResult>
                 .Handle<Exception>()
                 .WaitAndRetryAsync(
                 delay,
@@ -51,7 +51,7 @@ namespace Bet.Extensions.Resilience.Abstractions.Policies
                 .WithPolicyKey($"{PolicyOptions.Name}{PolicyNameSuffix}");
         }
 
-        public override ISyncPolicy GetSyncPolicy()
+        public override ISyncPolicy<TResult> GetSyncPolicy()
         {
             if (OnRetry == null)
             {
@@ -60,7 +60,7 @@ namespace Bet.Extensions.Resilience.Abstractions.Policies
 
             var delay = Backoff.DecorrelatedJitter(Options.MaxRetries, Options.SeedDelay, Options.MaxDelay);
 
-            return Policy
+            return Policy<TResult>
                .Handle<Exception>()
                .WaitAndRetry(
                delay,

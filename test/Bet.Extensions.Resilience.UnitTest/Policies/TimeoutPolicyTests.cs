@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
 using Bet.Extensions.Resilience.Abstractions;
 using Bet.Extensions.Resilience.Abstractions.Options;
 using Bet.Extensions.Resilience.Abstractions.Policies;
+using Bet.Extensions.Resilience.UnitTest.Policies.Options;
 using Bet.Extensions.Testing.Logging;
 
 using Microsoft.Extensions.Configuration;
@@ -63,6 +65,52 @@ namespace Bet.Extensions.Resilience.UnitTest.Policies
 
             var registeredAsyncPolicy = policyRegistry.Get<IAsyncPolicy>($"{policyOptionsName}Async");
             Assert.NotNull(registeredAsyncPolicy);
+        }
+
+        [Fact]
+        public void TimeoutPolicy_Should_Register_4_Policies_With_Registry()
+        {
+            var defaultPolicyName = TimeoutPolicyOptions.DefaultName;
+            var customPolicyName = "TestTimeoutPolicy";
+
+            var services = new ServiceCollection();
+            // logger is required for policies.
+            services.AddLogging(builder =>
+            {
+                builder.AddXunit(_output);
+            });
+            var dic = new Dictionary<string, string>
+            {
+                { $"{defaultPolicyName}:Timeout", "00:00:01" },
+                { $"{customPolicyName}:Timeout", "00:00:02" },
+            };
+            var config = new ConfigurationBuilder().AddInMemoryCollection(dic).Build();
+            services.AddSingleton<IConfiguration>(config);
+
+            services.AddResiliencePolicy<ITimeoutPolicy<TimeoutPolicyOptions>, TimeoutPolicy<TimeoutPolicyOptions>, TimeoutPolicyOptions>(
+                defaultPolicyName,
+                defaultPolicyName);
+
+            services.AddResiliencePolicy<ITimeoutPolicy<TestTimeoutPolicyOptions>, TimeoutPolicy<TestTimeoutPolicyOptions>, TestTimeoutPolicyOptions>(
+                customPolicyName,
+                customPolicyName);
+
+            var sp = services.BuildServiceProvider();
+            // configure policies within Policy Registry.
+
+            var configure = sp.GetRequiredService<IPolicyRegistrator>();
+
+            configure.ConfigurePolicies();
+
+            var policyRegistry = sp.GetRequiredService<IPolicyRegistry<string>>();
+
+            Assert.Equal(4, policyRegistry.Count);
+
+            var defaultAsyncPolicy = policyRegistry.Get<IAsyncPolicy>($"{defaultPolicyName}Async");
+            Assert.NotNull(defaultAsyncPolicy);
+
+            var allPolicies = sp.GetServices<ITimeoutPolicy<TestTimeoutPolicyOptions>>();
+            Assert.Single(allPolicies);
         }
 
         [Fact]
@@ -296,7 +344,7 @@ namespace Bet.Extensions.Resilience.UnitTest.Policies
             var config = new ConfigurationBuilder().AddInMemoryCollection(dic).Build();
             services.AddSingleton<IConfiguration>(config);
 
-            services.AddResiliencePolicy<ITimeoutPolicy<TimeoutPolicyOptions,string>, TimeoutPolicy<TimeoutPolicyOptions,string>, TimeoutPolicyOptions, string>(
+            services.AddResiliencePolicy<ITimeoutPolicy<TimeoutPolicyOptions, string>, TimeoutPolicy<TimeoutPolicyOptions, string>, TimeoutPolicyOptions, string>(
                 policyOptionsName,
                 policyOptionsName);
 

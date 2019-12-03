@@ -17,7 +17,6 @@ namespace Bet.Extensions.Resilience.Http.Policies
     /// <summary>
     /// Default Wait And Retry Polly Policy.
     /// </summary>
-    /// <typeparam name="TOptions">The type of the options.</typeparam>
     public class HttpRetryPolicy :
         RetryPolicy<HttpRetryPolicyOptions, HttpResponseMessage>,
         IHttpRetryPolicy
@@ -39,7 +38,7 @@ namespace Bet.Extensions.Resilience.Http.Policies
             {
                 return (attempt, outcome, context) =>
                 {
-                    logger.LogRetryOnDuration(attempt, context, options, outcome.GetMessage());
+                    logger.LogRetryOnDuration(attempt, context, options.Count, outcome.GetMessage());
                     return TimeSpan.FromSeconds(Math.Pow(options.BackoffPower, attempt));
                 };
             };
@@ -52,23 +51,24 @@ namespace Bet.Extensions.Resilience.Http.Policies
             {
                 return (outcome, time, attempt, context) =>
                 {
-                    logger.LogRetryOnRetry(time, attempt, context, options, outcome.GetMessage());
+                    logger.LogRetryOnRetry(time, attempt, context, options.Count, outcome.GetMessage());
                     return Task.CompletedTask;
                 };
             };
 
             return Policy<HttpResponseMessage>
                .Handle<HttpRequestException>()
+
                .OrResult(TransientHttpStatusCodePredicate)
 
                // HttpStatusCode.TooManyRequests if not specific logic is applied for the retries.
                .OrResult(x => (int)x.StatusCode == 429)
 
-                   .WaitAndRetryAsync(
+               .WaitAndRetryAsync(
                        retryCount: Options.Count,
                        sleepDurationProvider: OnDuration(Logger, Options),
                        onRetryAsync: OnRetryAsync(Logger, Options))
-                .WithPolicyKey($"{PolicyOptions.Name}{PolicyNameSuffix}");
+               .WithPolicyKey($"{PolicyOptions.Name}{PolicyNameSuffix}");
         }
 
         /// <inheritdoc/>
@@ -76,17 +76,22 @@ namespace Bet.Extensions.Resilience.Http.Policies
         {
             OnRetry = (logger, options) =>
             {
-                return (outcome, time, attempt, context) => logger.LogRetryOnRetry(time, attempt, context, options, outcome.GetMessage());
+                return (outcome, time, attempt, context) => logger.LogRetryOnRetry(time, attempt, context, options.Count, outcome.GetMessage());
             };
 
             return Policy<HttpResponseMessage>
                .Handle<HttpRequestException>()
+
                .OrResult(TransientHttpStatusCodePredicate)
-                .WaitAndRetry(
+
+               // HttpStatusCode.TooManyRequests if not specific logic is applied for the retries.
+               .OrResult(x => (int)x.StatusCode == 429)
+
+               .WaitAndRetry(
                     retryCount: Options.Count,
                     sleepDurationProvider: OnDuration(Logger, Options),
                     onRetry: OnRetry(Logger, Options))
-                 .WithPolicyKey(PolicyOptions.Name);
+               .WithPolicyKey(PolicyOptions.Name);
         }
 
         private bool TransientHttpStatusCodePredicate(HttpResponseMessage response)

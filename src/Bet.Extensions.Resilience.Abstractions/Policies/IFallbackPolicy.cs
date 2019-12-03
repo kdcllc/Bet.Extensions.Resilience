@@ -10,7 +10,7 @@ using Polly;
 
 namespace Bet.Extensions.Resilience.Abstractions.Policies
 {
-    public interface IFallbackPolicy<TOptions> : IPolicy<TOptions> where TOptions : PolicyOptions
+    public interface IFallbackPolicy<TOptions> : IPolicy<TOptions> where TOptions : FallbackPolicyOptions
     {
         Func<ILogger<IPolicy<TOptions>>, TOptions, Action<Exception, Context, CancellationToken>> FallBackAction { get; set; }
 
@@ -21,7 +21,7 @@ namespace Bet.Extensions.Resilience.Abstractions.Policies
         Func<ILogger<IPolicy<TOptions>>, TOptions, Func<Exception, Context, Task>> OnFallbackAsync { get; set; }
     }
 
-    public interface IFallbackPolicy<TOptions, TResult> : IPolicy<TOptions, TResult> where TOptions : PolicyOptions
+    public interface IFallbackPolicy<TOptions, TResult> : IPolicy<TOptions, TResult> where TOptions : FallbackPolicyOptions
     {
         Func<ILogger<IPolicy<TOptions, TResult>>, TOptions, Func<DelegateResult<TResult>, Context, CancellationToken, Task<TResult>>> FallBackActionAsync { get; set; }
 

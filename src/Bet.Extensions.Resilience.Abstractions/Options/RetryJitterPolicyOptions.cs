@@ -27,5 +27,10 @@ namespace Bet.Extensions.Resilience.Abstractions.Options
         /// The Maximum delay within the retry. The default is 200 seconds.
         /// </summary>
         public TimeSpan MaxDelay { get; set; } = TimeSpan.FromSeconds(200);
+
+        /// <summary>
+        /// The seed time delay.
+        /// </summary>
+        public TimeSpan SeedDelay { get; set; } = TimeSpan.FromMilliseconds(100);
     }
 }

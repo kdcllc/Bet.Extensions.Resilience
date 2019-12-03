@@ -13,7 +13,7 @@ namespace Bet.Extensions.Resilience.Abstractions.Policies
     /// Timeout Policy definition.
     /// </summary>
     /// <typeparam name="TOptions"></typeparam>
-    public interface ITimeoutPolicy<TOptions> : IPolicy<TOptions> where TOptions : PolicyOptions
+    public interface ITimeoutPolicy<TOptions> : IPolicy<TOptions> where TOptions : TimeoutPolicyOptions
     {
         /// <summary>
         /// The timeout async action.
@@ -38,7 +38,7 @@ namespace Bet.Extensions.Resilience.Abstractions.Policies
     /// </summary>
     /// <typeparam name="TOptions"></typeparam>
     /// <typeparam name="TResult"></typeparam>
-    public interface ITimeoutPolicy<TOptions, TResult> : IPolicy<TOptions, TResult> where TOptions : PolicyOptions
+    public interface ITimeoutPolicy<TOptions, TResult> : IPolicy<TOptions, TResult> where TOptions : TimeoutPolicyOptions
     {
         /// <summary>
         /// The timeout async action.
