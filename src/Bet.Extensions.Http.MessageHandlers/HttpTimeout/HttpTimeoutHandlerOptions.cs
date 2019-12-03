@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Net.Http;
 
-namespace Bet.Extensions.Http.MessageHandlers.Timeout
+namespace Bet.Extensions.Http.MessageHandlers.HttpTimeout
 {
     /// <summary>
-    /// The options to configure for <see cref="TimeoutHandler"/>.
+    /// The options to configure for <see cref="HttpTimeoutHandler"/>.
     /// </summary>
-    public sealed class TimeoutHandlerOptions
+    public sealed class HttpTimeoutHandlerOptions
     {
         /// <summary>
         /// The default time out for <see cref="HttpClient"/>.

@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Net.Http;
-
+using Bet.Extensions.Http.MessageHandlers.HttpTimeout;
 using Bet.Extensions.Resilience.Abstractions.Options;
 using Bet.Extensions.Resilience.Abstractions.Policies;
 using Bet.Extensions.Resilience.Http;
 using Bet.Extensions.Resilience.Http.Options;
 using Bet.Extensions.Resilience.Http.Policies;
+using Microsoft.Extensions.Options;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -73,6 +74,23 @@ namespace Microsoft.Extensions.DependencyInjection
                     ServiceLifetime.Transient);
 
             return services;
+        }
+
+        public static IHttpClientBuilder AddHttpTimeoutHanlder<TPolicyOptions>(this IHttpClientBuilder builder) where TPolicyOptions : TimeoutPolicyOptions, new()
+        {
+            // register delegating handler options.
+            builder.Services.AddSingleton<IConfigureOptions<HttpTimeoutHandlerOptions>>((sp) =>
+            {
+                var timeoutPolicyOptions = sp.GetRequiredService<IOptions<TPolicyOptions>>().Value;
+                return new ConfigureOptions<HttpTimeoutHandlerOptions>((options) =>
+                {
+                    options.DefaultTimeout = timeoutPolicyOptions.Timeout;
+                });
+            });
+
+            builder.AddHttpTimeoutHandler();
+
+            return builder;
         }
     }
 }

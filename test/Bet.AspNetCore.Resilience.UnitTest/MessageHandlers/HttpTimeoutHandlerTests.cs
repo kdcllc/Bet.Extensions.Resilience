@@ -3,8 +3,8 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 
-using Bet.Extensions.Http.MessageHandlers.Timeout;
-
+using Bet.Extensions.Http.MessageHandlers.HttpTimeout;
+using Bet.Extensions.Testing.Logging;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -13,15 +13,18 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Bet.AspNetCore.Resilience.UnitTest.MessageHandlers
 {
-    public class TimeoutHandlerTests
+    public class HttpTimeoutHandlerTests
     {
         private readonly TestServer _server;
 
-        public TimeoutHandlerTests()
+        public HttpTimeoutHandlerTests(ITestOutputHelper output)
         {
+            Output = output;
+
             var webHost = new WebHostBuilder()
                 .UseUrls("https://testserver:1000")
                 .UseStartup<MessageHandlersStartup>()
@@ -59,12 +62,19 @@ namespace Bet.AspNetCore.Resilience.UnitTest.MessageHandlers
             _server = new TestServer(webHost);
         }
 
+        public ITestOutputHelper Output { get; }
+
         [Fact]
         public async Task MakeAsyncCalls_ThrowExeptions()
         {
             var serviceCollection = new ServiceCollection();
 
-            serviceCollection.AddTimeoutHandler(opt =>
+            serviceCollection.AddLogging(builder =>
+            {
+                builder.AddXunit(Output);
+            });
+
+            serviceCollection.AddHttpTimeoutHandler(opt =>
             {
                 opt.DefaultTimeout = TimeSpan.FromSeconds(3);
                 opt.InnerHandler = _server.CreateHandler();
@@ -72,7 +82,7 @@ namespace Bet.AspNetCore.Resilience.UnitTest.MessageHandlers
 
             var services = serviceCollection.BuildServiceProvider();
 
-            var timeoutHandler = services.GetRequiredService<TimeoutHandler>();
+            var timeoutHandler = services.GetRequiredService<HttpTimeoutHandler>();
 
             using (var cts = new CancellationTokenSource())
             using (var client = new HttpClient(timeoutHandler))
