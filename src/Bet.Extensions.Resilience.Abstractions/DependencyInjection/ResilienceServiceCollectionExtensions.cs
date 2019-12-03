@@ -324,11 +324,18 @@ namespace Microsoft.Extensions.DependencyInjection
             where TImplementation : BasePolicy<TOptions, TResult>, IPolicy<TOptions, TResult>
             where TOptions : PolicyOptions, new()
         {
+            var serviceProvider = sp.GetRequiredService<IServiceProvider>();
             var policyOptionsConfigurator = sp.GetRequiredService<IPolicyOptionsConfigurator<TOptions>>();
             var registryConfigurator = sp.GetRequiredService<IPolicyRegistryConfigurator>();
             var logger = sp.GetRequiredService<ILogger<IPolicy<TOptions, TResult>>>();
 
-            return ActivatorUtilities.CreateInstance<TImplementation>(sp, policyOptions, policyOptionsConfigurator, registryConfigurator, logger);
+            return ActivatorUtilities.CreateInstance<TImplementation>(
+                sp,
+                policyOptions,
+                serviceProvider,
+                policyOptionsConfigurator,
+                registryConfigurator,
+                logger);
         }
 
         private static TImplementation CreatePolicyInsance<TImplementation, TOptions>(
@@ -337,11 +344,19 @@ namespace Microsoft.Extensions.DependencyInjection
             where TImplementation : BasePolicy<TOptions>, IPolicy<TOptions>
             where TOptions : PolicyOptions, new()
         {
+            var serviceProvider = sp.GetRequiredService<IServiceProvider>();
+
             var policyOptionsConfigurator = sp.GetRequiredService<IPolicyOptionsConfigurator<TOptions>>();
             var registryConfigurator = sp.GetRequiredService<IPolicyRegistryConfigurator>();
             var logger = sp.GetRequiredService<ILogger<IPolicy<TOptions>>>();
 
-            return ActivatorUtilities.CreateInstance<TImplementation>(sp, policyOptions, policyOptionsConfigurator, registryConfigurator, logger);
+            return ActivatorUtilities.CreateInstance<TImplementation>(
+                sp,
+                policyOptions,
+                serviceProvider,
+                policyOptionsConfigurator,
+                registryConfigurator,
+                logger);
         }
 
         private static void ValidateOptionsRegistration<TOptions>(

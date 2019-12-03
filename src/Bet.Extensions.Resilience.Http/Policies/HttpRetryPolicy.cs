@@ -30,9 +30,15 @@ namespace Bet.Extensions.Resilience.Http.Policies
         /// <param name="logger"></param>
         public HttpRetryPolicy(
             PolicyOptions policyOptions,
+            IServiceProvider serviceProvider,
             IPolicyOptionsConfigurator<HttpRetryPolicyOptions> policyOptionsConfigurator,
             IPolicyRegistryConfigurator registryConfigurator,
-            ILogger<IPolicy<HttpRetryPolicyOptions, HttpResponseMessage>> logger) : base(policyOptions, policyOptionsConfigurator, registryConfigurator, logger)
+            ILogger<IPolicy<HttpRetryPolicyOptions, HttpResponseMessage>> logger) : base(
+                policyOptions,
+                serviceProvider,
+                policyOptionsConfigurator,
+                registryConfigurator,
+                logger)
         {
             OnDuration = (logger, options) =>
             {

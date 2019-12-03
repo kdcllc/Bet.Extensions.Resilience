@@ -1,4 +1,5 @@
-﻿using System.Net.Http;
+﻿using System;
+using System.Net.Http;
 
 using Bet.Extensions.Resilience.Abstractions;
 using Bet.Extensions.Resilience.Abstractions.Options;
@@ -23,14 +24,21 @@ namespace Bet.Extensions.Resilience.Http.Policies
         /// Initializes a new instance of the <see cref="HttpCircuitBreakerPolicy"/> class.
         /// </summary>
         /// <param name="policyOptions"></param>
+        /// <param name="serviceProvider"></param>
         /// <param name="policyOptionsConfigurator"></param>
         /// <param name="registryConfigurator"></param>
         /// <param name="logger"></param>
         public HttpCircuitBreakerPolicy(
             PolicyOptions policyOptions,
+            IServiceProvider serviceProvider,
             IPolicyOptionsConfigurator<HttpCircuitBreakerPolicyOptions> policyOptionsConfigurator,
             IPolicyRegistryConfigurator registryConfigurator,
-            ILogger<IPolicy<HttpCircuitBreakerPolicyOptions, HttpResponseMessage>> logger) : base(policyOptions, policyOptionsConfigurator, registryConfigurator, logger)
+            ILogger<IPolicy<HttpCircuitBreakerPolicyOptions, HttpResponseMessage>> logger) : base(
+                policyOptions,
+                serviceProvider,
+                policyOptionsConfigurator,
+                registryConfigurator,
+                logger)
         {
             OnBreak = (logger, options) =>
             {

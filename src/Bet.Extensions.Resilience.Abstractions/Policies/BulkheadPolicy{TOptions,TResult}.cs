@@ -23,14 +23,21 @@ namespace Bet.Extensions.Resilience.Abstractions.Policies
         /// Initializes a new instance of the <see cref="BulkheadPolicy{TOptions, TResult}"/> class.
         /// </summary>
         /// <param name="policyOptions"></param>
+        /// <param name="serviceProvider"></param>
         /// <param name="policyOptionsConfigurator"></param>
         /// <param name="registryConfigurator"></param>
         /// <param name="logger"></param>
         public BulkheadPolicy(
             PolicyOptions policyOptions,
+            IServiceProvider serviceProvider,
             IPolicyOptionsConfigurator<TOptions> policyOptionsConfigurator,
             IPolicyRegistryConfigurator registryConfigurator,
-            ILogger<IPolicy<TOptions, TResult>> logger) : base(policyOptions, policyOptionsConfigurator, registryConfigurator, logger)
+            ILogger<IPolicy<TOptions, TResult>> logger) : base(
+                policyOptions,
+                serviceProvider,
+                policyOptionsConfigurator,
+                registryConfigurator,
+                logger)
         {
         }
 

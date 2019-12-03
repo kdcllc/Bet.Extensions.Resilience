@@ -1,4 +1,5 @@
-﻿using System.Net.Http;
+﻿using System;
+using System.Net.Http;
 
 using Bet.Extensions.Resilience.Abstractions;
 using Bet.Extensions.Resilience.Abstractions.Options;
@@ -17,14 +18,21 @@ namespace Bet.Extensions.Resilience.Http.Policies
         /// Initializes a new instance of the <see cref="HttpTimeoutPolicy"/> class.
         /// </summary>
         /// <param name="policyOptions"></param>
+        /// <param name="serviceProvider"></param>
         /// <param name="policyOptionsConfigurator"></param>
         /// <param name="registryConfigurator"></param>
         /// <param name="logger"></param>
         public HttpTimeoutPolicy(
             PolicyOptions policyOptions,
+            IServiceProvider serviceProvider,
             IPolicyOptionsConfigurator<HttpTimeoutPolicyOptions> policyOptionsConfigurator,
             IPolicyRegistryConfigurator registryConfigurator,
-            ILogger<IPolicy<HttpTimeoutPolicyOptions, HttpResponseMessage>> logger) : base(policyOptions, policyOptionsConfigurator, registryConfigurator, logger)
+            ILogger<IPolicy<HttpTimeoutPolicyOptions, HttpResponseMessage>> logger) : base(
+                policyOptions,
+                serviceProvider,
+                policyOptionsConfigurator,
+                registryConfigurator,
+                logger)
         {
         }
     }

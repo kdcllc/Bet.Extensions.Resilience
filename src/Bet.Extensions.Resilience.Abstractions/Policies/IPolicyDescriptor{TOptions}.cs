@@ -1,6 +1,6 @@
-﻿using Bet.Extensions.Resilience.Abstractions.Options;
+﻿using System;
 
-using Microsoft.Extensions.Logging;
+using Bet.Extensions.Resilience.Abstractions.Options;
 
 namespace Bet.Extensions.Resilience.Abstractions.Policies
 {
@@ -36,5 +36,10 @@ namespace Bet.Extensions.Resilience.Abstractions.Policies
         /// </summary>
         /// <returns></returns>
         TOptions Options { get; }
-     }
+
+        /// <summary>
+        /// DI Service provider.
+        /// </summary>
+        IServiceProvider ServiceProvider { get; }
+    }
 }

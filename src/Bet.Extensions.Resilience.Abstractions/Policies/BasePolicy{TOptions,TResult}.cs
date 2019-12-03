@@ -24,11 +24,13 @@ namespace Bet.Extensions.Resilience.Abstractions.Policies
         /// Initializes a new instance of the <see cref="BasePolicy{TOptions, TResult}"/> class.
         /// </summary>
         /// <param name="policyOptions">The policy options.</param>
+        /// <param name="serviceProvider"></param>
         /// <param name="policyOptionsConfigurator">The policy options configurator.</param>
         /// <param name="registryConfigurator">The policy registry configurator.</param>
         /// <param name="logger">The logger.</param>
         public BasePolicy(
             PolicyOptions policyOptions,
+            IServiceProvider serviceProvider,
             IPolicyOptionsConfigurator<TOptions> policyOptionsConfigurator,
             IPolicyRegistryConfigurator registryConfigurator,
             ILogger<IPolicy<TOptions, TResult>> logger)
@@ -39,6 +41,8 @@ namespace Bet.Extensions.Resilience.Abstractions.Policies
             }
 
             PolicyOptions = policyOptions;
+
+            ServiceProvider = serviceProvider;
 
             _policyOptionsConfigurator = policyOptionsConfigurator ?? throw new ArgumentNullException(nameof(policyOptionsConfigurator));
             _registryConfigurator = registryConfigurator ?? throw new ArgumentNullException(nameof(registryConfigurator));
@@ -66,6 +70,8 @@ namespace Bet.Extensions.Resilience.Abstractions.Policies
         public virtual TOptions Options => _policyOptionsConfigurator.GetOptions(PolicyOptions.OptionsName);
 
         public virtual ILogger<IPolicy<TOptions, TResult>> Logger { get; }
+
+        public IServiceProvider ServiceProvider { get; }
 
         /// <inheritdoc/>
         public abstract IAsyncPolicy<TResult> GetAsyncPolicy();

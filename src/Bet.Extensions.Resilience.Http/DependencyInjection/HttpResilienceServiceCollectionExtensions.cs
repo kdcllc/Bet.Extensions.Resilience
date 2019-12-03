@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Net.Http;
+
 using Bet.Extensions.Http.MessageHandlers.HttpTimeout;
 using Bet.Extensions.Resilience.Abstractions.Options;
 using Bet.Extensions.Resilience.Abstractions.Policies;
 using Bet.Extensions.Resilience.Http;
 using Bet.Extensions.Resilience.Http.Options;
 using Bet.Extensions.Resilience.Http.Policies;
+
 using Microsoft.Extensions.Options;
 
 namespace Microsoft.Extensions.DependencyInjection
@@ -53,9 +55,9 @@ namespace Microsoft.Extensions.DependencyInjection
             string sectionName = HttpPolicyNames.DefaultHttpPolicyOptionsName)
         {
             services.AddHttpResiliencePolicy<IHttpTimeoutPolicy, HttpTimeoutPolicy, HttpTimeoutPolicyOptions>(
-                HttpTimeoutPolicyOptions.DefaultName,
-                sectionName,
-                HttpTimeoutPolicyOptions.DefaultName,
+                policyName: HttpTimeoutPolicyOptions.DefaultName,
+                sectionName: sectionName,
+                policyOptionsName: HttpTimeoutPolicyOptions.DefaultName,
                 null,
                 ServiceLifetime.Transient);
 
