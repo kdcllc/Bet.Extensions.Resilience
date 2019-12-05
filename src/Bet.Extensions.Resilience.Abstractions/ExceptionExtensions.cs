@@ -1,4 +1,5 @@
 ﻿using System;
+
 using Polly;
 
 namespace Bet.Extensions.Resilience.Abstractions

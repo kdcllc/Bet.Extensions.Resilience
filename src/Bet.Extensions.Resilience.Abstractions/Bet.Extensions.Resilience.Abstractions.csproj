@@ -16,5 +16,4 @@
     <PackageReference Include="Microsoft.Extensions.Logging" />
     <PackageReference Include="Polly" />
   </ItemGroup>
-
 </Project>

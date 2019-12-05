@@ -1,6 +1,6 @@
 ﻿using System;
 
-using Bet.Extensions.Resilience.Abstractions;
+using Bet.Extensions.Resilience.Abstractions.DependencyInjection;
 
 using Microsoft.Extensions.DependencyInjection;
 
@@ -13,8 +13,8 @@ namespace Microsoft.Extensions.Hosting
     {
         public void Configure(IServiceProvider provider)
         {
-            var registration = provider.GetService<IPolicyRegistrator>();
-            registration?.ConfigurePolicies();
+            var policyRegistrant = provider.GetRequiredService<DefaultPolicyProfileRegistrator>();
+            policyRegistrant.Register();
         }
     }
 }

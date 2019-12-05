@@ -1,9 +1,8 @@
 ﻿using System;
 
-using Bet.Extensions.Resilience.Abstractions;
+using Bet.Extensions.Resilience.Abstractions.DependencyInjection;
 
 using Microsoft.AspNetCore.Builder;
-
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Microsoft.AspNetCore.Hosting
@@ -21,8 +20,8 @@ namespace Microsoft.AspNetCore.Hosting
         {
             return app =>
             {
-                var registration = _provider.GetService<IPolicyRegistrator>();
-                registration?.ConfigurePolicies();
+                var policyRegistrant = _provider.GetRequiredService<DefaultPolicyProfileRegistrator>();
+                policyRegistrant.Register();
 
                 next(app);
             };

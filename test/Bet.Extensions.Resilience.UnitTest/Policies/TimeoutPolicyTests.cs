@@ -1,17 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-using Bet.Extensions.Resilience.Abstractions;
+using Bet.Extensions.Resilience.Abstractions.DependencyInjection;
 using Bet.Extensions.Resilience.Abstractions.Options;
-using Bet.Extensions.Resilience.Abstractions.Policies;
 using Bet.Extensions.Resilience.UnitTest.Policies.Options;
 using Bet.Extensions.Testing.Logging;
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+
 using Polly;
 using Polly.Registry;
 
@@ -32,7 +31,7 @@ namespace Bet.Extensions.Resilience.UnitTest.Policies
         [Fact]
         public void TimeoutPolicy_Should_Register_2_Policies_With_Registry()
         {
-            var policyOptionsName = TimeoutPolicyOptions.DefaultName;
+            var policyOptionsName = PolicyOptionsKeys.TimeoutPolicy;
 
             var services = new ServiceCollection();
 
@@ -54,13 +53,13 @@ namespace Bet.Extensions.Resilience.UnitTest.Policies
                 policyOptionsName,
                 policyOptionsName);
 
-            var sp = services.BuildServiceProvider();
+            var provider = services.BuildServiceProvider();
 
-            // configure policies within Policy Registry.
-            var configure = sp.GetRequiredService<IPolicyRegistrator>();
-            configure.ConfigurePolicies();
+            // simulates registrations for the policies.
+            var registration = provider.GetRequiredService<DefaultPolicyProfileRegistrator>();
+            registration.Register();
 
-            var policyRegistry = sp.GetRequiredService<IPolicyRegistry<string>>();
+            var policyRegistry = provider.GetRequiredService<IPolicyRegistry<string>>();
             Assert.Equal(2, policyRegistry.Count);
 
             var registeredAsyncPolicy = policyRegistry.Get<IAsyncPolicy>($"{policyOptionsName}Async");

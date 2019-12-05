@@ -1,20 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 
+using Bet.Extensions.Resilience.Abstractions;
 using Bet.Extensions.Resilience.Abstractions.Options;
-using Bet.Extensions.Resilience.Http;
 using Bet.Extensions.Resilience.Http.Abstractions.Options;
 using Bet.Extensions.Resilience.Http.Options;
-using Bet.Extensions.Resilience.Http.Policies;
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Internal;
 using Microsoft.Extensions.Options;
 
 using Polly;
+using Polly.CircuitBreaker;
+using Polly.Retry;
+using Polly.Timeout;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -163,29 +164,26 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             // register default policies with default options name.
             // TODO: rework the issue with registration of the default policies
-            //Services.AddHttpDefaultResiliencePolicies();
+            // Services.AddHttpDefaultResiliencePolicies();
 
             // TODO: rework with policies the issue of registration.
             IAsyncPolicy<HttpResponseMessage>? TimeoutPolicy(IServiceProvider sp, HttpRequestMessage request)
             {
-                var policy = sp.GetServices<IHttpTimeoutPolicy>()?.FirstOrDefault(x => x.PolicyOptions.Name == HttpTimeoutPolicyOptions.DefaultName);
-                return policy?.GetAsyncPolicy();
+                return sp.GetRequiredService<PolicyProfile<AsyncTimeoutPolicy, TimeoutPolicyOptions>>().GetPolicy(HttpPolicyOptionsKeys.HttpTimeoutPolicy) as IAsyncPolicy<HttpResponseMessage>;
             }
 
             HttpClientBuilder.AddPolicyHandler(TimeoutPolicy);
 
             IAsyncPolicy<HttpResponseMessage>? RetryPolicy(IServiceProvider sp, HttpRequestMessage request)
             {
-                var policy = sp.GetServices<IHttpRetryPolicy>()?.FirstOrDefault(x => x.PolicyOptions.Name == HttpRetryPolicyOptions.DefaultName);
-                return policy?.GetAsyncPolicy();
+                return sp.GetRequiredService<PolicyProfile<AsyncRetryPolicy, RetryPolicyOptions>>().GetPolicy(HttpPolicyOptionsKeys.HttpRetryPolicy) as IAsyncPolicy<HttpResponseMessage>;
             }
 
             HttpClientBuilder.AddPolicyHandler(RetryPolicy);
 
             IAsyncPolicy<HttpResponseMessage>? CircuitBreakerPolicy(IServiceProvider sp, HttpRequestMessage request)
             {
-                var policy = sp.GetServices<IHttpCircuitBreakerPolicy>()?.FirstOrDefault(x => x.PolicyOptions.Name == HttpCircuitBreakerPolicyOptions.DefaultName);
-                return policy?.GetAsyncPolicy();
+                return sp.GetRequiredService<PolicyProfile<AsyncCircuitBreakerPolicy, CircuitBreakerPolicyOptions>>().GetPolicy(HttpPolicyOptionsKeys.HttpAdvancedCircuitBreakerPolicy) as IAsyncPolicy<HttpResponseMessage>;
             }
 
             HttpClientBuilder.AddPolicyHandler(CircuitBreakerPolicy);

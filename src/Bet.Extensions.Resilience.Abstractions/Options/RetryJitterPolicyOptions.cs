@@ -9,16 +9,6 @@ namespace Bet.Extensions.Resilience.Abstractions.Options
     public class RetryJitterPolicyOptions : PolicyOptions
     {
         /// <summary>
-        /// The Default policy name.
-        /// </summary>
-        public static string DefaultName = nameof(RetryJitterPolicyOptions).Substring(0, nameof(RetryJitterPolicyOptions).IndexOf("Options"));
-
-        /// <summary>
-        /// The Default policy options name.
-        /// </summary>
-        public static string DefaultNameOptionsName = DefaultName;
-
-        /// <summary>
         /// Maximum retries for the Retries. The default is 2.
         /// </summary>
         public int MaxRetries { get; set; } = 2;

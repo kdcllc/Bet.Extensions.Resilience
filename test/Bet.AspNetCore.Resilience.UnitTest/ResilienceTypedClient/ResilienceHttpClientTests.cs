@@ -5,11 +5,11 @@ using System.Threading.Tasks;
 
 using Bet.AspNetCore.Resilience.UnitTest.ResilienceTypedClient.Clients;
 using Bet.Extensions.Http.MessageHandlers;
-using Bet.Extensions.Resilience.Abstractions;
+using Bet.Extensions.Resilience.Abstractions.DependencyInjection;
 using Bet.Extensions.Testing.Logging;
+
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 
 using Xunit;
 using Xunit.Abstractions;
@@ -65,8 +65,8 @@ namespace Bet.AspNetCore.Resilience.UnitTest.ResilienceTypedClient
             var provider = services.BuildServiceProvider();
 
             // simulates registrations for the policies.
-            var registration = provider.GetService<IPolicyRegistrator>();
-            registration.ConfigurePolicies();
+            var registration = provider.GetRequiredService<DefaultPolicyProfileRegistrator>();
+            registration.Register();
 
             var client = provider.GetRequiredService<ICustomTypedClientWithOptions>();
 

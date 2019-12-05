@@ -9,16 +9,6 @@ namespace Bet.Extensions.Resilience.Abstractions.Options
     public class AdvancedCircuitBreakerPolicyOptions : PolicyOptions
     {
         /// <summary>
-        /// The Default policy name.
-        /// </summary>
-        public static string DefaultName = nameof(AdvancedCircuitBreakerPolicyOptions).Substring(0, nameof(AdvancedCircuitBreakerPolicyOptions).IndexOf("Options"));
-
-        /// <summary>
-        /// The Default policy options name.
-        /// </summary>
-        public static string DefaultNameOptionsName = DefaultName;
-
-        /// <summary>
         /// The Failure threshold in percents.
         /// Reacts on proportion of failures, the failureThreshold; eg break if over 50% of actions result in a handled failure.
         /// The default is 0.5.

@@ -1,15 +1,19 @@
+using System;
 using System.Threading.Tasks;
 
 using Bet.Extensions.Resilience.Abstractions;
 using Bet.Extensions.Resilience.Abstractions.Options;
-using Bet.Extensions.Resilience.Abstractions.Policies;
 
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 
 using Polly;
+using Polly.Registry;
+using Polly.Timeout;
 
 namespace Bet.Extensions.Resilience.Worker.Sample
 {
@@ -21,37 +25,47 @@ namespace Bet.Extensions.Resilience.Worker.Sample
 
             await host.StartAsync();
 
+            var config = host.Services.GetRequiredService<IConfiguration>();
             var logger = host.Services.GetRequiredService<ILogger<Program>>();
 
-            var optionsConfigurator = host.Services.GetRequiredService<IPolicyOptionsConfigurator<BulkheadPolicyOptions>>();
+            var policies = host.Services.GetServices<PolicyProfile<AsyncTimeoutPolicy, TimeoutPolicyOptions>>();
 
-            logger.LogInformation(
-                "Options value: {maxParallelization}.",
-                optionsConfigurator.GetOptions(BulkheadPolicyOptions.DefaultNameOptionsName).MaxParallelization);
+            var policy = host.Services.GetRequiredService<PolicyProfile<AsyncTimeoutPolicy, TimeoutPolicyOptions>>();
+
+            var optimisticPolicy = policy.GetPolicy("TimeoutPolicyAsync") as IAsyncPolicy;
+            var pessimisticPolicy = policy.GetPolicy("TimeoutPolicyPessimistic") as IAsyncPolicy<bool>;
 
             ChangeToken.OnChange(
-                () => optionsConfigurator.GetChangeToken(),
-                () =>
+                () => config.GetReloadToken(),
+                async () =>
                 {
-                    // this is triggered only when the 'appsettings.json' is modified.
-                    var policy = host.Services.GetRequiredService<BulkheadPolicy<BulkheadPolicyOptions>>().GetSyncPolicy();
+                    var srv = host.Services.GetRequiredService<IOptionsMonitor<TimeoutPolicyOptions>>().Get("TimeoutPolicyOptimistic");
 
-                    policy.Execute(
-                        async (context) =>
-                        {
-                            logger.LogInformation(
-                                "Executed Policy Key: {policyKey} and Operation Key: {operationKey}",
-                                context.PolicyKey,
-                                context.OperationKey);
+                    var policy = host.Services.GetRequiredService<PolicyProfile<AsyncTimeoutPolicy, TimeoutPolicyOptions>>();
 
-                            await Task.CompletedTask;
-                        }, new Context());
+                    var optimisticPolicy = policy.GetPolicy("TimeoutPolicyOptimistic") as IAsyncPolicy;
+                    var pessimisticPolicy = policy.GetPolicy("TimeoutPolicyPessimistic") as IAsyncPolicy<bool>;
 
-                    logger.LogInformation("Options Changed: {maxParallelization} new value.", optionsConfigurator
-                        .GetOptions(BulkheadPolicyOptions.DefaultNameOptionsName)
-                        .MaxParallelization);
+                    var result = await pessimisticPolicy.ExecuteAsync(async () =>
+                    {
+                        await Task.Delay(TimeSpan.FromSeconds(3));
+
+                        return true;
+                    });
                 });
 
+            var registry = host.Services.GetRequiredService<IPolicyRegistry<string>>();
+
+            var regPolicy = host.Services.GetRequiredService<IPolicyRegistry<string>>().Get<IAsyncPolicy<bool>>("TimeoutPolicyPessimistic");
+
+            var result = await regPolicy.ExecuteAsync(async () =>
+            {
+                await Task.Delay(TimeSpan.FromSeconds(3));
+
+                return true;
+            });
+
+            logger.LogInformation("Result: {0}", result);
             host.WaitForShutdown();
 
             return 0;
@@ -60,27 +74,37 @@ namespace Bet.Extensions.Resilience.Worker.Sample
         public static IHostBuilder CreateHostBuilder(string[] args)
         {
             return Host.CreateDefaultBuilder(args)
-                .UseStartupFilter<PolicyConfiguratorStartupFilter>()
-                .ConfigureServices((hostContext, services) =>
-                {
-                    // adds only options
-                    services.ConfigureResilienceOptions<BulkheadPolicyOptions>(
-                        BulkheadPolicyOptions.DefaultNameOptionsName,
-                        "CustomBulkheadPolicy");
 
-                    // adds default policy
-                    services
-                    .AddResiliencePolicy<BulkheadPolicy<BulkheadPolicyOptions>, BulkheadPolicyOptions>(
-                        BulkheadPolicyOptions.DefaultName,
-                        BulkheadPolicyOptions.DefaultNameOptionsName);
+                    .UseStartupFilter<PolicyConfiguratorStartupFilter>()
+                    .ConfigureServices((hostContext, services) =>
+                    {
+                        services.AddPollyPolicy<AsyncTimeoutPolicy, TimeoutPolicyOptions>("TimeoutPolicyOptimistic")
+                                .ConfigurePolicy(
+                                    PolicyOptionsKeys.TimeoutPolicy,
+                                    (policy) =>
+                                    {
+                                        policy.CreateTimeoutAsync(TimeoutStrategy.Optimistic);
+                                    },
+                                    policyName: "TimeoutPolicy")
+                                    .ConfigurePolicy(
+                                    PolicyOptionsKeys.TimeoutPolicy,
+                                    (policy) =>
+                                    {
+                                        policy.ConfigurePolicy = (options, logger) =>
+                                        {
+                                            logger.LogInformation("Hello TimeoutPolicyOptimistic");
 
-                    // adds default policy options but new policy key
-                    services
-                    .AddResiliencePolicy<BulkheadPolicy<BulkheadPolicyOptions>, BulkheadPolicyOptions>(
-                        "CustomBulkheadPolicy2",
-                        BulkheadPolicyOptions.DefaultNameOptionsName,
-                        "CustomBulkheadPolicy2");
-                });
+                                            return Policy.TimeoutAsync(options.Timeout, TimeoutStrategy.Optimistic);
+                                        };
+                                    },
+                                    policyName: "TimeoutPolicyAsync");
+
+                        services.AddPollyPolicy<AsyncTimeoutPolicy<bool>, TimeoutPolicyOptions>("TimeoutPolicyPessimistic")
+                                .ConfigurePolicy("DefaultPolicy:TimeoutPolicy", (policy) =>
+                                {
+                                    PolicyProfileCreators.CreateTimeoutAsync<TimeoutPolicyOptions, bool>(policy);
+                                });
+                    });
         }
     }
 }

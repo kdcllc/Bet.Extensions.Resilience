@@ -8,16 +8,6 @@
     public class BulkheadPolicyOptions : PolicyOptions
     {
         /// <summary>
-        /// The Default policy name.
-        /// </summary>
-        public static string DefaultName = nameof(BulkheadPolicyOptions).Substring(0, nameof(BulkheadPolicyOptions).IndexOf("Options"));
-
-        /// <summary>
-        /// The Default policy options name.
-        /// </summary>
-        public static string DefaultNameOptionsName = DefaultName;
-
-        /// <summary>
         /// The maximum parallelization of executions through the bulkhead.
         /// </summary>
         public int MaxParallelization { get; set; } = 100;

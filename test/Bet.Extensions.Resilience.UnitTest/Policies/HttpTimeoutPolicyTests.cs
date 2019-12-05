@@ -3,16 +3,15 @@ using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Bet.Extensions.Resilience.Abstractions;
-using Bet.Extensions.Resilience.Http;
-using Bet.Extensions.Resilience.Http.Options;
-using Bet.Extensions.Resilience.Http.Policies;
+
 using Bet.Extensions.Testing.Logging;
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+
 using Polly;
 using Polly.Registry;
+
 using Xunit;
 using Xunit.Abstractions;
 
