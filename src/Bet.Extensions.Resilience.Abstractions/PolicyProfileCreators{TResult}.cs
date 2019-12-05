@@ -65,7 +65,8 @@ namespace Bet.Extensions.Resilience.Abstractions
         /// <typeparam name="TResult"></typeparam>
         /// <param name="policyProfile"></param>
         /// <param name="func">'outcome.GetExceptionMessages()'.</param>
-        public static void CreateFallbackPolicyAsync<TOptions, TResult>(
+        /// <param name="addSyffix"></param>
+        public static void CreateFallbackAsync<TOptions, TResult>(
             PolicyProfileOptions<TOptions> policyProfile,
             Func<DelegateResult<TResult>, string> func,
             bool addSyffix = false)
@@ -113,7 +114,7 @@ namespace Bet.Extensions.Resilience.Abstractions
             };
         }
 
-        public static void CreateFallbackPolicy<TOptions, TResult>(
+        public static void CreateFallback<TOptions, TResult>(
             PolicyProfileOptions<TOptions> policyProfile,
             Func<DelegateResult<TResult>, string> func)
             where TOptions : FallbackPolicyOptions

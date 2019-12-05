@@ -4,6 +4,9 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 
+using Bet.Extensions.Resilience.Abstractions;
+using Bet.Extensions.Resilience.Abstractions.DependencyInjection;
+using Bet.Extensions.Resilience.Abstractions.Options;
 using Bet.Extensions.Testing.Logging;
 
 using Microsoft.Extensions.Configuration;
@@ -11,6 +14,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 using Polly;
 using Polly.Registry;
+using Polly.Timeout;
 
 using Xunit;
 using Xunit.Abstractions;
@@ -29,7 +33,7 @@ namespace Bet.Extensions.Resilience.UnitTest.Policies
         [Fact]
         public async Task HttpTimeoutPolicy_With_Result_Async_Should_Throw_TimeoutRejectedException()
         {
-            var policyOptionsName = HttpTimeoutPolicyOptions.DefaultName;
+            var policyOptionsName = PolicyOptionsKeys.TimeoutPolicy;
 
             var services = new ServiceCollection();
 
@@ -47,18 +51,19 @@ namespace Bet.Extensions.Resilience.UnitTest.Policies
             var config = new ConfigurationBuilder().AddInMemoryCollection(dic).Build();
             services.AddSingleton<IConfiguration>(config);
 
-            services.AddHttpResiliencePolicy<IHttpTimeoutPolicy, HttpTimeoutPolicy, HttpTimeoutPolicyOptions>(
-                policyOptionsName,
-                policyOptionsName);
+            services.AddPollyPolicy<AsyncTimeoutPolicy<HttpResponseMessage>, TimeoutPolicyOptions>(PolicyOptionsKeys.TimeoutPolicy)
+                   .ConfigurePolicy(
+                   policyOptionsName,
+                   policy => PolicyProfileCreators.CreateTimeout<TimeoutPolicyOptions, HttpResponseMessage>(policy));
 
             var sp = services.BuildServiceProvider();
 
-            var policy = sp.GetRequiredService<IHttpTimeoutPolicy>();
+            var policy = (IAsyncPolicy<HttpResponseMessage>)sp.GetRequiredService<PolicyProfile<TimeoutPolicy, TimeoutPolicyOptions>>().GetPolicy(policyOptionsName);
             Assert.NotNull(policy);
 
             async Task<HttpResponseMessage> TimedOutTask()
             {
-                return await policy.GetAsyncPolicy().ExecuteAsync(async () =>
+                return await policy.ExecuteAsync(async () =>
                 {
                     await Task.Delay(TimeSpan.FromSeconds(2));
                     return await Task.FromResult(new HttpResponseMessage());
@@ -71,7 +76,7 @@ namespace Bet.Extensions.Resilience.UnitTest.Policies
         [Fact]
         public async Task HttpTimeoutPolicy_With_Result_Async_Should_Succeeded()
         {
-            var policyOptionsName = HttpTimeoutPolicyOptions.DefaultName;
+            var policyOptionsName = PolicyOptionsKeys.TimeoutPolicy;
 
             var services = new ServiceCollection();
 
@@ -89,16 +94,17 @@ namespace Bet.Extensions.Resilience.UnitTest.Policies
             var config = new ConfigurationBuilder().AddInMemoryCollection(dic).Build();
             services.AddSingleton<IConfiguration>(config);
 
-            services.AddHttpResiliencePolicy<IHttpTimeoutPolicy, HttpTimeoutPolicy, HttpTimeoutPolicyOptions>(
-                policyOptionsName,
-                policyOptionsName);
+            services.AddPollyPolicy<AsyncTimeoutPolicy<HttpResponseMessage>, TimeoutPolicyOptions>(PolicyOptionsKeys.TimeoutPolicy)
+                   .ConfigurePolicy(
+                   policyOptionsName,
+                   policy => PolicyProfileCreators.CreateTimeout<TimeoutPolicyOptions, HttpResponseMessage>(policy));
 
             var sp = services.BuildServiceProvider();
 
-            var policy = sp.GetRequiredService<IHttpTimeoutPolicy>();
+            var policy = (IAsyncPolicy<HttpResponseMessage>)sp.GetRequiredService<PolicyProfile<TimeoutPolicy, TimeoutPolicyOptions>>().GetPolicy(policyOptionsName);
             Assert.NotNull(policy);
 
-            var result = await policy.GetAsyncPolicy().ExecuteAsync(async () =>
+            var result = await policy.ExecuteAsync(async () =>
             {
                 await Task.Delay(TimeSpan.FromSeconds(1));
                 return await Task.FromResult(new HttpResponseMessage(HttpStatusCode.BadRequest));
@@ -110,7 +116,7 @@ namespace Bet.Extensions.Resilience.UnitTest.Policies
         [Fact]
         public async Task HttpTimeoutPolicy_Registry_With_Result_Async_Should_Succeeded()
         {
-            var policyOptionsName = HttpTimeoutPolicyOptions.DefaultName;
+            var policyOptionsName = PolicyOptionsKeys.TimeoutPolicy;
 
             var services = new ServiceCollection();
 
@@ -128,20 +134,21 @@ namespace Bet.Extensions.Resilience.UnitTest.Policies
             var config = new ConfigurationBuilder().AddInMemoryCollection(dic).Build();
             services.AddSingleton<IConfiguration>(config);
 
-            services.AddHttpResiliencePolicy<IHttpTimeoutPolicy, HttpTimeoutPolicy, HttpTimeoutPolicyOptions>(
-                policyOptionsName,
-                policyOptionsName);
+            services.AddPollyPolicy<AsyncTimeoutPolicy<HttpResponseMessage>, TimeoutPolicyOptions>(PolicyOptionsKeys.TimeoutPolicy)
+                   .ConfigurePolicy(
+                   policyOptionsName,
+                   policy => PolicyProfileCreators.CreateTimeout<TimeoutPolicyOptions, HttpResponseMessage>(policy));
 
             var sp = services.BuildServiceProvider();
 
             // register policy with global registry
-            var registar = sp.GetRequiredService<IPolicyRegistrator>();
-            Assert.NotNull(registar);
-            registar.ConfigurePolicies();
+            // simulates registrations for the policies.
+            var registration = sp.GetRequiredService<DefaultPolicyProfileRegistrator>();
+            registration.Register();
 
             var registry = sp.GetRequiredService<IReadOnlyPolicyRegistry<string>>();
 
-            var policy = registry.Get<IAsyncPolicy<HttpResponseMessage>>($"{policyOptionsName}Async");
+            var policy = registry.Get<IAsyncPolicy<HttpResponseMessage>>(policyOptionsName);
             Assert.NotNull(policy);
 
             var result = await policy.ExecuteAsync(async () =>
