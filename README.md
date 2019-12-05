@@ -4,27 +4,32 @@
 [![NuGet](https://img.shields.io/nuget/v/Bet.Extensions.Resilience.Http.svg)](https://www.nuget.org/packages?q=Bet.Extensions.Resilience.Http)
 [![MyGet](https://img.shields.io/myget/kdcllc/v/Bet.Extensions.Resilience.Http.svg?label=myget)](https://www.myget.org/F/kdcllc/api/v2)
 
+This project contains a number of libraries to satisfy the needs of Microservices development in Kubernetes environment.
+
+The bedrock for this project's Resilience is based on [`Polly`](https://github.com/App-vNext/Polly) policy libraries.
+
 This library provides with a configurational Resilience framework for [HttpClientFactory](https://docs.microsoft.com/en-us/dotnet/architecture/microservices/implement-resilient-applications/use-httpclientfactory-to-implement-resilient-http-requests).
 
-In addition later work will also include the Resilience providers for Azure SQL.
+Resilience
 
-The Resilience of these packages is based on [`Polly`](https://github.com/App-vNext/Polly) standard library.
+- [`Bet.Extensions.Resilience.Abstractions`](./src/Bet.Extensions.Resilience.Abstractions/README.md) - the foundation library for Resilience policies.
+- [`Bet.Extensions.Resilience.Http`](./src/Bet.Extensions.Resilience.Http/README.md) - provides with base Policy Shapes for `HttpClient`.
+- [`Bet.Extensions.Resilience.SqlClient`](./src/Bet.Extensions.Resilience.Http/README.md) - provides with base SQL specific Policy Shapes.
 
-Message Handlers
+Hosting
+
+- [`Bet.Extensions.Hosting.Resilience`](./src/Bet.Extensions.Hosting.Resilience/README.md) - Registering for Generic Host Policies with DI and `IPolicyRegistry<string>`
+- [`Bet.AspNetCore.Hosting.Resilience`](./src/Bet.AspNetCore.Hosting.Resilience/README.md) - Registering for AspNetCore Host Policies with DI and `IPolicyRegistry<string>`
+
+Http Delegating Message Handlers
 
 - [`Bet.Extensions.Http.MessageHandlers`](./src/Bet.Extensions.Http.MessageHandlers/README.md)
 - [`Bet.Extensions.Http.MessageHandlers.Abstractions`](./src/Bet.Extensions.Http.MessageHandlers.Abstractions/README.md)
 
-Resilience
-
-- [`Bet.Extensions.Resilience.Http`](./src/Bet.Extensions.Resilience.Http/README.md)
-- [`Bet.Extensions.Resilience.Abstractions`](./src/Bet.Extensions.Resilience.Abstractions/README.md)
-- [`Bet.Extensions.Hosting.Resilience`](./src/Bet.Extensions.Hosting.Resilience/README.md)
-- [`Bet.AspNetCore.Hosting.Resilience`](./src/Bet.AspNetCore.Hosting.Resilience/README.md)
-
-## Sample Application
+## Sample Applications
 
 - [`Bet.Extensions.Resilience.WebApp.Sample`](./src/Bet.Extensions.Resilience.WebApp.Sample/README.md)
+- [`Bet.Extensions.Resilience.Worker.Sample`](./src/Bet.Extensions.Resilience.Worker.Sample/README.md)
 
 ## Development Environment
 

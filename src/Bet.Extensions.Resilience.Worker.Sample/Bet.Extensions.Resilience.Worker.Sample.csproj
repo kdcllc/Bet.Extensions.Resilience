@@ -5,6 +5,7 @@
     <UserSecretsId>dotnet-Bet.Extensions.Resilience.Worker.Sample-7737C7F2-7448-4AB6-A4E2-63CC35E0ED62</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     <DockerfileContext>..\..</DockerfileContext>
+    <IsPackable>false</IsPackable>
   </PropertyGroup>
 
   <ItemGroup>

@@ -4,6 +4,7 @@
     <TargetFramework>netcoreapp3.0</TargetFramework>
     <PreserveCompilationReferences>true</PreserveCompilationReferences>
     <UserSecretsId>664cd53d-f6bf-49ed-b10a-4a53bedf7987</UserSecretsId>
+    <IsPackable>false</IsPackable>
   </PropertyGroup>
 
 
