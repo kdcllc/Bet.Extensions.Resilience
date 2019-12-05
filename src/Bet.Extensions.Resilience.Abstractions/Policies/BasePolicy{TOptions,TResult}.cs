@@ -55,12 +55,6 @@ namespace Bet.Extensions.Resilience.Abstractions.Policies
         }
 
         /// <inheritdoc/>
-        public virtual IPolicyOptionsConfigurator<TOptions> OptionsConfigurator => _policyOptionsConfigurator;
-
-        /// <inheritdoc/>
-        public virtual IPolicyRegistryConfigurator PolicyRegistryConfigurator => _registryConfigurator;
-
-        /// <inheritdoc/>
         public virtual string PolicyNameSuffix => "Async";
 
         /// <inheritdoc/>

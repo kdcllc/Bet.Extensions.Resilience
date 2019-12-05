@@ -350,13 +350,13 @@ namespace Microsoft.Extensions.DependencyInjection
             var registryConfigurator = sp.GetRequiredService<IPolicyRegistryConfigurator>();
             var logger = sp.GetRequiredService<ILogger<IPolicy<TOptions>>>();
 
-            return ActivatorUtilities.CreateInstance<TImplementation>(
+            var x = ActivatorUtilities.CreateInstance<TImplementation>(
                 sp,
                 policyOptions,
                 serviceProvider,
                 policyOptionsConfigurator,
                 registryConfigurator,
-                logger);
+                logger) { P};
         }
 
         private static void ValidateOptionsRegistration<TOptions>(

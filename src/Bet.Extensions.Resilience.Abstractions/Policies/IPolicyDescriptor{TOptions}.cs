@@ -22,16 +22,6 @@ namespace Bet.Extensions.Resilience.Abstractions.Policies
         string PolicyNameSuffix { get; }
 
         /// <summary>
-        /// Gets all of the options Configurations that has been registered for the type.
-        /// </summary>
-        IPolicyOptionsConfigurator<TOptions> OptionsConfigurator { get; }
-
-        /// <summary>
-        /// Gets Policy Registration Configurator.
-        /// </summary>
-        IPolicyRegistryConfigurator PolicyRegistryConfigurator { get; }
-
-        /// <summary>
         /// Gets options.
         /// </summary>
         /// <returns></returns>
