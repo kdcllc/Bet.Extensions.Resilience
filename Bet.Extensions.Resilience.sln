@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.28803.352
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bet.Extensions.Resilience.Abstractions", "src\Bet.Extensions.Resilience.Abstractions\Bet.Extensions.Resilience.Abstractions.csproj", "{AA56D526-0777-40C6-8CAF-9DA96911941C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bet.Extensions.Resilience.UnitTest", "test\Bet.Extensions.Resilience.UnitTest\Bet.Extensions.Resilience.UnitTest.csproj", "{A7C3FDE4-CA19-40C4-A58C-3CD3386D7A78}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bet.AspNetCore.Resilience.UnitTest", "test\Bet.AspNetCore.Resilience.UnitTest\Bet.AspNetCore.Resilience.UnitTest.csproj", "{A7C3FDE4-CA19-40C4-A58C-3CD3386D7A78}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{32C6BDF4-6EEB-4C13-B084-AB554A2ACDAC}"
 EndProject
@@ -20,7 +20,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{EDACF3E2
 		build\sources.props = build\sources.props
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bet.Extensions.Resilience.SampleWebApp", "src\Bet.Extensions.Resilience.SampleWebApp\Bet.Extensions.Resilience.SampleWebApp.csproj", "{EFA33EF3-60AC-41F9-AB21-722E54644C5A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bet.Extensions.Resilience.WebApp.Sample", "src\Bet.Extensions.Resilience.WebApp.Sample\Bet.Extensions.Resilience.WebApp.Sample.csproj", "{EFA33EF3-60AC-41F9-AB21-722E54644C5A}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{D6D65A0B-5D03-44DC-A730-DB8A333CDC81}"
 	ProjectSection(SolutionItems) = preProject
@@ -36,7 +36,21 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bet.Extensions.MessageHandlers", "src\Bet.Extensions.MessageHandlers\Bet.Extensions.MessageHandlers.csproj", "{199EAEAC-9EE7-4324-A26D-F4CCF34BD971}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bet.Extensions.Http.MessageHandlers", "src\Bet.Extensions.Http.MessageHandlers\Bet.Extensions.Http.MessageHandlers.csproj", "{199EAEAC-9EE7-4324-A26D-F4CCF34BD971}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bet.Extensions.Hosting.Resilience", "src\Bet.Extensions.Hosting.Resilience\Bet.Extensions.Hosting.Resilience.csproj", "{4F6D44FD-717D-4AE5-926C-F2629631B9F1}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bet.AspNetCore.Hosting.Resilience", "src\Bet.AspNetCore.Hosting.Resilience\Bet.AspNetCore.Hosting.Resilience.csproj", "{3BADFB16-FD25-45EF-8F05-6694116BB2A2}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bet.Extensions.Resilience.UnitTest", "test\Bet.Extensions.Resilience.UnitTest\Bet.Extensions.Resilience.UnitTest.csproj", "{32FCD106-30FC-4458-966B-DBB0E0637DE2}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bet.Extensions.Resilience.Http.Abstractions", "src\Bet.Extensions.Resilience.Http.Abstractions\Bet.Extensions.Resilience.Http.Abstractions.csproj", "{FD239D35-D490-4817-98C8-16C86A1470AD}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bet.Extensions.Resilience.SqlClient", "src\Bet.Extensions.Resilience.SqlClient\Bet.Extensions.Resilience.SqlClient.csproj", "{8679A0B2-F65B-4F01-AA54-9158495F9714}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{AC40855D-7C86-42E0-87E5-386D02E54913}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bet.Extensions.Resilience.Worker.Sample", "src\Bet.Extensions.Resilience.Worker.Sample\Bet.Extensions.Resilience.Worker.Sample.csproj", "{4C570650-B8BD-4D4B-A61A-7EEAC1D859BD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -64,6 +78,30 @@ Global
 		{199EAEAC-9EE7-4324-A26D-F4CCF34BD971}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{199EAEAC-9EE7-4324-A26D-F4CCF34BD971}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{199EAEAC-9EE7-4324-A26D-F4CCF34BD971}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4F6D44FD-717D-4AE5-926C-F2629631B9F1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4F6D44FD-717D-4AE5-926C-F2629631B9F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4F6D44FD-717D-4AE5-926C-F2629631B9F1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4F6D44FD-717D-4AE5-926C-F2629631B9F1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3BADFB16-FD25-45EF-8F05-6694116BB2A2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3BADFB16-FD25-45EF-8F05-6694116BB2A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3BADFB16-FD25-45EF-8F05-6694116BB2A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3BADFB16-FD25-45EF-8F05-6694116BB2A2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{32FCD106-30FC-4458-966B-DBB0E0637DE2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{32FCD106-30FC-4458-966B-DBB0E0637DE2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{32FCD106-30FC-4458-966B-DBB0E0637DE2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{32FCD106-30FC-4458-966B-DBB0E0637DE2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FD239D35-D490-4817-98C8-16C86A1470AD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FD239D35-D490-4817-98C8-16C86A1470AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FD239D35-D490-4817-98C8-16C86A1470AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FD239D35-D490-4817-98C8-16C86A1470AD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8679A0B2-F65B-4F01-AA54-9158495F9714}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8679A0B2-F65B-4F01-AA54-9158495F9714}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8679A0B2-F65B-4F01-AA54-9158495F9714}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8679A0B2-F65B-4F01-AA54-9158495F9714}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4C570650-B8BD-4D4B-A61A-7EEAC1D859BD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4C570650-B8BD-4D4B-A61A-7EEAC1D859BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4C570650-B8BD-4D4B-A61A-7EEAC1D859BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4C570650-B8BD-4D4B-A61A-7EEAC1D859BD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -72,8 +110,14 @@ Global
 		{AA56D526-0777-40C6-8CAF-9DA96911941C} = {32C6BDF4-6EEB-4C13-B084-AB554A2ACDAC}
 		{A7C3FDE4-CA19-40C4-A58C-3CD3386D7A78} = {23BB98BA-5F4A-4220-BE4D-5604E58F56E5}
 		{4BA05CA6-9669-4014-8856-034B7229B835} = {32C6BDF4-6EEB-4C13-B084-AB554A2ACDAC}
-		{EFA33EF3-60AC-41F9-AB21-722E54644C5A} = {32C6BDF4-6EEB-4C13-B084-AB554A2ACDAC}
+		{EFA33EF3-60AC-41F9-AB21-722E54644C5A} = {AC40855D-7C86-42E0-87E5-386D02E54913}
 		{199EAEAC-9EE7-4324-A26D-F4CCF34BD971} = {32C6BDF4-6EEB-4C13-B084-AB554A2ACDAC}
+		{4F6D44FD-717D-4AE5-926C-F2629631B9F1} = {32C6BDF4-6EEB-4C13-B084-AB554A2ACDAC}
+		{3BADFB16-FD25-45EF-8F05-6694116BB2A2} = {32C6BDF4-6EEB-4C13-B084-AB554A2ACDAC}
+		{32FCD106-30FC-4458-966B-DBB0E0637DE2} = {23BB98BA-5F4A-4220-BE4D-5604E58F56E5}
+		{FD239D35-D490-4817-98C8-16C86A1470AD} = {32C6BDF4-6EEB-4C13-B084-AB554A2ACDAC}
+		{8679A0B2-F65B-4F01-AA54-9158495F9714} = {32C6BDF4-6EEB-4C13-B084-AB554A2ACDAC}
+		{4C570650-B8BD-4D4B-A61A-7EEAC1D859BD} = {AC40855D-7C86-42E0-87E5-386D02E54913}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {23EAFD8A-DAB7-43F6-86D1-9F6C6A81F6D0}

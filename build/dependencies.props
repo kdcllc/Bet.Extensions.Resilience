@@ -1,53 +1,69 @@
 <Project>
   <PropertyGroup>
     <RunCodeAnalysis>true</RunCodeAnalysis>
-    <NetCoreCommon>2.2.*</NetCoreCommon>
-    <BetCommon>1.4.0</BetCommon>
+    <AspNetCoreCommon>2.2</AspNetCoreCommon>
+    <NetCoreCommon>2.2</NetCoreCommon>
+    <BetCommon>2.0.1</BetCommon>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp2.2' Or '$(TargetFramework)' == 'netstandard2.0'">
-    <NetCoreCommon>2.2.*</NetCoreCommon>
+    <AspNetCoreCommon>2.2</AspNetCoreCommon>
+    <NetCoreCommon>2.2</NetCoreCommon>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp3.0' Or '$(TargetFramework)' == 'netstandard2.1'">
-    <NetCoreCommon>3.0.0-preview9.*</NetCoreCommon>
+    <AspNetCoreCommon>3.0.0</AspNetCoreCommon>
+    <NetCoreCommon>3.0.0</NetCoreCommon>
   </PropertyGroup>
 
   <ItemGroup Label="NetCore">
-    <PackageReference Update="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="$(NetCoreCommon)" />
-    <PackageReference Update="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="$(NetCoreCommon)" />
-    <PackageReference Update="Microsoft.AspNetCore.Mvc.Testing"  Version="$(NetCoreCommon)"/>
-    <PackageReference Update="Microsoft.AspNetCore.TestHost"  Version="$(NetCoreCommon)"/>
+    <PackageReference Update="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="$(AspNetCoreCommon)" />
+    <PackageReference Update="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="$(AspNetCoreCommon)" />
+    <PackageReference Update="Microsoft.AspNetCore.Mvc.Testing" Version="$(AspNetCoreCommon)"/>
+    <PackageReference Update="Microsoft.AspNetCore.TestHost" Version="$(AspNetCoreCommon)"/>
+    <PackageReference Update="Microsoft.AspNetCore.Hosting.Abstractions" Version="$(AspNetCoreCommon)"/>
+  </ItemGroup>
+
+  <ItemGroup Label="Extensions">
     <PackageReference Update="Microsoft.Extensions.Configuration" Version="$(NetCoreCommon)" />
-    <PackageReference Update="Microsoft.Extensions.Hosting.Abstractions"  Version="$(NetCoreCommon)"/>
+    <PackageReference Update="Microsoft.Extensions.DependencyInjection" Version="$(NetCoreCommon)" />
+    <PackageReference Update="Microsoft.Extensions.DependencyInjection.Abstractions" Version="$(NetCoreCommon)" />
     <PackageReference Update="Microsoft.Extensions.Hosting" Version="$(NetCoreCommon)" />
     <PackageReference Update="Microsoft.Extensions.Http.Polly" Version="$(NetCoreCommon)"/>
     <PackageReference Update="Microsoft.Extensions.Logging.Abstractions" Version="$(NetCoreCommon)" />
     <PackageReference Update="Microsoft.Extensions.Logging.Console" Version="$(NetCoreCommon)" />
     <PackageReference Update="Microsoft.Extensions.Logging.Debug" Version="$(NetCoreCommon)" />
-    <PackageReference Update="Microsoft.Extensions.Options.ConfigurationExtensions" Version="$(NetCoreCommon)" />
     <PackageReference Update="Microsoft.Extensions.Options" Version="$(NetCoreCommon)" />
+    <PackageReference Update="Microsoft.Extensions.Options.ConfigurationExtensions" Version="$(NetCoreCommon)" />
+    <PackageReference Update="Microsoft.Extensions.DiagnosticAdapter" Version="$(NetCoreCommon)" />
+    <PackageReference Update="Microsoft.Extensions.Logging" Version="$(NetCoreCommon)"/>
   </ItemGroup>
 
   <ItemGroup Label="Unit Tests">
-    <PackageReference Update="Microsoft.NET.Test.Sdk" Version="16.2.0" />
-    <PackageReference Update="Moq" Version="4.13.0" />
+    <PackageReference Update="Microsoft.NET.Test.Sdk" Version="16.4.0" />
+    <PackageReference Update="Moq" Version="4.13.1" />
     <PackageReference Update="xunit" Version="2.4.1" />
     <PackageReference Update="xunit.runner.visualstudio" Version="2.4.1" />
     <PackageReference Update="FluentAssertions" Version="5.9.0" />
+    <PackageReference Update="coverlet.collector" Version="1.0.1" />
   </ItemGroup>
 
   <ItemGroup Label="Shared">
     <PackageReference Update="Newtonsoft.Json" Version="12.0.1" />
     <PackageReference Update="Polly" Version="7.1.1" />
     <PackageReference Update="Bet.Extensions" Version="$(BetCommon)" />
+    <PackageReference Update="Bet.Extensions.Hosting" Version="$(BetCommon)" />
+    <PackageReference Update="Bet.Extensions.Options" Version="$(BetCommon)" />
+    <PackageReference Update="Bet.Extensions.Testing" Version="$(BetCommon)" />
+    <PackageReference Update="Microsoft.Data.SqlClient" Version="1.1.0" />
+    <PackageReference Update="System.Data.SqlClient" Version="4.7.0" />
   </ItemGroup>
 
   <ItemGroup Label="SourceLink">
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0-beta2-19462-01" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
   </ItemGroup>
 
   <ItemGroup Label="Analyzers">
-    <PackageReference Include="Bet.CodeAnalyzers" Version="1.0.6" PrivateAssets="All" />
+    <PackageReference Include="Bet.CodeAnalyzers" Version="1.0.7" PrivateAssets="All" />
   </ItemGroup>
 </Project>

@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0;netcoreapp3.0</TargetFrameworks>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <Description>AspNetCore.Hosting library enables functionality used with AspNetCore such as CorrelationId.</Description>
+    <PackageTags>DotNetCore, IWebHost, Hosting ,Extensions, CorrelationId, HttpClientFactory</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" Condition="'$(TargetFramework)' == 'netcoreapp3.0'" />
+    <PackageReference Include="Microsoft.AspNetCore.Hosting.Abstractions" Condition="'$(TargetFramework)' == 'netstandard2.0'" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Bet.Extensions.Http.MessageHandlers\Bet.Extensions.Http.MessageHandlers.csproj" />
+    <ProjectReference Include="..\Bet.Extensions.Resilience.Http\Bet.Extensions.Resilience.Http.csproj" />
+  </ItemGroup>
+</Project>

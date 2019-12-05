@@ -2,32 +2,23 @@
 
   <PropertyGroup>
     <TargetFrameworks>netcoreapp2.2;netcoreapp3.0</TargetFrameworks>
-    <NoWarn>$(NoWarn);CA1063;CA1816:</NoWarn>
+    <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.App" Condition="'$(TargetFramework)' == 'netcoreapp2.2'" />
-    <FrameworkReference Include="Microsoft.AspNetCore.App" Condition="'$(TargetFramework)' == 'netcoreapp3.0'" />
-
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" />
-    <PackageReference Include="Microsoft.AspNetCore.TestHost" />
-    <PackageReference Include="Microsoft.Extensions.Hosting" />
-    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
+    <PackageReference Include="coverlet.collector" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
-    <PackageReference Include="Moq" />
     <PackageReference Include="xunit" />
     <PackageReference Include="xunit.runner.visualstudio" />
-    <PackageReference Include="FluentAssertions" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
+
+    <PackageReference Include="Bet.Extensions.Testing" />
+
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Bet.Extensions.Resilience.Http\Bet.Extensions.Resilience.Http.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="PolicyBuilders\" />
-    <Folder Include="Resilience\" />
   </ItemGroup>
 
 </Project>

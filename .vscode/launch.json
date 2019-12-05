@@ -10,9 +10,9 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
-            "program": "${workspaceFolder}/src/Bet.Extensions.Resilience.SampleWebApp/bin/Debug/netcoreapp3.0/Bet.Extensions.Resilience.SampleWebApp.dll",
+            "program": "${workspaceFolder}/src/Bet.Extensions.Resilience.WebApp.Sample/bin/Debug/netcoreapp3.0/Bet.Extensions.Resilience.WebApp.Sample.dll",
             "args": [],
-            "cwd": "${workspaceFolder}/src/Bet.Extensions.Resilience.SampleWebApp/",
+            "cwd": "${workspaceFolder}/src/Bet.Extensions.Resilience.WebApp.Sample/",
             "console": "internalConsole",
             "stopAtEntry": false,
 
