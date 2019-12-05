@@ -169,7 +169,7 @@ namespace Microsoft.Extensions.DependencyInjection
             // TODO: rework with policies the issue of registration.
             IAsyncPolicy<HttpResponseMessage> TimeoutPolicy(IServiceProvider sp, HttpRequestMessage request)
             {
-                var policy = sp.GetRequiredService<PolicyProfile<AsyncTimeoutPolicy<HttpResponseMessage>, TimeoutPolicyOptions>>()
+                var policy = sp.GetRequiredService<PolicyBucket<AsyncTimeoutPolicy<HttpResponseMessage>, TimeoutPolicyOptions>>()
                                 .GetPolicy(HttpPolicyOptionsKeys.HttpTimeoutPolicy);
                 return (IAsyncPolicy<HttpResponseMessage>)policy;
             }
@@ -178,7 +178,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
             IAsyncPolicy<HttpResponseMessage> RetryPolicy(IServiceProvider sp, HttpRequestMessage request)
             {
-                var policy = sp.GetRequiredService<PolicyProfile<AsyncRetryPolicy<HttpResponseMessage>, RetryPolicyOptions>>()
+                var policy = sp.GetRequiredService<PolicyBucket<AsyncRetryPolicy<HttpResponseMessage>, RetryPolicyOptions>>()
                                 .GetPolicy(HttpPolicyOptionsKeys.HttpRetryPolicy);
                 return (IAsyncPolicy<HttpResponseMessage>)policy;
             }
@@ -187,7 +187,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
             IAsyncPolicy<HttpResponseMessage>? CircuitBreakerPolicy(IServiceProvider sp, HttpRequestMessage request)
             {
-                var policy = sp.GetRequiredService<PolicyProfile<AsyncCircuitBreakerPolicy<HttpResponseMessage>, CircuitBreakerPolicyOptions>>()
+                var policy = sp.GetRequiredService<PolicyBucket<AsyncCircuitBreakerPolicy<HttpResponseMessage>, CircuitBreakerPolicyOptions>>()
                                     .GetPolicy(HttpPolicyOptionsKeys.HttpCircuitBreakerPolicy);
                 return (IAsyncPolicy<HttpResponseMessage>)policy;
             }

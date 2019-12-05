@@ -1,20 +1,20 @@
 ﻿using System.Net.Http;
 
 using Bet.Extensions.Http.MessageHandlers.HttpTimeout;
-using Bet.Extensions.Resilience.Abstractions;
 using Bet.Extensions.Resilience.Abstractions.Options;
 using Bet.Extensions.Resilience.Http;
 using Bet.Extensions.Resilience.Http.Options;
 
 using Microsoft.Extensions.Options;
 
+using Polly;
 using Polly.CircuitBreaker;
 using Polly.Retry;
 using Polly.Timeout;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
-    public static class HttpResilienceServiceCollectionExtensions
+    public static class ServiceCollectionExtensions
     {
         /// <summary>
         /// Add Default Http Policies.
@@ -27,7 +27,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddPollyPolicy<AsyncTimeoutPolicy<HttpResponseMessage>, TimeoutPolicyOptions>(HttpPolicyOptionsKeys.HttpTimeoutPolicy)
                         .ConfigurePolicy(
                             sectionName: $"{sectionName}:{HttpPolicyOptionsKeys.HttpTimeoutPolicy}",
-                            (policy) => PolicyProfileCreators.CreateTimeoutAsync<TimeoutPolicyOptions, HttpResponseMessage>(policy));
+                            (policy) => PolicyShapes.CreateTimeoutAsync<TimeoutPolicyOptions, HttpResponseMessage>(policy));
 
             services.AddPollyPolicy<AsyncCircuitBreakerPolicy<HttpResponseMessage>, CircuitBreakerPolicyOptions>(HttpPolicyOptionsKeys.HttpCircuitBreakerPolicy)
                         .ConfigurePolicy(

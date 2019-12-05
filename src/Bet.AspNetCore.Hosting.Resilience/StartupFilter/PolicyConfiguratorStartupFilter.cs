@@ -20,7 +20,7 @@ namespace Microsoft.AspNetCore.Hosting
         {
             return app =>
             {
-                var policyRegistrant = _provider.GetRequiredService<DefaultPolicyProfileRegistrator>();
+                var policyRegistrant = _provider.GetRequiredService<PolicyBucketConfigurator>();
                 policyRegistrant.Register();
 
                 next(app);

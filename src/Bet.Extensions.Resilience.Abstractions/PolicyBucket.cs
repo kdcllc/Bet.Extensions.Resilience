@@ -10,18 +10,18 @@ using Polly.Registry;
 
 namespace Bet.Extensions.Resilience.Abstractions
 {
-    public class PolicyProfile<TPolicy, TOptions> : IPolicyProfileDescriptor
+    public class PolicyBucket<TPolicy, TOptions> : IPolicyBucketLabel
         where TPolicy : IsPolicy
         where TOptions : PolicyOptions
     {
-        private readonly IOptionsFactory<PolicyProfileOptions<TOptions>> _optionsFactory;
+        private readonly IOptionsFactory<PolicyBucketOptions<TOptions>> _optionsFactory;
         private readonly IOptionsMonitor<TOptions> _optionsMonitor;
         private readonly Dictionary<string, PolicyLoader<TPolicy, TOptions>> _policies;
         private readonly IPolicyRegistry<string> _policyRegistry;
         private readonly ILoggerFactory _loggerFactory;
 
-        public PolicyProfile(
-            IOptionsFactory<PolicyProfileOptions<TOptions>> optionsFactory,
+        public PolicyBucket(
+            IOptionsFactory<PolicyBucketOptions<TOptions>> optionsFactory,
             IOptionsMonitor<TOptions> optionsMonitor,
             IPolicyRegistry<string> policyRegistry,
             ILoggerFactory loggerFactory)

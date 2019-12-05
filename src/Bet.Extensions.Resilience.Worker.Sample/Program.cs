@@ -28,9 +28,9 @@ namespace Bet.Extensions.Resilience.Worker.Sample
             var config = host.Services.GetRequiredService<IConfiguration>();
             var logger = host.Services.GetRequiredService<ILogger<Program>>();
 
-            var policies = host.Services.GetServices<PolicyProfile<AsyncTimeoutPolicy, TimeoutPolicyOptions>>();
+            var policies = host.Services.GetServices<PolicyBucket<AsyncTimeoutPolicy, TimeoutPolicyOptions>>();
 
-            var policy = host.Services.GetRequiredService<PolicyProfile<AsyncTimeoutPolicy, TimeoutPolicyOptions>>();
+            var policy = host.Services.GetRequiredService<PolicyBucket<AsyncTimeoutPolicy, TimeoutPolicyOptions>>();
 
             var optimisticPolicy = policy.GetPolicy("TimeoutPolicyAsync") as IAsyncPolicy;
             var pessimisticPolicy = policy.GetPolicy("TimeoutPolicyPessimistic") as IAsyncPolicy<bool>;
@@ -41,7 +41,7 @@ namespace Bet.Extensions.Resilience.Worker.Sample
                 {
                     var srv = host.Services.GetRequiredService<IOptionsMonitor<TimeoutPolicyOptions>>().Get("TimeoutPolicyOptimistic");
 
-                    var policy = host.Services.GetRequiredService<PolicyProfile<AsyncTimeoutPolicy, TimeoutPolicyOptions>>();
+                    var policy = host.Services.GetRequiredService<PolicyBucket<AsyncTimeoutPolicy, TimeoutPolicyOptions>>();
 
                     var optimisticPolicy = policy.GetPolicy("TimeoutPolicyOptimistic") as IAsyncPolicy;
                     var pessimisticPolicy = policy.GetPolicy("TimeoutPolicyPessimistic") as IAsyncPolicy<bool>;
@@ -102,7 +102,7 @@ namespace Bet.Extensions.Resilience.Worker.Sample
                         services.AddPollyPolicy<AsyncTimeoutPolicy<bool>, TimeoutPolicyOptions>("TimeoutPolicyPessimistic")
                                 .ConfigurePolicy("DefaultPolicy:TimeoutPolicy", (policy) =>
                                 {
-                                    PolicyProfileCreators.CreateTimeoutAsync<TimeoutPolicyOptions, bool>(policy);
+                                    PolicyShapes.CreateTimeoutAsync<TimeoutPolicyOptions, bool>(policy);
                                 });
                     });
         }

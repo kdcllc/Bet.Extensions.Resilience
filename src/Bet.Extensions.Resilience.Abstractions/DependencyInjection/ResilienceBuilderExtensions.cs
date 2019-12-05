@@ -17,7 +17,7 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IResilienceBuilder<TPolicy, TOptions> ConfigurePolicy<TPolicy, TOptions>(
             this IResilienceBuilder<TPolicy, TOptions> builder,
             string sectionName,
-            Action<PolicyProfileOptions<TOptions>> configurePolicy,
+            Action<PolicyBucketOptions<TOptions>> configurePolicy,
             string? policyName = null,
             Action<TOptions>? configure = null)
             where TPolicy : IsPolicy where TOptions : PolicyOptions, new()
@@ -35,7 +35,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 builder.PolicyNames.Add(policyName);
             }
 
-            builder.Services.AddOptions<PolicyProfileOptions<TOptions>>(policyName)
+            builder.Services.AddOptions<PolicyBucketOptions<TOptions>>(policyName)
                 .Configure<IServiceProvider>((options, provider) =>
                 {
                     options.ServiceProvider = provider;

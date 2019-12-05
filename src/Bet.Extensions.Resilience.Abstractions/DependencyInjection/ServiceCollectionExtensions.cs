@@ -72,11 +72,11 @@ namespace Microsoft.Extensions.DependencyInjection
 
             services.TryAddPolicyRegistry();
 
-            services.TryAddSingleton<DefaultPolicyProfileRegistrator, DefaultPolicyProfileRegistrator>();
+            services.TryAddSingleton<PolicyBucketConfigurator, PolicyBucketConfigurator>();
 
             services.Add(ServiceDescriptor.Describe(
-                typeof(PolicyProfile<TPolicy, TOptions>),
-                typeof(PolicyProfile<TPolicy, TOptions>),
+                typeof(PolicyBucket<TPolicy, TOptions>),
+                typeof(PolicyBucket<TPolicy, TOptions>),
                 serviceLifetime));
 
             return services;
@@ -96,7 +96,7 @@ namespace Microsoft.Extensions.DependencyInjection
                     throw new ArgumentException($"{policyName} already exists");
                 }
 
-                registrant.RegisteredPolicies.Add(policyName, typeof(PolicyProfile<TPolicy, TOptions>));
+                registrant.RegisteredPolicies.Add(policyName, typeof(PolicyBucket<TPolicy, TOptions>));
             }
         }
 

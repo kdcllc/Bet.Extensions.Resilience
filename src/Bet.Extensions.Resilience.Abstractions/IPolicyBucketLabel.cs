@@ -2,7 +2,7 @@
 
 namespace Bet.Extensions.Resilience.Abstractions
 {
-    public interface IPolicyProfileDescriptor
+    public interface IPolicyBucketLabel
     {
         IsPolicy GetPolicy(string policyName);
     }

@@ -65,7 +65,7 @@ namespace Bet.AspNetCore.Resilience.UnitTest.ResilienceTypedClient
             var provider = services.BuildServiceProvider();
 
             // simulates registrations for the policies.
-            var registration = provider.GetRequiredService<DefaultPolicyProfileRegistrator>();
+            var registration = provider.GetRequiredService<PolicyBucketConfigurator>();
             registration.Register();
 
             var client = provider.GetRequiredService<ICustomTypedClientWithOptions>();

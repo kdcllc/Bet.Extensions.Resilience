@@ -2,23 +2,23 @@
 using System.Threading;
 using System.Threading.Tasks;
 
+using Bet.Extensions.Resilience.Abstractions;
 using Bet.Extensions.Resilience.Abstractions.Options;
 
 using Microsoft.Extensions.Logging;
 
-using Polly;
 using Polly.Bulkhead;
 using Polly.CircuitBreaker;
 using Polly.Timeout;
 
-namespace Bet.Extensions.Resilience.Abstractions
+namespace Polly
 {
-    public static partial class PolicyProfileCreators
+    public static partial class PolicyShapes
     {
         public static string PolicyNameSuffix => "Async";
 
         public static void CreateTimeoutAsync<TOptions>(
-            this PolicyProfileOptions<TOptions> policyProfile,
+            this PolicyBucketOptions<TOptions> policyProfile,
             TimeoutStrategy timeoutStrategy = TimeoutStrategy.Pessimistic,
             bool addSyffix = false) where TOptions : TimeoutPolicyOptions
         {
@@ -41,7 +41,7 @@ namespace Bet.Extensions.Resilience.Abstractions
         }
 
         public static void CreateTimeout<TOptions>(
-            this PolicyProfileOptions<TOptions> policyProfile,
+            this PolicyBucketOptions<TOptions> policyProfile,
             TimeoutStrategy timeoutStrategy = TimeoutStrategy.Pessimistic)
             where TOptions : TimeoutPolicyOptions
         {
@@ -61,7 +61,7 @@ namespace Bet.Extensions.Resilience.Abstractions
         }
 
         public static void CreateFallabckAsync<TOptions>(
-            this PolicyProfileOptions<TOptions> policyProfile,
+            this PolicyBucketOptions<TOptions> policyProfile,
             bool addSyffix = false)
             where TOptions : FallbackPolicyOptions
         {
@@ -104,7 +104,7 @@ namespace Bet.Extensions.Resilience.Abstractions
             };
         }
 
-        public static void CreateFallabck<TOptions>(this PolicyProfileOptions<TOptions> policyProfile)
+        public static void CreateFallabck<TOptions>(this PolicyBucketOptions<TOptions> policyProfile)
             where TOptions : FallbackPolicyOptions
         {
             policyProfile.ConfigurePolicy = (options, logger) =>
@@ -143,7 +143,7 @@ namespace Bet.Extensions.Resilience.Abstractions
         }
 
         public static void CreateBulkheadAsync<TOptions>(
-            this PolicyProfileOptions<TOptions> policyProfile,
+            this PolicyBucketOptions<TOptions> policyProfile,
             bool addSyffix = false)
             where TOptions : BulkheadPolicyOptions
         {
@@ -175,7 +175,7 @@ namespace Bet.Extensions.Resilience.Abstractions
             };
         }
 
-        public static void CreateBulkhead<TOptions>(this PolicyProfileOptions<TOptions> policyProfile)
+        public static void CreateBulkhead<TOptions>(this PolicyBucketOptions<TOptions> policyProfile)
             where TOptions : BulkheadPolicyOptions
         {
             policyProfile.ConfigurePolicy = (options, logger) =>
@@ -204,7 +204,7 @@ namespace Bet.Extensions.Resilience.Abstractions
         }
 
         public static void CreateCircuitBreakerAsync<TOptions>(
-            this PolicyProfileOptions<TOptions> policyProfile,
+            this PolicyBucketOptions<TOptions> policyProfile,
             bool addSyffix = false)
             where TOptions : CircuitBreakerPolicyOptions
         {
@@ -238,7 +238,7 @@ namespace Bet.Extensions.Resilience.Abstractions
             };
         }
 
-        public static void CreateCircuitBreaker<TOptions>(this PolicyProfileOptions<TOptions> policyProfile)
+        public static void CreateCircuitBreaker<TOptions>(this PolicyBucketOptions<TOptions> policyProfile)
             where TOptions : CircuitBreakerPolicyOptions
         {
             policyProfile.ConfigurePolicy = (options, logger) =>
@@ -271,7 +271,7 @@ namespace Bet.Extensions.Resilience.Abstractions
         }
 
         public static void CreateRetryAsync<TOptions>(
-            this PolicyProfileOptions<TOptions> policyProfile,
+            this PolicyBucketOptions<TOptions> policyProfile,
             bool addSyffix = false)
             where TOptions : RetryPolicyOptions
         {
@@ -301,7 +301,7 @@ namespace Bet.Extensions.Resilience.Abstractions
             };
         }
 
-        public static void CreateRetry<TOptions>(this PolicyProfileOptions<TOptions> policyProfile)
+        public static void CreateRetry<TOptions>(this PolicyBucketOptions<TOptions> policyProfile)
             where TOptions : RetryPolicyOptions
         {
             policyProfile.ConfigurePolicy = (options, logger) =>
@@ -328,7 +328,7 @@ namespace Bet.Extensions.Resilience.Abstractions
         }
 
         public static void CreateJitterRetryAsync<TOptions>(
-            this PolicyProfileOptions<TOptions> policyProfile,
+            this PolicyBucketOptions<TOptions> policyProfile,
             bool addSyffix = false) where TOptions : RetryJitterPolicyOptions
         {
             policyProfile.ConfigurePolicy = (options, logger) =>
@@ -352,7 +352,7 @@ namespace Bet.Extensions.Resilience.Abstractions
             };
         }
 
-        public static void CreateJitterRetry<TOptions>(this PolicyProfileOptions<TOptions> policyProfile)
+        public static void CreateJitterRetry<TOptions>(this PolicyBucketOptions<TOptions> policyProfile)
             where TOptions : RetryJitterPolicyOptions
         {
             policyProfile.ConfigurePolicy = (options, logger) =>

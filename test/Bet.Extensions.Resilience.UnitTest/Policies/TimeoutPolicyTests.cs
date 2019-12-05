@@ -59,7 +59,7 @@ namespace Bet.Extensions.Resilience.UnitTest.Policies
             var sp = services.BuildServiceProvider();
 
             // simulates registrations for the policies.
-            var registration = sp.GetRequiredService<DefaultPolicyProfileRegistrator>();
+            var registration = sp.GetRequiredService<PolicyBucketConfigurator>();
             registration.Register();
 
             var policyRegistry = sp.GetRequiredService<IPolicyRegistry<string>>();
@@ -102,7 +102,7 @@ namespace Bet.Extensions.Resilience.UnitTest.Policies
             var sp = services.BuildServiceProvider();
 
             // simulates registrations for the policies.
-            var registration = sp.GetRequiredService<DefaultPolicyProfileRegistrator>();
+            var registration = sp.GetRequiredService<PolicyBucketConfigurator>();
             registration.Register();
 
             var policyRegistry = sp.GetRequiredService<IPolicyRegistry<string>>();
@@ -113,7 +113,7 @@ namespace Bet.Extensions.Resilience.UnitTest.Policies
             var defaultAsyncPolicy = policyRegistry.Get<IAsyncPolicy>(defaultPolicyName);
             Assert.NotNull(defaultAsyncPolicy);
 
-            var allPolicies = sp.GetServices<PolicyProfile<AsyncTimeoutPolicy, TestTimeoutPolicyOptions>>();
+            var allPolicies = sp.GetServices<PolicyBucket<AsyncTimeoutPolicy, TestTimeoutPolicyOptions>>();
             Assert.Single(allPolicies);
         }
 
@@ -145,7 +145,7 @@ namespace Bet.Extensions.Resilience.UnitTest.Policies
 
             var sp = services.BuildServiceProvider();
 
-            var policy = (IAsyncPolicy)sp.GetRequiredService<PolicyProfile<AsyncTimeoutPolicy, TimeoutPolicyOptions>>().GetPolicy(policyOptionsName);
+            var policy = (IAsyncPolicy)sp.GetRequiredService<PolicyBucket<AsyncTimeoutPolicy, TimeoutPolicyOptions>>().GetPolicy(policyOptionsName);
             Assert.NotNull(policy);
 
             async Task TimedOutTask()
@@ -184,11 +184,11 @@ namespace Bet.Extensions.Resilience.UnitTest.Policies
             services.AddPollyPolicy<AsyncTimeoutPolicy<string>, TimeoutPolicyOptions>(PolicyOptionsKeys.TimeoutPolicy)
                   .ConfigurePolicy(
                   policyOptionsName,
-                  policy => PolicyProfileCreators.CreateTimeoutAsync<TimeoutPolicyOptions, string>(policy));
+                  policy => PolicyShapes.CreateTimeoutAsync<TimeoutPolicyOptions, string>(policy));
 
             var sp = services.BuildServiceProvider();
 
-            var policy = (IAsyncPolicy<string>)sp.GetRequiredService<PolicyProfile<AsyncTimeoutPolicy<string>, TimeoutPolicyOptions>>().GetPolicy(policyOptionsName);
+            var policy = (IAsyncPolicy<string>)sp.GetRequiredService<PolicyBucket<AsyncTimeoutPolicy<string>, TimeoutPolicyOptions>>().GetPolicy(policyOptionsName);
             Assert.NotNull(policy);
 
             async Task<string> TimedOutTask()
@@ -231,7 +231,7 @@ namespace Bet.Extensions.Resilience.UnitTest.Policies
 
             var sp = services.BuildServiceProvider();
 
-            var policy = (IAsyncPolicy)sp.GetRequiredService<PolicyProfile<AsyncTimeoutPolicy, TimeoutPolicyOptions>>().GetPolicy(policyOptionsName);
+            var policy = (IAsyncPolicy)sp.GetRequiredService<PolicyBucket<AsyncTimeoutPolicy, TimeoutPolicyOptions>>().GetPolicy(policyOptionsName);
             Assert.NotNull(policy);
 
             async Task TimedOutTask()
@@ -270,11 +270,11 @@ namespace Bet.Extensions.Resilience.UnitTest.Policies
             services.AddPollyPolicy<AsyncTimeoutPolicy<string>, TimeoutPolicyOptions>(policyOptionsName)
                    .ConfigurePolicy(
                            sectionName: policyOptionsName,
-                           (policy) => PolicyProfileCreators.CreateTimeoutAsync<TimeoutPolicyOptions, string>(policy));
+                           (policy) => PolicyShapes.CreateTimeoutAsync<TimeoutPolicyOptions, string>(policy));
 
             var sp = services.BuildServiceProvider();
 
-            var policy = (IAsyncPolicy<string>)sp.GetRequiredService<PolicyProfile<AsyncTimeoutPolicy<string>, TimeoutPolicyOptions>>().GetPolicy(policyOptionsName);
+            var policy = (IAsyncPolicy<string>)sp.GetRequiredService<PolicyBucket<AsyncTimeoutPolicy<string>, TimeoutPolicyOptions>>().GetPolicy(policyOptionsName);
             Assert.NotNull(policy);
 
             async Task<string> TimedOutTask()
@@ -317,7 +317,7 @@ namespace Bet.Extensions.Resilience.UnitTest.Policies
 
             var sp = services.BuildServiceProvider();
 
-            var policy = (ISyncPolicy)sp.GetRequiredService<PolicyProfile<TimeoutPolicy, TimeoutPolicyOptions>>().GetPolicy(policyOptionsName);
+            var policy = (ISyncPolicy)sp.GetRequiredService<PolicyBucket<TimeoutPolicy, TimeoutPolicyOptions>>().GetPolicy(policyOptionsName);
             Assert.NotNull(policy);
 
             void TimedOutTask()
@@ -356,11 +356,11 @@ namespace Bet.Extensions.Resilience.UnitTest.Policies
             services.AddPollyPolicy<TimeoutPolicy<string>, TimeoutPolicyOptions>(PolicyOptionsKeys.TimeoutPolicy)
                    .ConfigurePolicy(
                    policyOptionsName,
-                   policy => PolicyProfileCreators.CreateTimeout<TimeoutPolicyOptions, string>(policy));
+                   policy => PolicyShapes.CreateTimeout<TimeoutPolicyOptions, string>(policy));
 
             var sp = services.BuildServiceProvider();
 
-            var policy = (ISyncPolicy<string>)sp.GetRequiredService<PolicyProfile<TimeoutPolicy<string>, TimeoutPolicyOptions>>().GetPolicy(policyOptionsName);
+            var policy = (ISyncPolicy<string>)sp.GetRequiredService<PolicyBucket<TimeoutPolicy<string>, TimeoutPolicyOptions>>().GetPolicy(policyOptionsName);
             Assert.NotNull(policy);
 
             string TimedOutTask()
@@ -403,7 +403,7 @@ namespace Bet.Extensions.Resilience.UnitTest.Policies
 
             var sp = services.BuildServiceProvider();
 
-            var policy = (ISyncPolicy)sp.GetRequiredService<PolicyProfile<TimeoutPolicy, TimeoutPolicyOptions>>().GetPolicy(policyOptionsName);
+            var policy = (ISyncPolicy)sp.GetRequiredService<PolicyBucket<TimeoutPolicy, TimeoutPolicyOptions>>().GetPolicy(policyOptionsName);
             Assert.NotNull(policy);
 
             void TimedOutTask()
@@ -442,11 +442,11 @@ namespace Bet.Extensions.Resilience.UnitTest.Policies
             services.AddPollyPolicy<TimeoutPolicy<string>, TimeoutPolicyOptions>(PolicyOptionsKeys.TimeoutPolicy)
                    .ConfigurePolicy(
                    policyOptionsName,
-                   policy => PolicyProfileCreators.CreateTimeout<TimeoutPolicyOptions, string>(policy));
+                   policy => PolicyShapes.CreateTimeout<TimeoutPolicyOptions, string>(policy));
 
             var sp = services.BuildServiceProvider();
 
-            var policy = (ISyncPolicy<string>)sp.GetRequiredService<PolicyProfile<TimeoutPolicy<string>, TimeoutPolicyOptions>>().GetPolicy(policyOptionsName);
+            var policy = (ISyncPolicy<string>)sp.GetRequiredService<PolicyBucket<TimeoutPolicy<string>, TimeoutPolicyOptions>>().GetPolicy(policyOptionsName);
             Assert.NotNull(policy);
 
             string TimedOutTask()

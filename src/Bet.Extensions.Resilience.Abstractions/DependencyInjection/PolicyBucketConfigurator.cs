@@ -4,11 +4,11 @@ using Bet.Extensions.Resilience.Abstractions.Internal;
 
 namespace Bet.Extensions.Resilience.Abstractions.DependencyInjection
 {
-    public class DefaultPolicyProfileRegistrator
+    public class PolicyBucketConfigurator
     {
         private readonly IServiceProvider _provider;
 
-        public DefaultPolicyProfileRegistrator(IServiceProvider provider)
+        public PolicyBucketConfigurator(IServiceProvider provider)
         {
             _provider = provider ?? throw new ArgumentNullException(nameof(provider));
         }
@@ -19,7 +19,7 @@ namespace Bet.Extensions.Resilience.Abstractions.DependencyInjection
 
             foreach (var reg in policyRegistrant.RegisteredPolicies)
             {
-                var policy = (IPolicyProfileDescriptor)_provider.GetService(reg.Value);
+                var policy = (IPolicyBucketLabel)_provider.GetService(reg.Value);
 
                 var policyOptionsRegistrant = (PolicyOptionsRegistrant)_provider.GetService(typeof(PolicyOptionsRegistrant));
 

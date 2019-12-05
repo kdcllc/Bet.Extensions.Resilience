@@ -10,20 +10,19 @@ using Bet.Extensions.Resilience.Http.Options;
 
 using Microsoft.Extensions.Logging;
 
-using Polly;
 using Polly.Bulkhead;
 using Polly.CircuitBreaker;
 using Polly.Extensions.Http;
 using Polly.Timeout;
 
-namespace Bet.Extensions.Resilience.Http
+namespace Polly
 {
-    public static class HttpPolicyProfileCreators
+    public static class HttpPolicyShapes
     {
         public static string PolicyNameSuffix => "Async";
 
-        public static void HttpCreateFallbackPolicyAsync<TOptions>(
-            this PolicyProfileOptions<TOptions> policyProfile,
+        public static void HttpCreateFallbackAsync<TOptions>(
+            this PolicyBucketOptions<TOptions> policyProfile,
             bool addSyffix = false)
             where TOptions : HttpFallbackPolicyOptions
         {
@@ -71,7 +70,7 @@ namespace Bet.Extensions.Resilience.Http
             };
         }
 
-        public static void HttpCreateFallbackPolicy<TOptions>(PolicyProfileOptions<TOptions> policyProfile)
+        public static void HttpCreateFallback<TOptions>(this PolicyBucketOptions<TOptions> policyProfile)
             where TOptions : HttpFallbackPolicyOptions
         {
             policyProfile.ConfigurePolicy = (options, logger) =>
@@ -115,7 +114,7 @@ namespace Bet.Extensions.Resilience.Http
         }
 
         public static void HttpCreateCircuitBreakerAsync<TOptions>(
-            this PolicyProfileOptions<TOptions> policyProfile,
+            this PolicyBucketOptions<TOptions> policyProfile,
             bool addSyffix = false)
             where TOptions : CircuitBreakerPolicyOptions
         {
@@ -150,8 +149,8 @@ namespace Bet.Extensions.Resilience.Http
             };
         }
 
-        public static void HttpCreateCircuitBreaker<TOptions>(
-            PolicyProfileOptions<TOptions> policyProfile) where TOptions : CircuitBreakerPolicyOptions
+        public static void HttpCreateCircuitBreaker<TOptions>(this PolicyBucketOptions<TOptions> policyProfile)
+            where TOptions : CircuitBreakerPolicyOptions
         {
             policyProfile.ConfigurePolicy = (options, logger) =>
             {
@@ -183,7 +182,7 @@ namespace Bet.Extensions.Resilience.Http
         }
 
         public static void HttpCreateRetryAsync<TOptions>(
-            this PolicyProfileOptions<TOptions> policyProfile,
+            this PolicyBucketOptions<TOptions> policyProfile,
             bool addSyffix = false)
             where TOptions : RetryPolicyOptions
         {
@@ -216,7 +215,7 @@ namespace Bet.Extensions.Resilience.Http
             };
         }
 
-        public static void HttpCreateRetry<TOptions>(this PolicyProfileOptions<TOptions> policyProfile)
+        public static void HttpCreateRetry<TOptions>(this PolicyBucketOptions<TOptions> policyProfile)
            where TOptions : RetryPolicyOptions
         {
             policyProfile.ConfigurePolicy = (options, logger) =>
@@ -247,7 +246,7 @@ namespace Bet.Extensions.Resilience.Http
         }
 
         public static void HttpCreateRetryJitterAsync<TOptions>(
-            PolicyProfileOptions<TOptions> policyProfile,
+            PolicyBucketOptions<TOptions> policyProfile,
             bool addSyffix = false) where TOptions : RetryJitterPolicyOptions
         {
             policyProfile.ConfigurePolicy = (options, logger) =>
@@ -275,9 +274,8 @@ namespace Bet.Extensions.Resilience.Http
             };
         }
 
-        public static void HttpCreateRetryJitter<TOptions, TResult>(
-            PolicyProfileOptions<TOptions> policyProfile,
-            Func<DelegateResult<TResult>, string> func) where TOptions : RetryJitterPolicyOptions
+        public static void HttpCreateRetryJitter<TOptions>(this PolicyBucketOptions<TOptions> policyProfile)
+            where TOptions : RetryJitterPolicyOptions
         {
             policyProfile.ConfigurePolicy = (options, logger) =>
             {
@@ -296,7 +294,7 @@ namespace Bet.Extensions.Resilience.Http
 
                 void OnRetry(DelegateResult<HttpResponseMessage> outcome, TimeSpan time, int attempt, Context context)
                 {
-                    logger.LogRetryOnRetry(time, attempt, context, options.MaxRetries,outcome.GetMessage());
+                    logger.LogRetryOnRetry(time, attempt, context, options.MaxRetries, outcome.GetMessage());
                 }
             };
         }

@@ -2,21 +2,21 @@
 using System.Threading;
 using System.Threading.Tasks;
 
+using Bet.Extensions.Resilience.Abstractions;
 using Bet.Extensions.Resilience.Abstractions.Options;
 
 using Microsoft.Extensions.Logging;
 
-using Polly;
 using Polly.Bulkhead;
 using Polly.CircuitBreaker;
 using Polly.Timeout;
 
-namespace Bet.Extensions.Resilience.Abstractions
+namespace Polly
 {
-    public static partial class PolicyProfileCreators
+    public static partial class PolicyShapes
     {
         public static void CreateTimeoutAsync<TOptions, TResult>(
-            PolicyProfileOptions<TOptions> policyProfile,
+            PolicyBucketOptions<TOptions> policyProfile,
             TimeoutStrategy timeoutStrategy = TimeoutStrategy.Pessimistic,
             bool addSyffix = false) where TOptions : TimeoutPolicyOptions
         {
@@ -39,7 +39,7 @@ namespace Bet.Extensions.Resilience.Abstractions
         }
 
         public static void CreateTimeout<TOptions, TResult>(
-            this PolicyProfileOptions<TOptions> policyProfile,
+            this PolicyBucketOptions<TOptions> policyProfile,
             TimeoutStrategy timeoutStrategy = TimeoutStrategy.Pessimistic)
             where TOptions : TimeoutPolicyOptions
         {
@@ -67,7 +67,7 @@ namespace Bet.Extensions.Resilience.Abstractions
         /// <param name="func">'outcome.GetExceptionMessages()'.</param>
         /// <param name="addSyffix"></param>
         public static void CreateFallbackAsync<TOptions, TResult>(
-            PolicyProfileOptions<TOptions> policyProfile,
+            PolicyBucketOptions<TOptions> policyProfile,
             Func<DelegateResult<TResult>, string> func,
             bool addSyffix = false)
             where TOptions : FallbackPolicyOptions
@@ -115,7 +115,7 @@ namespace Bet.Extensions.Resilience.Abstractions
         }
 
         public static void CreateFallback<TOptions, TResult>(
-            PolicyProfileOptions<TOptions> policyProfile,
+            PolicyBucketOptions<TOptions> policyProfile,
             Func<DelegateResult<TResult>, string> func)
             where TOptions : FallbackPolicyOptions
         {
@@ -159,7 +159,7 @@ namespace Bet.Extensions.Resilience.Abstractions
         }
 
         public static void CreateBulkheadAsync<TOptions, TResult>(
-            PolicyProfileOptions<TOptions> policyProfile,
+            PolicyBucketOptions<TOptions> policyProfile,
             bool addSyffix = false)
             where TOptions : BulkheadPolicyOptions
         {
@@ -191,7 +191,7 @@ namespace Bet.Extensions.Resilience.Abstractions
             };
         }
 
-        public static void CreateBulkhead<TOptions, TResult>(PolicyProfileOptions<TOptions> policyProfile)
+        public static void CreateBulkhead<TOptions, TResult>(PolicyBucketOptions<TOptions> policyProfile)
             where TOptions : BulkheadPolicyOptions
         {
             policyProfile.ConfigurePolicy = (options, logger) =>
@@ -220,7 +220,7 @@ namespace Bet.Extensions.Resilience.Abstractions
         }
 
         public static void CreateCircuitBreakerAsync<TOptions, TResult>(
-            PolicyProfileOptions<TOptions> policyProfile,
+            PolicyBucketOptions<TOptions> policyProfile,
             Func<DelegateResult<TResult>, string> func,
             bool addSyffix = false)
             where TOptions : CircuitBreakerPolicyOptions
@@ -255,7 +255,7 @@ namespace Bet.Extensions.Resilience.Abstractions
         }
 
         public static void CreateCircuitBreaker<TOptions, TResult>(
-            PolicyProfileOptions<TOptions> policyProfile,
+            PolicyBucketOptions<TOptions> policyProfile,
             Func<DelegateResult<TResult>, string> func) where TOptions : CircuitBreakerPolicyOptions
         {
             policyProfile.ConfigurePolicy = (options, logger) =>
@@ -288,7 +288,7 @@ namespace Bet.Extensions.Resilience.Abstractions
         }
 
         public static void CreateRetryAsync<TOptions, TResult>(
-            PolicyProfileOptions<TOptions> policyProfile,
+            PolicyBucketOptions<TOptions> policyProfile,
             Func<DelegateResult<TResult>, string> func,
             bool addSyffix = false)
             where TOptions : RetryPolicyOptions
@@ -319,7 +319,7 @@ namespace Bet.Extensions.Resilience.Abstractions
         }
 
         public static void CreateRetry<TOptions, TResult>(
-           PolicyProfileOptions<TOptions> policyProfile,
+           PolicyBucketOptions<TOptions> policyProfile,
            Func<DelegateResult<TResult>, string> func)
            where TOptions : RetryPolicyOptions
         {
@@ -347,7 +347,7 @@ namespace Bet.Extensions.Resilience.Abstractions
         }
 
         public static void CreateRetryJitterAsync<TOptions, TResult>(
-            PolicyProfileOptions<TOptions> policyProfile,
+            PolicyBucketOptions<TOptions> policyProfile,
             Func<DelegateResult<TResult>, string> func,
             bool addSyffix = false) where TOptions : RetryJitterPolicyOptions
         {
@@ -373,7 +373,7 @@ namespace Bet.Extensions.Resilience.Abstractions
         }
 
         public static void CreateRetryJitter<TOptions, TResult>(
-            PolicyProfileOptions<TOptions> policyProfile,
+            PolicyBucketOptions<TOptions> policyProfile,
             Func<DelegateResult<TResult>, string> func) where TOptions : RetryJitterPolicyOptions
         {
             policyProfile.ConfigurePolicy = (options, logger) =>

@@ -6,7 +6,7 @@ using Polly;
 
 namespace Bet.Extensions.Resilience.Abstractions.Options
 {
-    public class PolicyProfileOptions<TOptions> where TOptions : PolicyOptions
+    public class PolicyBucketOptions<TOptions> where TOptions : PolicyOptions
     {
         public string Name { get; set; } = string.Empty;
 

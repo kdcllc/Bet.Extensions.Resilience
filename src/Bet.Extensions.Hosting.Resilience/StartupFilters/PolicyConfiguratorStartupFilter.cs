@@ -13,7 +13,7 @@ namespace Microsoft.Extensions.Hosting
     {
         public void Configure(IServiceProvider provider)
         {
-            var policyRegistrant = provider.GetRequiredService<DefaultPolicyProfileRegistrator>();
+            var policyRegistrant = provider.GetRequiredService<PolicyBucketConfigurator>();
             policyRegistrant.Register();
         }
     }

@@ -36,6 +36,7 @@
     <PackageReference Update="Microsoft.Extensions.Options" Version="$(NetCoreCommon)" />
     <PackageReference Update="Microsoft.Extensions.Options.ConfigurationExtensions" Version="$(NetCoreCommon)" />
     <PackageReference Update="Microsoft.Extensions.DiagnosticAdapter" Version="$(NetCoreCommon)" />
+    <PackageReference Update="Microsoft.Extensions.Logging" Version="$(NetCoreCommon)"/>
   </ItemGroup>
 
   <ItemGroup Label="Unit Tests">

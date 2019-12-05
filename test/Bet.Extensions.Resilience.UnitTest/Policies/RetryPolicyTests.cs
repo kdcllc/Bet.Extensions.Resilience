@@ -53,7 +53,7 @@ namespace Bet.Extensions.Resilience.UnitTest.Policies
 
             var sp = services.BuildServiceProvider();
 
-            var policy = (IAsyncPolicy)sp.GetRequiredService<PolicyProfile<AsyncRetryPolicy, RetryPolicyOptions>>().GetPolicy(policyOptionsName);
+            var policy = (IAsyncPolicy)sp.GetRequiredService<PolicyBucket<AsyncRetryPolicy, RetryPolicyOptions>>().GetPolicy(policyOptionsName);
             Assert.NotNull(policy);
 
             async Task TimedOutTask()
@@ -92,11 +92,11 @@ namespace Bet.Extensions.Resilience.UnitTest.Policies
             services.AddPollyPolicy<AsyncRetryPolicy, RetryPolicyOptions>(policyOptionsName)
                .ConfigurePolicy(
                policyOptionsName,
-               policy => PolicyProfileCreators.CreateRetryAsync<RetryPolicyOptions, bool>(policy, (outcome) => outcome.GetExceptionMessages()));
+               policy => PolicyShapes.CreateRetryAsync<RetryPolicyOptions, bool>(policy, (outcome) => outcome.GetExceptionMessages()));
 
             var sp = services.BuildServiceProvider();
 
-            var policy = (IAsyncPolicy<bool>)sp.GetRequiredService<PolicyProfile<AsyncRetryPolicy, RetryPolicyOptions>>().GetPolicy(policyOptionsName);
+            var policy = (IAsyncPolicy<bool>)sp.GetRequiredService<PolicyBucket<AsyncRetryPolicy, RetryPolicyOptions>>().GetPolicy(policyOptionsName);
             Assert.NotNull(policy);
 
             async Task<bool> TimedOutTask()

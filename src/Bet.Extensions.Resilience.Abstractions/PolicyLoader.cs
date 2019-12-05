@@ -14,12 +14,12 @@ namespace Bet.Extensions.Resilience.Abstractions
     {
         private readonly ILogger<PolicyLoader<TPolicy, TOptions>> _logger;
         private readonly IPolicyRegistry<string> _policyRegistry;
-        private readonly PolicyProfileOptions<TOptions> _policyProfileOptions;
+        private readonly PolicyBucketOptions<TOptions> _policyProfileOptions;
 
         private TOptions _options;
 
         public PolicyLoader(
-            PolicyProfileOptions<TOptions> policyProfileOptions,
+            PolicyBucketOptions<TOptions> policyProfileOptions,
             IOptionsMonitor<TOptions> optionsMonitor,
             IPolicyRegistry<string> policyRegistry,
             ILoggerFactory loggerFactory)

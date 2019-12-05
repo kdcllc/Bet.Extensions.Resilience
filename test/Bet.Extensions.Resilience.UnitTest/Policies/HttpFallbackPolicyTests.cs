@@ -55,20 +55,20 @@ namespace Bet.Extensions.Resilience.UnitTest.Policies
             services.AddPollyPolicy<AsyncTimeoutPolicy<HttpResponseMessage>, TimeoutPolicyOptions>(PolicyOptionsKeys.TimeoutPolicy)
                     .ConfigurePolicy(
                         sectionName: PolicyOptionsKeys.TimeoutPolicy,
-                        (policy) => PolicyProfileCreators.CreateTimeoutAsync<TimeoutPolicyOptions, HttpResponseMessage>(policy));
+                        (policy) => PolicyShapes.CreateTimeoutAsync<TimeoutPolicyOptions, HttpResponseMessage>(policy));
 
             services.AddPollyPolicy<AsyncFallbackPolicy<HttpResponseMessage>, HttpFallbackPolicyOptions>(HttpPolicyOptionsKeys.HttpFallbackPolicy)
                     .ConfigurePolicy(
                         sectionName: HttpPolicyOptionsKeys.HttpFallbackPolicy,
-                        (policy) => policy.HttpCreateFallbackPolicyAsync());
+                        (policy) => policy.HttpCreateFallbackAsync());
 
             var sp = services.BuildServiceProvider();
 
-            var fallbackPolicy = sp.GetRequiredService<PolicyProfile<AsyncFallbackPolicy<HttpResponseMessage>, HttpFallbackPolicyOptions>>().GetPolicy(HttpPolicyOptionsKeys.HttpFallbackPolicy) as IAsyncPolicy<HttpResponseMessage>;
+            var fallbackPolicy = sp.GetRequiredService<PolicyBucket<AsyncFallbackPolicy<HttpResponseMessage>, HttpFallbackPolicyOptions>>().GetPolicy(HttpPolicyOptionsKeys.HttpFallbackPolicy) as IAsyncPolicy<HttpResponseMessage>;
 
             Assert.NotNull(fallbackPolicy);
 
-            var timeoutPolicy = sp.GetRequiredService<PolicyProfile<AsyncTimeoutPolicy<HttpResponseMessage>, TimeoutPolicyOptions>>().GetPolicy(PolicyOptionsKeys.TimeoutPolicy) as IAsyncPolicy<HttpResponseMessage>;
+            var timeoutPolicy = sp.GetRequiredService<PolicyBucket<AsyncTimeoutPolicy<HttpResponseMessage>, TimeoutPolicyOptions>>().GetPolicy(PolicyOptionsKeys.TimeoutPolicy) as IAsyncPolicy<HttpResponseMessage>;
             Assert.NotNull(timeoutPolicy);
 
             var policy = fallbackPolicy.WrapAsync(timeoutPolicy);
