@@ -25,19 +25,19 @@ namespace Microsoft.Extensions.DependencyInjection
             string sectionName = HttpPolicyOptionsKeys.DefaultHttpPolicy)
         {
             services.AddPollyPolicy<AsyncTimeoutPolicy<HttpResponseMessage>, TimeoutPolicyOptions>(HttpPolicyOptionsKeys.HttpTimeoutPolicy)
-                .ConfigurePolicy(
-                $"{sectionName}:{HttpPolicyOptionsKeys.HttpTimeoutPolicy}",
-                policy => PolicyProfileCreators.CreateTimeoutAsync<TimeoutPolicyOptions, HttpResponseMessage>(policy));
+                        .ConfigurePolicy(
+                            sectionName: $"{sectionName}:{HttpPolicyOptionsKeys.HttpTimeoutPolicy}",
+                            (policy) => PolicyProfileCreators.CreateTimeoutAsync<TimeoutPolicyOptions, HttpResponseMessage>(policy));
 
             services.AddPollyPolicy<AsyncCircuitBreakerPolicy<HttpResponseMessage>, CircuitBreakerPolicyOptions>(HttpPolicyOptionsKeys.HttpCircuitBreakerPolicy)
-                .ConfigurePolicy(
-                    $"{sectionName}:{HttpPolicyOptionsKeys.HttpCircuitBreakerPolicy}",
-                    policy => policy.HttpCreateCircuitBreakerAsync());
+                        .ConfigurePolicy(
+                            sectionName: $"{sectionName}:{HttpPolicyOptionsKeys.HttpCircuitBreakerPolicy}",
+                            (policy) => policy.HttpCreateCircuitBreakerAsync());
 
             services.AddPollyPolicy<AsyncRetryPolicy<HttpResponseMessage>, RetryPolicyOptions>(HttpPolicyOptionsKeys.HttpRetryPolicy)
-                    .ConfigurePolicy(
-                    $"{sectionName}:{HttpPolicyOptionsKeys.HttpCircuitBreakerPolicy}",
-                    policy => policy.HttpCreateRetryAsync());
+                        .ConfigurePolicy(
+                            sectionName: $"{sectionName}:{HttpPolicyOptionsKeys.HttpRetryPolicy}",
+                            (policy) => policy.HttpCreateRetryAsync());
 
             return services;
         }

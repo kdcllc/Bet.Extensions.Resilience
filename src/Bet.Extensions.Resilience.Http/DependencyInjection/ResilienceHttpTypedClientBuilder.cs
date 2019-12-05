@@ -167,23 +167,29 @@ namespace Microsoft.Extensions.DependencyInjection
             // Services.AddHttpDefaultResiliencePolicies();
 
             // TODO: rework with policies the issue of registration.
-            IAsyncPolicy<HttpResponseMessage>? TimeoutPolicy(IServiceProvider sp, HttpRequestMessage request)
+            IAsyncPolicy<HttpResponseMessage> TimeoutPolicy(IServiceProvider sp, HttpRequestMessage request)
             {
-                return sp.GetRequiredService<PolicyProfile<AsyncTimeoutPolicy, TimeoutPolicyOptions>>().GetPolicy(HttpPolicyOptionsKeys.HttpTimeoutPolicy) as IAsyncPolicy<HttpResponseMessage>;
+                var policy = sp.GetRequiredService<PolicyProfile<AsyncTimeoutPolicy<HttpResponseMessage>, TimeoutPolicyOptions>>()
+                                .GetPolicy(HttpPolicyOptionsKeys.HttpTimeoutPolicy);
+                return (IAsyncPolicy<HttpResponseMessage>)policy;
             }
 
             HttpClientBuilder.AddPolicyHandler(TimeoutPolicy);
 
-            IAsyncPolicy<HttpResponseMessage>? RetryPolicy(IServiceProvider sp, HttpRequestMessage request)
+            IAsyncPolicy<HttpResponseMessage> RetryPolicy(IServiceProvider sp, HttpRequestMessage request)
             {
-                return sp.GetRequiredService<PolicyProfile<AsyncRetryPolicy, RetryPolicyOptions>>().GetPolicy(HttpPolicyOptionsKeys.HttpRetryPolicy) as IAsyncPolicy<HttpResponseMessage>;
+                var policy = sp.GetRequiredService<PolicyProfile<AsyncRetryPolicy<HttpResponseMessage>, RetryPolicyOptions>>()
+                                .GetPolicy(HttpPolicyOptionsKeys.HttpRetryPolicy);
+                return (IAsyncPolicy<HttpResponseMessage>)policy;
             }
 
             HttpClientBuilder.AddPolicyHandler(RetryPolicy);
 
             IAsyncPolicy<HttpResponseMessage>? CircuitBreakerPolicy(IServiceProvider sp, HttpRequestMessage request)
             {
-                return sp.GetRequiredService<PolicyProfile<AsyncCircuitBreakerPolicy, CircuitBreakerPolicyOptions>>().GetPolicy(HttpPolicyOptionsKeys.HttpAdvancedCircuitBreakerPolicy) as IAsyncPolicy<HttpResponseMessage>;
+                var policy = sp.GetRequiredService<PolicyProfile<AsyncCircuitBreakerPolicy<HttpResponseMessage>, CircuitBreakerPolicyOptions>>()
+                                    .GetPolicy(HttpPolicyOptionsKeys.HttpCircuitBreakerPolicy);
+                return (IAsyncPolicy<HttpResponseMessage>)policy;
             }
 
             HttpClientBuilder.AddPolicyHandler(CircuitBreakerPolicy);

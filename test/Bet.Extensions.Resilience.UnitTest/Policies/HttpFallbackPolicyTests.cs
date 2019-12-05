@@ -4,20 +4,21 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 
+using Bet.Extensions.Resilience.Abstractions;
+using Bet.Extensions.Resilience.Abstractions.Options;
+using Bet.Extensions.Resilience.Http;
 using Bet.Extensions.Resilience.Http.Options;
 using Bet.Extensions.Testing.Logging;
-using Bet.Extensions.Resilience.Abstractions;
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 using Polly;
+using Polly.Fallback;
+using Polly.Timeout;
 
 using Xunit;
 using Xunit.Abstractions;
-using Bet.Extensions.Resilience.Abstractions.Options;
-using Polly.Timeout;
-using Polly.Fallback;
 
 namespace Bet.Extensions.Resilience.UnitTest.Policies
 {
@@ -52,23 +53,22 @@ namespace Bet.Extensions.Resilience.UnitTest.Policies
             services.AddSingleton<IConfiguration>(config);
 
             services.AddPollyPolicy<AsyncTimeoutPolicy<HttpResponseMessage>, TimeoutPolicyOptions>(PolicyOptionsKeys.TimeoutPolicy)
-                .ConfigurePolicy(
-                PolicyOptionsKeys.TimeoutPolicy,
-                policy => PolicyProfileCreators.CreateTimeoutAsync<TimeoutPolicyOptions, HttpResponseMessage>(policy));
+                    .ConfigurePolicy(
+                        sectionName: PolicyOptionsKeys.TimeoutPolicy,
+                        (policy) => PolicyProfileCreators.CreateTimeoutAsync<TimeoutPolicyOptions, HttpResponseMessage>(policy));
 
-            services.AddPollyPolicy<AsyncFallbackPolicy<HttpResponseMessage>, FallbackPolicyOptions>(HttpPolicyOptionsKeys.HttpFallbackPolicy)
-                .ConfigurePolicy(
-                PolicyOptionsKeys.FallbackPolicy,
-                policy => PolicyProfileCreators.CreateFallbackAsync<FallbackPolicyOptions, HttpResponseMessage>(policy, (outcome) => outcome.GetExceptionMessages()));
-
+            services.AddPollyPolicy<AsyncFallbackPolicy<HttpResponseMessage>, HttpFallbackPolicyOptions>(HttpPolicyOptionsKeys.HttpFallbackPolicy)
+                    .ConfigurePolicy(
+                        sectionName: HttpPolicyOptionsKeys.HttpFallbackPolicy,
+                        (policy) => policy.HttpCreateFallbackPolicyAsync());
 
             var sp = services.BuildServiceProvider();
 
-            var fallbackPolicy = sp.GetRequiredService<PolicyProfile<AsyncFallbackPolicy, FallbackPolicyOptions>>().GetPolicy(HttpPolicyOptionsKeys.HttpFallbackPolicy) as IAsyncPolicy<HttpResponseMessage>;
+            var fallbackPolicy = sp.GetRequiredService<PolicyProfile<AsyncFallbackPolicy<HttpResponseMessage>, HttpFallbackPolicyOptions>>().GetPolicy(HttpPolicyOptionsKeys.HttpFallbackPolicy) as IAsyncPolicy<HttpResponseMessage>;
 
             Assert.NotNull(fallbackPolicy);
 
-            var timeoutPolicy = sp.GetRequiredService<PolicyProfile<AsyncTimeoutPolicy, TimeoutPolicyOptions>>().GetPolicy(PolicyOptionsKeys.TimeoutPolicy) as IAsyncPolicy<HttpResponseMessage>;
+            var timeoutPolicy = sp.GetRequiredService<PolicyProfile<AsyncTimeoutPolicy<HttpResponseMessage>, TimeoutPolicyOptions>>().GetPolicy(PolicyOptionsKeys.TimeoutPolicy) as IAsyncPolicy<HttpResponseMessage>;
             Assert.NotNull(timeoutPolicy);
 
             var policy = fallbackPolicy.WrapAsync(timeoutPolicy);
