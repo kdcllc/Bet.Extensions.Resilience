@@ -3,14 +3,17 @@ using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+
+using Bet.Extensions.Hosting.Resilience.CorrelationId;
 using Bet.Extensions.Http.MessageHandlers;
 using Bet.Extensions.Http.MessageHandlers.CorrelationId;
-using Bet.Extensions.Hosting.Resilience.CorrelationId;
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+
 using Moq;
 using Moq.Protected;
+
 using Xunit;
 using Xunit.Abstractions;
 

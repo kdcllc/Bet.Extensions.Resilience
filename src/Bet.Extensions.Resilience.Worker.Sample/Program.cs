@@ -84,6 +84,7 @@ namespace Bet.Extensions.Resilience.Worker.Sample
             return Host.CreateDefaultBuilder(args)
 
                     .UseStartupFilter<PolicyConfiguratorStartupFilter>()
+                    .UseCorrelationId(options => options.UseGuidForCorrelationId = true)
                     .ConfigureServices((hostContext, services) =>
                     {
                         services.AddPollyPolicy<AsyncTimeoutPolicy, TimeoutPolicyOptions>("TimeoutPolicyOptimistic")

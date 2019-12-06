@@ -11,3 +11,38 @@ This Library provides registration for hosting container of `IHost` interface fo
 ```cmd
     dotnet add package Bet.Extensions.Hosting.Resilience
 ```
+
+## Usage
+
+```csharp
+
+    public static IHostBuilder CreateHostBuilder(string[] args)
+    {
+        return Host.CreateDefaultBuilder(args)
+
+                // adds resilience
+                .UseResilienceOnStartup()
+
+                // use correlationid for http context
+                .UseCorrelationId(options => options.UseGuidForCorrelationId = true);
+    }
+
+    private async Task<string> GetWeatherForecast()
+    {
+        // inject IOptions<CorrelationIdOptions> correlationOptions
+        // creates a parent activity context...
+        var activity = new Activity("CallToBackend")
+                            .AddBaggage(_correlationOptions.Header, Guid.NewGuid().ToString())
+                            .Start();
+
+        try
+        {
+            return await _httpClient.GetStringAsync(
+                                   "http://localhost:5000/weatherforecastproxy");
+        }
+        finally
+        {
+            activity.Stop();
+        }
+    }
+```
