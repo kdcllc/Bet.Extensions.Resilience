@@ -26,6 +26,7 @@ namespace Bet.Extensions.Hosting.Resilience.CorrelationId
         private readonly ICorrelationContextFactory _correlationContextFactory;
         private readonly ILogger<DiagnosticListener> _logger;
         private readonly IDisposable _reference;
+        private Activity _activity;
 
         public CorrelationDiagnosticsListener(
             ICorrelationContextFactory correlationContextFactory,
@@ -33,27 +34,24 @@ namespace Bet.Extensions.Hosting.Resilience.CorrelationId
             ILogger<DiagnosticListener> logger)
         {
             _correlationContextFactory = correlationContextFactory ?? throw new ArgumentNullException(nameof(correlationContextFactory));
-
             _options = options.Value;
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _reference = DiagnosticListener.AllListeners.Subscribe(this);
+
+            Interlocked.Exchange(ref _activity, new Activity("Start").Start());
         }
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
-            HostingEventSource.Log.HostStop();
-
             _logger.LogDebug("Started");
-
+            HostingEventSource.Log.HostStart();
             return Task.CompletedTask;
         }
 
         public Task StopAsync(CancellationToken cancellationToken)
         {
-            HostingEventSource.Log.HostStop();
-
             _logger.LogDebug("Stopped");
-
+            HostingEventSource.Log.HostStop();
             return Task.CompletedTask;
         }
 
@@ -67,7 +65,7 @@ namespace Bet.Extensions.Hosting.Resilience.CorrelationId
 
         public void OnNext(DiagnosticListener value)
         {
-            _logger.LogInformation(value.Name);
+            _logger.LogDebug(value.Name);
 
             if (value.Name == "HttpHandlerDiagnosticListener"
                 || value.Name == "Microsoft.AspNetCore")
@@ -78,7 +76,7 @@ namespace Bet.Extensions.Hosting.Resilience.CorrelationId
 
         public void OnNext(KeyValuePair<string, object> value)
         {
-            _logger.LogInformation($"{value.Key} - {value.Value}");
+            _logger.LogDebug($"{value.Key} - {value.Value}");
         }
 
         [DiagnosticName("System.Net.Http.HttpRequestOut")]
@@ -90,24 +88,34 @@ namespace Bet.Extensions.Hosting.Resilience.CorrelationId
         [DiagnosticName("System.Net.Http.HttpRequestOut.Start")]
         public virtual void OnHttpRequestOutStart(HttpRequestMessage request)
         {
+            var parentActivity = Activity.Current.GetBaggageItem(_options.Header);
+
+            Interlocked.Exchange(ref _activity, new Activity("Request").Start());
+
             _logger.LogDebug("System.Net.Http.HttpRequestOut.Start");
 
-            var correlationId = SetCorrelationId(request);
+            var correlationId = string.IsNullOrEmpty(parentActivity) ? _activity.GetBaggageItem(_options.Header) : parentActivity;
 
-            _correlationContextFactory.Create(correlationId, _options.Header);
+            if (string.IsNullOrEmpty(correlationId))
+            {
+                correlationId = SetCorrelationId(request);
+                _activity.AddBaggage(_options.Header, correlationId);
 
-            Activity.Current.AddTag(_options.Header, correlationId);
+                _correlationContextFactory.Create(correlationId, _options.Header);
+            }
 
             if (!request.Headers.TryGetValues(_options.Header, out var values))
             {
                 request.Headers.Add(_options.Header, new string[] { correlationId });
             }
+
+            _logger.LogInformation("Request CorrelationId: {correlationId}", correlationId);
         }
 
         [DiagnosticName("System.Net.Http.Request")]
         public virtual void OnRequest(HttpRequestMessage request)
         {
-            _logger.LogWarning("System.Net.Http.Request");
+            _logger.LogDebug("System.Net.Http.Request");
         }
 
         [DiagnosticName("System.Net.Http.HttpRequestOut.Stop")]
@@ -116,7 +124,7 @@ namespace Bet.Extensions.Hosting.Resilience.CorrelationId
             HttpResponseMessage response,
             TaskStatus requestTaskStatus)
         {
-            _logger.LogWarning("System.Net.Http.HttpRequestOut.Stop");
+            _logger.LogDebug("System.Net.Http.HttpRequestOut.Stop");
 
             if (_options.IncludeInResponse)
             {
@@ -124,15 +132,17 @@ namespace Bet.Extensions.Hosting.Resilience.CorrelationId
                 {
                     response.Headers.Add(_options.Header, values);
 
-                    Activity.Current.AddTag(_options.Header, string.Join(", ", values));
+                    _logger.LogInformation("Response CorrelationId: {correlationId}", values);
                 }
             }
+
+            _activity.Stop();
         }
 
         [DiagnosticName("System.Net.Http.Response")]
         public virtual void OnResponse(HttpResponseMessage response)
         {
-            _logger.LogWarning("System.Net.Http.Response");
+            _logger.LogDebug("System.Net.Http.Response");
         }
 
         public void Dispose()
@@ -157,15 +167,22 @@ namespace Bet.Extensions.Hosting.Resilience.CorrelationId
 
             if (RequiresGenerationOfCorrelationId(correlationIdFoundInRequestHeader, correlationId))
             {
-                correlationId = GenerateCorrelationId(Activity.Current.Id);
+                correlationId = GenerateCorrelationId();
             }
 
             return correlationId;
         }
 
-        private StringValues GenerateCorrelationId(string traceIdentifier)
+        private StringValues GenerateCorrelationId()
         {
-            return _options.UseGuidForCorrelationId || string.IsNullOrEmpty(traceIdentifier) ? Guid.NewGuid().ToString() : traceIdentifier;
+            if (_options.UseGuidForCorrelationId || string.IsNullOrEmpty(_activity.Id))
+            {
+                return Guid.NewGuid().ToString();
+            }
+            else
+            {
+                return _activity.Id;
+            }
         }
     }
 }
