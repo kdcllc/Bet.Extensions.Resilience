@@ -37,13 +37,12 @@ namespace Bet.AspNetCore.Resilience.UnitTest.GenericHosting
                 })
                 .ConfigureServices((context, services) =>
                 {
-                    //services.AddCorrelationId();
-                    //services.AddHostedService<CorrelationDiagnosticsListener>();
+                    // services.AddCorrelationId();
+                    // services.AddHostedService<CorrelationDiagnosticsListener>();
                 })
                 .Configure(app =>
                 {
                     // app.UseCorrelationId();
-
                     app.MapWhen(
                       context => context.Request.Path.Value.Contains("/service1"),
                       (IApplicationBuilder pp) =>

@@ -83,12 +83,11 @@ namespace Bet.AspNetCore.Resilience.UnitTest.GenericHosting
 
             var hostServices = host.Services;
 
-            //var client1 = hostServices.GetRequiredService<IHttpClientFactory>().CreateClient("Client1");
+            // var client1 = hostServices.GetRequiredService<IHttpClientFactory>().CreateClient("Client1");
 
-            //var request = new HttpRequestMessage(HttpMethod.Get, "/service");
+            // var request = new HttpRequestMessage(HttpMethod.Get, "/service");
 
-            //var response = await client1.SendAsync(request, CancellationToken.None);
-
+            // var response = await client1.SendAsync(request, CancellationToken.None);
             var client2 = hostServices.GetRequiredService<IHttpClientFactory>().CreateClient("Client2");
             var response = await client2.GetAsync(string.Empty);
 

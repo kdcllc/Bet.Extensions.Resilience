@@ -51,7 +51,7 @@ services.AddPollyPolicy<AsyncTimeoutPolicy<bool>, TimeoutPolicyOptions>("Timeout
             });
 ```
 
-2. Use withing the other components by getting values from the `PolicyBucket`
+2. Use the Polly policy withing the other components by getting values from the `PolicyBucket` registry.
 
 ```csharp
 
@@ -69,3 +69,29 @@ services.AddPollyPolicy<AsyncTimeoutPolicy<bool>, TimeoutPolicyOptions>("Timeout
     var pessemisticPolicy = host.Services.GetRequiredService<IPolicyRegistry<string>>()
                     .Get<IAsyncPolicy<bool>>("TimeoutPolicyPessimistic");
 ```
+
+## Design
+
+Policy can be:
+
+1. void Async
+2. void Sunc
+3. Async<TResult>
+4. Sync<TResult>
+
+Policy can have Options:
+
+- Specific to the policy configuration i.e. `MaxRetries`
+- Configurations provider can raise change event that can be monitored. Upon the change registrations for policies must be updated.
+
+Policy can be registered with:
+
+- `IPolicyRegistry<string>`
+- Dependency Injection
+
+Policy can combine other policies
+
+- `WrapAsync`
+- `Wrap`
+
+

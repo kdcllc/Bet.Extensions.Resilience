@@ -36,14 +36,14 @@ namespace Bet.Extensions.Resilience.WebApp.Sample
             // https://github.com/aspnet/Announcements/issues/343
             services.AddRazorPages().AddRazorRuntimeCompilation();
 
-            //services
+            // services
             //    .AddResilienceHttpClient<IChavahClient, ChavahClient>()
             //    .ConfigureDefaultPolicies();
-
             services.AddHttpDefaultResiliencePolicies(sectionName: "Policies");
 
             services
                 .AddHttpClient<IChavahClient, ChavahClient>(nameof(ChavahClient))
+
                 // configurations for options becomes IChavahClient
                 // .AddHttpClient<IChavahClient, ChavahClient>()
                 .ConfigureOptions<HttpClientOptions>()

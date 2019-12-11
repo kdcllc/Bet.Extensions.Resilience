@@ -13,7 +13,7 @@ namespace Microsoft.Extensions.DependencyInjection
     public static class ResilienceHttpClientBuilderExtensions
     {
         /// <summary>
-        /// Adds <see cref="ResilienceHttpClientBuilder"/>.
+        /// Adds <see cref="IResilienceHttpClientBuilder"/>.
         /// </summary>
         /// <typeparam name="TClient"></typeparam>
         /// <typeparam name="TImplementation"></typeparam>
@@ -35,7 +35,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <summary>
         /// Configures <see cref="HttpClient"/> options.
         /// </summary>
-        /// <typeparam name="TOptions">The type of the options</typeparam>
+        /// <typeparam name="TOptions">The type of the options.</typeparam>
         /// <param name="builder">The <see cref="IHttpClientBuilder"/>.</param>
         /// <param name="optionsSectionName">
         /// The options name section.

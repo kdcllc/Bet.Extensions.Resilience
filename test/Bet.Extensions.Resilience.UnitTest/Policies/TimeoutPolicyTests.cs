@@ -76,6 +76,7 @@ namespace Bet.Extensions.Resilience.UnitTest.Policies
             var customPolicyName = "TestTimeoutPolicy";
 
             var services = new ServiceCollection();
+
             // logger is required for policies.
             services.AddLogging(builder =>
             {
