@@ -35,7 +35,7 @@ namespace Microsoft.Extensions.Hosting
 
         /// <summary>
         /// Adds support for CorrelationId per http client.
-        /// https://devblogs.microsoft.com/aspnet/improvements-in-net-core-3-0-for-troubleshooting-and-monitoring-distributed-apps/
+        /// https://devblogs.microsoft.com/aspnet/improvements-in-net-core-3-0-for-troubleshooting-and-monitoring-distributed-apps/.
         /// </summary>
         /// <param name="builder"></param>
         /// <param name="configure"></param>

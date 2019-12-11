@@ -7,7 +7,7 @@ namespace Bet.Extensions.Resilience.Abstractions
     {
         /// <summary>
         /// Creates Jittered timespan.
-        /// https://github.com/App-vNext/Polly/wiki/Retry-with-jitter/86fc200c672e87cc24fe444ec61f38da19e861ec#more-complex-jitter
+        /// https://github.com/App-vNext/Polly/wiki/Retry-with-jitter/86fc200c672e87cc24fe444ec61f38da19e861ec#more-complex-jitter.
         /// </summary>
         /// <param name="maxRetries"></param>
         /// <param name="seedDelay"></param>

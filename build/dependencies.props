@@ -3,7 +3,7 @@
     <RunCodeAnalysis>true</RunCodeAnalysis>
     <AspNetCoreCommon>2.2</AspNetCoreCommon>
     <NetCoreCommon>2.2</NetCoreCommon>
-    <BetCommon>2.0.1</BetCommon>
+    <BetCommon>2.1.0</BetCommon>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp2.2' Or '$(TargetFramework)' == 'netstandard2.0'">
@@ -11,9 +11,9 @@
     <NetCoreCommon>2.2</NetCoreCommon>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp3.0' Or '$(TargetFramework)' == 'netstandard2.1'">
-    <AspNetCoreCommon>3.0.0</AspNetCoreCommon>
-    <NetCoreCommon>3.0.0</NetCoreCommon>
+  <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp3.1' Or '$(TargetFramework)' == 'netstandard2.1'">
+    <AspNetCoreCommon>3.1.0</AspNetCoreCommon>
+    <NetCoreCommon>3.1.0</NetCoreCommon>
   </PropertyGroup>
 
   <ItemGroup Label="NetCore">
