@@ -67,4 +67,9 @@
   <ItemGroup Label="Analyzers">
     <PackageReference Include="Bet.CodeAnalyzers" Version="1.0.10" PrivateAssets="All" />
   </ItemGroup>
+
+  <ItemGroup>
+    <None Include="../../img/icon.png" Pack="true" Visible="false" PackagePath="" />
+  </ItemGroup>
+
 </Project>

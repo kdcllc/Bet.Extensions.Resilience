@@ -1,20 +1,29 @@
 <Project>
 
   <PropertyGroup Label="Basic Settings">
-    <VersionPrefix>2.1.0-preview</VersionPrefix>
+    <VersionPrefix>2.1.1-preview1</VersionPrefix>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <SuppressNETCoreSdkPreviewMessage>true</SuppressNETCoreSdkPreviewMessage>
     <NoWarn>$(NoWarn);CS1591;</NoWarn>
-    <LangVersion>latest</LangVersion>
+    <LangVersion>preview</LangVersion>
   </PropertyGroup>
 
+  <PropertyGroup Label="Ownership Settings">
+    <Company>King David Consulting LLC</Company>
+    <Authors>kdcllc</Authors>
+    <Copyright>Copyright © King David Consulting LLC</Copyright>
+  </PropertyGroup>
+  
   <PropertyGroup Label="Nuget Package Settings">
     <Description>Resilience Library for Micro Services running in containers like Kubernetes.</Description>
     <PackageProjectUrl>https://github.com/kdcllc/Bet.Extensions.Resilience</PackageProjectUrl>
     <RepositoryUrl>https://github.com/kdcllc/Bet.Extensions.Resilience.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageLicense>https://github.com/kdcllc/Bet.Extensions.Resilience/master/LICENSE</PackageLicense>
-    <PackageIconUrl>https://raw.githubusercontent.com/kdcllc/Bet.Extensions.Resilience/master/img/logo64x64.png</PackageIconUrl>
+
+    <!-- https://docs.microsoft.com/en-us/nuget/reference/errors-and-warnings/nu5048 -->
+    <PackageIcon>icon.png</PackageIcon>
+
     <PackageTags>AspNetCore, DotNet, Resilience, Pollly, Docker, Web Api, Kubernetes</PackageTags>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
@@ -24,5 +33,9 @@
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
+
+    <!-- https://github.com/kdcllc/Bet.AspNetCore/issues/103 -->
+    <DebugType>Embedded</DebugType>
+    <EmbedAllSources>True</EmbedAllSources>
   </PropertyGroup>
 </Project>
