@@ -1,8 +1,11 @@
 ﻿# Bet.Extensions.Hosting.Resilience
 
 [![Build status](https://ci.appveyor.com/api/projects/status/tmqs7xbq1aqee3md/branch/master?svg=true)](https://ci.appveyor.com/project/kdcllc/bet-extensions-resilience/branch/master)
+
 [![NuGet](https://img.shields.io/nuget/v/Bet.Extensions.Hosting.Resilience.svg)](https://www.nuget.org/packages?q=Bet.Extensions.Hosting.Resilience)
-[![MyGet](https://img.shields.io/myget/kdcllc/v/Bet.Extensions.Hosting.Resilience.svg?label=myget)](https://www.myget.org/F/kdcllc/api/v2)
+![Nuget](https://img.shields.io/nuget/dt/Bet.Extensions.Hosting.Resilience)
+[![feedz.io](https://img.shields.io/badge/endpoint.svg?url=https://f.feedz.io/kdcllc/bet-extensions-resilience/shield/Bet.Extensions.Hosting.Resilience/latest)](https://f.feedz.io/kdcllc/bet-extensions-resilience/packages/Bet.Extensions.Hosting.Resilience/latest/download)
+
 
 This Library provides registration for hosting container of `IHost` interface for `HttpClient` message handlers.
 

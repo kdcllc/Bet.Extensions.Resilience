@@ -16,7 +16,7 @@ namespace Bet.Extensions.Http.MessageHandlers.CookieAuthentication
 
         public HttpClientBasicAuthOptions HttpOptions { get; set; }
 
-        public Action<HttpStatusCode, string> OnError { get; set; }
+        public Action<HttpStatusCode, string>? OnError { get; set; }
 
         public Func<HttpClientBasicAuthOptions, HttpRequestMessage> AuthenticationRequest { get; set; } = (options) =>
         {

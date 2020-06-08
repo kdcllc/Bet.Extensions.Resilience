@@ -10,26 +10,26 @@ The bedrock for this project's Resilience is based on [`Polly`](https://github.c
 
 This library provides with a configurational Resilience framework for [HttpClientFactory](https://docs.microsoft.com/en-us/dotnet/architecture/microservices/implement-resilient-applications/use-httpclientfactory-to-implement-resilient-http-requests).
 
-Resilience
+## Resilience Libraries
 
-- [`Bet.Extensions.Resilience.Abstractions`](./src/Bet.Extensions.Resilience.Abstractions/README.md) - the foundation library for Resilience policies.
-- [`Bet.Extensions.Resilience.Http`](./src/Bet.Extensions.Resilience.Http/README.md) - provides with base Policy Shapes for `HttpClient`.
-- [`Bet.Extensions.Resilience.SqlClient`](./src/Bet.Extensions.Resilience.Http/README.md) - provides with base SQL specific Policy Shapes.
+- [`Bet.Extensions.Resilience.Abstractions`](./src/Bet.Extensions.Resilience.Abstractions/) - the foundation library for Resilience policies.
+- [`Bet.Extensions.Resilience.Http`](./src/Bet.Extensions.Resilience.Http/) - provides with base Policy Shapes for `HttpClient`.
+- [`Bet.Extensions.Resilience.SqlClient`](./src/Bet.Extensions.Resilience.Http/) - provides with base SQL specific Policy Shapes.
 
-Hosting
+## Resilience Hosting Libraries
 
-- [`Bet.Extensions.Hosting.Resilience`](./src/Bet.Extensions.Hosting.Resilience/README.md) - Registering for Generic Host Policies with DI and `IPolicyRegistry<string>`
-- [`Bet.AspNetCore.Hosting.Resilience`](./src/Bet.AspNetCore.Hosting.Resilience/README.md) - Registering for AspNetCore Host Policies with DI and `IPolicyRegistry<string>`
+- [`Bet.Extensions.Hosting.Resilience`](./src/Bet.Extensions.Hosting.Resilience/) - Registering for Generic Host Policies with DI and `IPolicyRegistry<string>`
+- [`Bet.AspNetCore.Hosting.Resilience`](./src/Bet.AspNetCore.Hosting.Resilience/) - Registering for AspNetCore Host Policies with DI and `IPolicyRegistry<string>`
 
-Http Delegating Message Handlers
+## Http Delegating Message Handlers
 
-- [`Bet.Extensions.Http.MessageHandlers`](./src/Bet.Extensions.Http.MessageHandlers/README.md)
-- [`Bet.Extensions.Http.MessageHandlers.Abstractions`](./src/Bet.Extensions.Http.MessageHandlers.Abstractions/README.md)
+- [`Bet.Extensions.Http.MessageHandlers.Abstractions`](./src/Bet.Extensions.Http.MessageHandlers.Abstractions/)
+- [`Bet.Extensions.Http.MessageHandlers`](./src/Bet.Extensions.Http.MessageHandlers/)
 
 ## Sample Applications
 
-- [`Bet.Extensions.Resilience.WebApp.Sample`](./src/Bet.Extensions.Resilience.WebApp.Sample/README.md)
-- [`Bet.Extensions.Resilience.Worker.Sample`](./src/Bet.Extensions.Resilience.Worker.Sample/README.md)
+- [`Bet.Extensions.Resilience.WebApp.Sample`](./src/Bet.Extensions.Resilience.WebApp.Sample/)
+- [`Bet.Extensions.Resilience.Worker.Sample`](./src/Bet.Extensions.Resilience.Worker.Sample/)
 
 ## Development Environment
 
@@ -53,11 +53,9 @@ This repo is utilizing KDCLLC Docker images:
 
 - [kdcllc/dotnet:3.0-sdk-buster](https://hub.docker.com/r/kdcllc/dotnet/tags) - for running the sample web application.
 
-[Docker files Github repo](https://github.com/kdcllc/docker/blob/master/dotnet/dotnet-docker.md)
+- [Docker files Github repo](https://github.com/kdcllc/docker/blob/master/dotnet/dotnet-docker.md)
 
 ## Reference
-
-
 
 ### HttpClient Diagnostics events order
 

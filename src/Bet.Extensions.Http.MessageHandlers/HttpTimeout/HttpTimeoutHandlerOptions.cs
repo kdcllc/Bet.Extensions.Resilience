@@ -17,6 +17,6 @@ namespace Bet.Extensions.Http.MessageHandlers.HttpTimeout
         /// <summary>
         /// The innerHanlder to be used for the Handler.
         /// </summary>
-        public HttpMessageHandler InnerHandler { get; set; }
+        public HttpMessageHandler? InnerHandler { get; set; }
     }
 }

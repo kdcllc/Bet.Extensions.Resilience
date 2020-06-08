@@ -12,7 +12,7 @@ namespace Polly
     public static class PolicyLoggerExtensions
     {
         /// <summary>
-        /// Logs message for <see cref="Polly.Timeout.TimeoutPolicy"/>.
+        /// Logs message for <see cref="Timeout.TimeoutPolicy"/>.
         /// </summary>
         /// <typeparam name="T">The type of the logger.</typeparam>
         /// <param name="logger">The logger.</param>
@@ -35,9 +35,8 @@ namespace Polly
         }
 
         /// <summary>
-        /// Logs message for <see cref="Polly.Timeout.TimeoutPolicy"/>.
+        /// Logs message for <see cref="Timeout.TimeoutPolicy"/>.
         /// </summary>
-        /// <typeparam name="T">The type of the logger.</typeparam>
         /// <param name="logger">The logger.</param>
         /// <param name="context">The polly context.</param>
         /// <param name="time">The timeout that expired.</param>
@@ -58,7 +57,7 @@ namespace Polly
         }
 
         /// <summary>
-        /// Logs message for <see cref="Polly.Fallback.FallbackPolicy"/>.
+        /// Logs message for <see cref="Fallback.FallbackPolicy"/>.
         /// </summary>
         /// <typeparam name="T">The type of the logger.</typeparam>
         /// <param name="logger">The logger.</param>
@@ -78,9 +77,8 @@ namespace Polly
         }
 
         /// <summary>
-        /// Logs message for <see cref="Polly.Fallback.FallbackPolicy"/>.
+        /// Logs message for <see cref="Fallback.FallbackPolicy"/>.
         /// </summary>
-        /// <typeparam name="T">The type of the logger.</typeparam>
         /// <param name="logger">The logger.</param>
         /// <param name="context">The polly context.</param>
         /// <param name="message">The message to log.</param>
@@ -98,7 +96,7 @@ namespace Polly
         }
 
         /// <summary>
-        /// Logs message for <see cref="Polly.Bulkhead.BulkheadPolicy"/>.
+        /// Logs message for <see cref="Bulkhead.BulkheadPolicy"/>.
         /// </summary>
         /// <typeparam name="T">The type of the logger.</typeparam>
         /// <param name="logger">The logger.</param>
@@ -120,7 +118,7 @@ namespace Polly
         }
 
         /// <summary>
-        /// Logs message for <see cref="Polly.Bulkhead.BulkheadPolicy"/>.
+        /// Logs message for <see cref="Bulkhead.BulkheadPolicy"/>.
         /// </summary>
         /// <param name="logger">The logger.</param>
         /// <param name="context">The polly context.</param>
@@ -141,7 +139,7 @@ namespace Polly
         }
 
         /// <summary>
-        /// Logs message for <see cref="Polly.CircuitBreaker.CircuitBreakerPolicy"/>.
+        /// Logs message for <see cref="CircuitBreakerPolicy"/>.
         /// </summary>
         /// <typeparam name="T">The type of the logger.</typeparam>
         /// <param name="logger">The logger.</param>
@@ -176,7 +174,7 @@ namespace Polly
         }
 
         /// <summary>
-        /// Logs message for <see cref="Polly.CircuitBreaker.CircuitBreakerPolicy"/>.
+        /// Logs message for <see cref="CircuitBreakerPolicy"/>.
         /// </summary>
         /// <param name="logger">The logger.</param>
         /// <param name="time">The time of the break.</param>
@@ -210,7 +208,7 @@ namespace Polly
         }
 
         /// <summary>
-        /// Logs message for <see cref="Polly.CircuitBreaker.CircuitBreakerPolicy"/>.
+        /// Logs message for <see cref="CircuitBreakerPolicy"/>.
         /// </summary>
         /// <typeparam name="T">The type of the logger.</typeparam>
         /// <param name="logger">The logger.</param>
@@ -230,7 +228,7 @@ namespace Polly
         }
 
         /// <summary>
-        /// Logs message for <see cref="Polly.CircuitBreaker.CircuitBreakerPolicy"/>.
+        /// Logs message for <see cref="CircuitBreakerPolicy"/>.
         /// </summary>
         /// <param name="logger">The logger.</param>
         /// <param name="context">The polly context.</param>
@@ -249,7 +247,7 @@ namespace Polly
         }
 
         /// <summary>
-        /// Logs message for <see cref="Polly.Retry.RetryPolicy"/>.
+        /// Logs message for <see cref="Retry.RetryPolicy"/>.
         /// </summary>
         /// <typeparam name="T">The type of the logger.</typeparam>
         /// <param name="logger">The logger.</param>
@@ -279,7 +277,7 @@ namespace Polly
         }
 
         /// <summary>
-        /// Logs message for <see cref="Polly.Retry.RetryPolicy"/>.
+        /// Logs message for <see cref="Retry.RetryPolicy"/>.
         /// </summary>
         /// <param name="logger">The logger.</param>
         /// <param name="retryAttempt">The current retry attempt count.</param>
@@ -308,7 +306,7 @@ namespace Polly
         }
 
         /// <summary>
-        /// Logs message for <see cref="Polly.Retry.RetryPolicy"/>.
+        /// Logs message for <see cref="Retry.RetryPolicy"/>.
         /// </summary>
         /// <typeparam name="T">The type of the logger.</typeparam>
         /// <param name="logger">The logger.</param>
@@ -345,7 +343,7 @@ namespace Polly
         }
 
         /// <summary>
-        /// Logs message for <see cref="Polly.Retry.RetryPolicy"/>.
+        /// Logs message for <see cref="Retry.RetryPolicy"/>.
         /// </summary>
         /// <param name="logger">The logger.</param>
         /// <param name="time">The elapse time.</param>

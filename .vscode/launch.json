@@ -4,7 +4,6 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
-
         {
             "name": ".NET Core Launch Web",
             "type": "coreclr",
@@ -15,16 +14,13 @@
             "cwd": "${workspaceFolder}/src/Bet.Extensions.Resilience.WebApp.Sample/",
             "console": "internalConsole",
             "stopAtEntry": false,
-
             "env": {
                 "ASPNETCORE_ENVIRONMENT": "Development",
                 "ASPNETCORE_URLS": "https://*:443;http://*:80"
             },
-
             "sourceFileMap": {
                 "/Views": "${workspaceFolder}/Views"
             },
-
             "launchBrowser": {
                 "enabled": true,
                 "args": "${auto-detect-url}",
@@ -38,13 +34,18 @@
                 "linux": {
                     "command": "xdg-open"
                 }
-            },
+            }
         },
         {
             "name": ".NET Core Attach",
             "type": "coreclr",
             "request": "attach",
             "processId": "${command:pickProcess}"
+        },
+        {
+            "name": "Local Process with Kubernetes (Preview)",
+            "type": "dev-spaces-connect-configuration",
+            "request": "launch"
         }
     ]
 }

@@ -3,7 +3,7 @@
     /// <inheritdoc />
     public class CorrelationContextFactory : ICorrelationContextFactory
     {
-        private readonly ICorrelationContextAccessor _correlationContextAccessor;
+        private readonly ICorrelationContextAccessor? _correlationContextAccessor;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CorrelationContextFactory"/> class.
@@ -17,7 +17,7 @@
         /// Initializes a new instance of the <see cref="CorrelationContextFactory"/> class.
         /// </summary>
         /// <param name="correlationContextAccessor">The <see cref="ICorrelationContextAccessor"/> through which the <see cref="CorrelationContext"/> will be set.</param>
-        public CorrelationContextFactory(ICorrelationContextAccessor correlationContextAccessor)
+        public CorrelationContextFactory(ICorrelationContextAccessor? correlationContextAccessor)
         {
             _correlationContextAccessor = correlationContextAccessor;
         }

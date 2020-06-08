@@ -2,7 +2,6 @@
 
 using Bet.Extensions.Http.MessageHandlers.HttpTimeout;
 using Bet.Extensions.Resilience.Abstractions.Options;
-using Bet.Extensions.Resilience.Http;
 using Bet.Extensions.Resilience.Http.Options;
 
 using Microsoft.Extensions.Options;

@@ -8,6 +8,6 @@ namespace Bet.Extensions.Http.MessageHandlers.CookieAuthentication
     {
         public CookieGeneratorOptions Options { get; set; } = new CookieGeneratorOptions(new HttpClientBasicAuthOptions());
 
-        public HttpMessageHandler InnerHandler { get; set; }
+        public HttpMessageHandler? InnerHandler { get; set; }
     }
 }

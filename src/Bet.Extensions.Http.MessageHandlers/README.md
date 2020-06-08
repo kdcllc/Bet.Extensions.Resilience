@@ -1,8 +1,12 @@
 ﻿# Bet.Extensions.Http.MessageHandlers
 
 [![Build status](https://ci.appveyor.com/api/projects/status/tmqs7xbq1aqee3md/branch/master?svg=true)](https://ci.appveyor.com/project/kdcllc/bet-extensions-resilience/branch/master)
+
+
 [![NuGet](https://img.shields.io/nuget/v/Bet.Extensions.Http.MessageHandlers.svg)](https://www.nuget.org/packages?q=Bet.Extensions.Http.MessageHandlers)
-[![MyGet](https://img.shields.io/myget/kdcllc/v/Bet.Extensions.Http.MessageHandlers.svg?label=myget)](https://www.myget.org/F/kdcllc/api/v2)
+![Nuget](https://img.shields.io/nuget/dt/Bet.Extensions.Http.MessageHandlers)
+[![feedz.io](https://img.shields.io/badge/endpoint.svg?url=https://f.feedz.io/kdcllc/bet-extensions-resilience/shield/Bet.Extensions.Http.MessageHandlers/latest)](https://f.feedz.io/kdcllc/bet-extensions-resilience/packages/Bet.Extensions.Http.MessageHandlers/latest/download)
+
 
 This library extends various `MessageHandlers` for `HttpClient`.
 

@@ -42,8 +42,7 @@ namespace Bet.AspNetCore.Resilience.UnitTest.GenericHosting
                .Setup<Task<HttpResponseMessage>>(
                   "SendAsync",
                   ItExpr.IsAny<HttpRequestMessage>(),
-                  ItExpr.IsAny<CancellationToken>()
-               )
+                  ItExpr.IsAny<CancellationToken>())
 
                // prepare the expected response of the mocked http call
                .ReturnsAsync(() =>
