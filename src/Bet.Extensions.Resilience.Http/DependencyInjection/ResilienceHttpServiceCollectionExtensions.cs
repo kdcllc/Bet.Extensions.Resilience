@@ -13,7 +13,7 @@ using Polly.Timeout;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
-    public static class ServiceCollectionExtensions
+    public static class ResilienceHttpServiceCollectionExtensions
     {
         /// <summary>
         /// Add Default Http Policies.

@@ -56,6 +56,7 @@
     <PackageReference Update="Bet.Extensions.Hosting" Version="$(BetCommon)" />
     <PackageReference Update="Bet.Extensions.Options" Version="$(BetCommon)" />
     <PackageReference Update="Bet.Extensions.Testing" Version="$(BetCommon)" />
+    <PackageReference Update="Bet.AspNetCore.Middleware" Version="$(BetCommon)" />
     <PackageReference Update="Microsoft.Data.SqlClient" Version="1.1.3" />
     <PackageReference Update="System.Data.SqlClient" Version="4.8.1" />
   </ItemGroup>

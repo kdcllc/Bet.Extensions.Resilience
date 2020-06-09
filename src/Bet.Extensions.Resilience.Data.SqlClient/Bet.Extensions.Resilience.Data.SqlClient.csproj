@@ -6,8 +6,8 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <Description>The collection of Polly Policies for System.Data.SqlClient.</Description>
-    <PackageTags>DotNetCore, HTTP Message Handers, Extensions, Microservices, Polly, Policies, System.Data.SqlClient</PackageTags>
+    <Description>The Database Resilience Abstractions for System.Data.SqlClient Or Mirosoft.Data.SqlClient</Description>
+    <PackageTags>DotNetCore,Database, DbCommand, DbConnection, Extensions, Microservices, Polly, Policies, System.Data.SqlClient</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>

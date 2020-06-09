@@ -1,8 +1,12 @@
 # Bet.Extensions.Resilience
+[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](https://raw.githubusercontent.com/kdcllc/Bet.Extensions.Resilience/master/LICENSE)
 
 [![Build status](https://ci.appveyor.com/api/projects/status/tmqs7xbq1aqee3md/branch/master?svg=true)](https://ci.appveyor.com/project/kdcllc/bet-extensions-resilience/branch/master)
-[![NuGet](https://img.shields.io/nuget/v/Bet.Extensions.Resilience.Http.svg)](https://www.nuget.org/packages?q=Bet.Extensions.Resilience.Http)
-[![MyGet](https://img.shields.io/myget/kdcllc/v/Bet.Extensions.Resilience.Http.svg?label=myget)](https://www.myget.org/F/kdcllc/api/v2)
+
+[![NuGet](https://img.shields.io/nuget/v/Bet.Extensions.Resilience.Abstractions.svg)](https://www.nuget.org/packages?q=Bet.Extensions.Resilience.Abstractions)
+![Nuget](https://img.shields.io/nuget/dt/Bet.Extensions.Resilience.Abstractions)
+
+[![feedz.io](https://img.shields.io/badge/endpoint.svg?url=https://f.feedz.io/kdcllc/bet-extensions-resilience/shield/Bet.Extensions.Resilience.Abstractions/latest)](https://f.feedz.io/kdcllc/bet-extensions-resilience/packages/Bet.Extensions.Resilience.Abstractions/latest/download)
 
 This project contains a number of libraries to satisfy the needs of Microservices development in Kubernetes environment.
 
@@ -14,7 +18,7 @@ This library provides with a configurational Resilience framework for [HttpClien
 
 - [`Bet.Extensions.Resilience.Abstractions`](./src/Bet.Extensions.Resilience.Abstractions/) - the foundation library for Resilience policies.
 - [`Bet.Extensions.Resilience.Http`](./src/Bet.Extensions.Resilience.Http/) - provides with base Policy Shapes for `HttpClient`.
-- [`Bet.Extensions.Resilience.SqlClient`](./src/Bet.Extensions.Resilience.Http/) - provides with base SQL specific Policy Shapes.
+- [`Bet.Extensions.Resilience.Data.SqlClient`](./src/Bet.Extensions.Resilience.Data.SqlClient/) - provides with base SQL specific Policy Shapes.
 
 ## Resilience Hosting Libraries
 

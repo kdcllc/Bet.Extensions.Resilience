@@ -9,7 +9,7 @@ using Microsoft.Data.SqlClient;
 #endif
 using Polly;
 
-namespace Bet.Extensions.Resilience.SqlClient
+namespace Bet.Extensions.Resilience.Data.SqlClient
 {
     public static class SqlPolicyExtensions
     {
