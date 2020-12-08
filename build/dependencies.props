@@ -1,19 +1,14 @@
 <Project>
   <PropertyGroup>
     <RunCodeAnalysis>true</RunCodeAnalysis>
-    <AspNetCoreCommon>2.2</AspNetCoreCommon>
-    <NetCoreCommon>2.2</NetCoreCommon>
-    <BetCommon>3.1.4</BetCommon>
+    <AspNetCoreCommon>3.1.10</AspNetCoreCommon>
+    <NetCoreCommon>3.1.10</NetCoreCommon>
+    <BetCommon>3.1.10</BetCommon>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp2.2' Or '$(TargetFramework)' == 'netstandard2.0'">
-    <AspNetCoreCommon>2.2</AspNetCoreCommon>
-    <NetCoreCommon>2.2</NetCoreCommon>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp3.1' Or '$(TargetFramework)' == 'netstandard2.1'">
-    <AspNetCoreCommon>3.1.4</AspNetCoreCommon>
-    <NetCoreCommon>3.1.4</NetCoreCommon>
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net5.0' Or '$(TargetFramework)' == 'netstandard2.1'">
+    <AspNetCoreCommon>5.0.0</AspNetCoreCommon>
+    <NetCoreCommon>5.0.0</NetCoreCommon>
   </PropertyGroup>
 
   <ItemGroup Label="NetCore">
@@ -41,10 +36,10 @@
   </ItemGroup>
 
   <ItemGroup Label="Unit Tests">
-    <PackageReference Update="Microsoft.NET.Test.Sdk" Version="16.6.1" />
-    <PackageReference Update="Moq" Version="4.14.1" />
+    <PackageReference Update="Microsoft.NET.Test.Sdk" Version="16.8.3" />
+    <PackageReference Update="Moq" Version="4.15.2" />
     <PackageReference Update="xunit" Version="2.4.1" />
-    <PackageReference Update="xunit.runner.visualstudio" Version="2.4.2" />
+    <PackageReference Update="xunit.runner.visualstudio" Version="2.4.3" />
     <PackageReference Update="FluentAssertions" Version="5.10.3" />
     <PackageReference Update="coverlet.collector" Version="1.3.0" />
   </ItemGroup>
@@ -52,13 +47,16 @@
   <ItemGroup Label="Shared">
     <PackageReference Update="Newtonsoft.Json" Version="12.0.1" />
     <PackageReference Update="Polly" Version="7.2.1" />
+    <PackageReference Update="Microsoft.Data.SqlClient" Version="2.1.0" />
+    <PackageReference Update="System.Data.SqlClient" Version="4.8.2" />
+  </ItemGroup>
+
+  <ItemGroup Label="Bet">
     <PackageReference Update="Bet.Extensions" Version="$(BetCommon)" />
     <PackageReference Update="Bet.Extensions.Hosting" Version="$(BetCommon)" />
     <PackageReference Update="Bet.Extensions.Options" Version="$(BetCommon)" />
     <PackageReference Update="Bet.Extensions.Testing" Version="$(BetCommon)" />
     <PackageReference Update="Bet.AspNetCore.Middleware" Version="$(BetCommon)" />
-    <PackageReference Update="Microsoft.Data.SqlClient" Version="1.1.3" />
-    <PackageReference Update="System.Data.SqlClient" Version="4.8.1" />
   </ItemGroup>
 
   <ItemGroup Label="SourceLink">

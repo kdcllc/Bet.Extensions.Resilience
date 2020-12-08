@@ -1,4 +1,5 @@
 # Bet.Extensions.Resilience
+
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](https://raw.githubusercontent.com/kdcllc/Bet.Extensions.Resilience/master/LICENSE)
 
 [![Build status](https://ci.appveyor.com/api/projects/status/tmqs7xbq1aqee3md/branch/master?svg=true)](https://ci.appveyor.com/project/kdcllc/bet-extensions-resilience/branch/master)
@@ -49,15 +50,15 @@ To get an ip address of the running docker container:
      hostname -I
 ```
 
-## Docker images
+## Docker Images
 
-This repo is utilizing KDCLLC Docker images:
+This repo is utilizing [King David Consulting LLC Docker Images](https://hub.docker.com/u/kdcllc):
 
-- [kdcllc/dotnet:3.0-sdk-vscode-bionic](https://hub.docker.com/r/kdcllc/dotnet/tags) - for the VS Code In container development.
+- [kdcllc/dotnet-sdk:3.1](https://hub.docker.com/r/kdcllc/dotnet-sdk-vscode):  - the docker image for templated `DotNetCore` build of the sample web application.
 
-- [kdcllc/dotnet:3.0-sdk-buster](https://hub.docker.com/r/kdcllc/dotnet/tags) - for running the sample web application.
+- [kdcllc/dotnet-sdk-vscode:3.1](https://hub.docker.com/r/kdcllc/dotnet-sdk/tags): the docker image for the Visual Studio Code In container development.
 
-- [Docker files Github repo](https://github.com/kdcllc/docker/blob/master/dotnet/dotnet-docker.md)
+- [Docker Github repo](https://github.com/kdcllc/docker/blob/master/dotnet/dotnet-docker.md)
 
 ## Reference
 
