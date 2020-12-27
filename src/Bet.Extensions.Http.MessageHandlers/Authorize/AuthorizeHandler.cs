@@ -39,7 +39,6 @@ namespace Bet.Extensions.Http.MessageHandlers.Authorize
             HttpRequestMessage request,
             CancellationToken cancellationToken)
         {
-
             if (string.IsNullOrEmpty(_accessToken))
             {
                 _logger.LogInformation("{tokenType} Authentication token is null. Attempting to Authenticate.", _authType);
