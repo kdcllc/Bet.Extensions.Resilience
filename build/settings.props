@@ -5,7 +5,7 @@
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <SuppressNETCoreSdkPreviewMessage>true</SuppressNETCoreSdkPreviewMessage>
     <NoWarn>$(NoWarn);CS1591;</NoWarn>
-    <LangVersion>preview</LangVersion>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <PropertyGroup Label="Ownership Settings">
@@ -13,7 +13,7 @@
     <Authors>kdcllc</Authors>
     <Copyright>Copyright © King David Consulting LLC</Copyright>
   </PropertyGroup>
-  
+
   <PropertyGroup Label="Nuget Package Settings">
     <Description>Resilience Library for Micro Services running in containers like Kubernetes.</Description>
     <PackageProjectUrl>https://github.com/kdcllc/Bet.Extensions.Resilience</PackageProjectUrl>
