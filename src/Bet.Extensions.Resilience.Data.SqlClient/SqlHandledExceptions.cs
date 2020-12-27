@@ -1,4 +1,4 @@
-﻿namespace Bet.Extensions.Resilience.SqlClient
+﻿namespace Bet.Extensions.Resilience.Data.SqlClient
 {
     public enum SqlHandledExceptions
     {

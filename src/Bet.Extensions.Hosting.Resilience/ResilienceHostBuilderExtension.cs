@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Linq;
+
 using Bet.Extensions.Hosting.Resilience.CorrelationId;
 using Bet.Extensions.Http.MessageHandlers.CorrelationId;
+
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Microsoft.Extensions.Hosting

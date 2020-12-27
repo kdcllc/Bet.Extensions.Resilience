@@ -81,20 +81,15 @@ namespace Bet.AspNetCore.Resilience.UnitTest.ResilienceTypedClient
             // Assign
             var serviceCollection = new ServiceCollection();
 
-            serviceCollection.AddLogging(builder =>
-            {
-                builder.AddXunit(Output);
-            });
+            serviceCollection.AddLogging(builder => builder.AddXunit(Output));
 
-            using (var server = new ResilienceTypedClientTestServerBuilder(Output).GetSimpleServer())
-            {
-                var handler = server.CreateHandler();
+            using var server = new ResilienceTypedClientTestServerBuilder(Output).GetSimpleServer();
+            var handler = server.CreateHandler();
 
-                Assert.Throws<InvalidOperationException>(() => serviceCollection
-                    .AddResilienceHttpClient<ICustomTypedClient, CustomTypedClient>()
-                    .ConfigurePrimaryHandler((sp) => new DefaultHttpClientHandler())
-                    .ConfigurePrimaryHandler((sp) => new DefaultHttpClientHandler()));
-            }
+            Assert.Throws<InvalidOperationException>(() => serviceCollection
+                .AddResilienceHttpClient<ICustomTypedClient, CustomTypedClient>()
+                .ConfigurePrimaryHandler((sp) => new DefaultHttpClientHandler())
+                .ConfigurePrimaryHandler((sp) => new DefaultHttpClientHandler()));
         }
     }
 }

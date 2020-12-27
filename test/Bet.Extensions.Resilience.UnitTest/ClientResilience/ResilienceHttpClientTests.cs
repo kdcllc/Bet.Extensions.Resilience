@@ -199,7 +199,7 @@ namespace Bet.Extensions.Resilience.UnitTest.ClientResilience
 
             serviceCollection.AddSingleton(_ => configuration as IConfiguration);
 
-            serviceCollection.AddTransient<TestDelegatingHandler>(sp => new TestDelegatingHandler());
+            serviceCollection.AddTransient(sp => new TestDelegatingHandler());
 
             var noOp = Polly.Policy.NoOpAsync().AsAsyncPolicy<HttpResponseMessage>();
 

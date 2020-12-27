@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -97,10 +98,10 @@ namespace Bet.Extensions.Http.MessageHandlers.HttpTimeout
             }
         }
 
-        private CancellationTokenSource GetCancellationTokenSource(HttpRequestMessage request, CancellationToken cancellationToken)
+        private CancellationTokenSource? GetCancellationTokenSource(HttpRequestMessage request, CancellationToken cancellationToken)
         {
             var timeout = request.GetTimeout() ?? _defaultTimeout;
-            if (timeout == System.Threading.Timeout.InfiniteTimeSpan)
+            if (timeout == Timeout.InfiniteTimeSpan)
             {
                 // No need to create a CTS if there's no timeout
                 return null;

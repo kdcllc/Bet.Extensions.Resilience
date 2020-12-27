@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0;net5.0</TargetFrameworks>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <Description>The Database Resilience Abstractions for System.Data.SqlClient Or Mirosoft.Data.SqlClient</Description>
+    <PackageTags>DotNetCore,Database, DbCommand, DbConnection, Extensions, Microservices, Polly, Policies, System.Data.SqlClient</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!--https://devblogs.microsoft.com/dotnet/introducing-the-new-microsoftdatasqlclient/-->
+    <PackageReference Include="Microsoft.Data.SqlClient" Condition="'$(TargetFramework)' == 'net5.0'" />
+    <PackageReference Include="System.Data.SqlClient" Condition="'$(TargetFramework)' == 'netstandard2.0'" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Bet.Extensions.Resilience.Abstractions\Bet.Extensions.Resilience.Abstractions.csproj" />
+  </ItemGroup>
+
+</Project>

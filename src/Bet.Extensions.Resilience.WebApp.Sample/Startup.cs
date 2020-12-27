@@ -1,3 +1,4 @@
+using Bet.AspNetCore.Middleware.Diagnostics;
 using Bet.Extensions.Resilience.Http.Abstractions.Options;
 using Bet.Extensions.Resilience.Http.Options;
 using Bet.Extensions.Resilience.WebApp.Sample.Clients;
@@ -22,6 +23,11 @@ namespace Bet.Extensions.Resilience.WebApp.Sample
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddDeveloperListRegisteredServices(o =>
+            {
+                o.PathOutputOptions = PathOutputOptions.Json;
+            });
+
             services.Configure<CookiePolicyOptions>(options =>
             {
                 // This lambda determines whether user consent for non-essential cookies is needed for a given request.
@@ -39,14 +45,14 @@ namespace Bet.Extensions.Resilience.WebApp.Sample
             // services
             //    .AddResilienceHttpClient<IChavahClient, ChavahClient>()
             //    .ConfigureDefaultPolicies();
-            services.AddHttpDefaultResiliencePolicies(sectionName: "Policies");
+            services.AddHttpDefaultResiliencePolicies(sectionName: "DefaultHttpPolicies");
 
             services
                 .AddHttpClient<IChavahClient, ChavahClient>(nameof(ChavahClient))
 
                 // configurations for options becomes IChavahClient
                 // .AddHttpClient<IChavahClient, ChavahClient>()
-                .ConfigureOptions<HttpClientOptions>()
+                .ConfigureOptions<ChavahClientOptions>()
                 .AddPolicyHandlerFromRegistry(HttpPolicyOptionsKeys.HttpCircuitBreakerPolicy)
                 .AddPolicyHandlerFromRegistry(HttpPolicyOptionsKeys.HttpRetryPolicy);
         }
@@ -57,6 +63,7 @@ namespace Bet.Extensions.Resilience.WebApp.Sample
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.UseDeveloperListRegisteredServices();
             }
             else
             {

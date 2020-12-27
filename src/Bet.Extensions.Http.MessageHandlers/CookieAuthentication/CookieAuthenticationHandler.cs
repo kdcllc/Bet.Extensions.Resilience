@@ -15,7 +15,7 @@ namespace Bet.Extensions.Http.MessageHandlers.CookieAuthentication
         private readonly ILogger _logger;
         private readonly bool _ownsHandler;
         private readonly CookieGenerator _cookieGenerator;
-        private IEnumerable<string> _cookies;
+        private IEnumerable<string>? _cookies;
 
         public CookieAuthenticationHandler(CookieAuthenticationHandlerOptions options, ILogger logger)
         {
@@ -62,7 +62,7 @@ namespace Bet.Extensions.Http.MessageHandlers.CookieAuthentication
                 }
 
                 {
-                    var cookie = await RefreshCookieResponse(cancellationToken);
+                    var cookie = await GetCookieResponse(cancellationToken);
                     if (!string.IsNullOrEmpty(cookie))
                     {
                         request.Headers.Add("Cookie", cookie);
@@ -82,27 +82,7 @@ namespace Bet.Extensions.Http.MessageHandlers.CookieAuthentication
             }
         }
 
-        private async Task<string> GetCookieResponse(CancellationToken cancellationToken)
-        {
-            try
-            {
-                _semaphore.Wait(cancellationToken);
-                if (cancellationToken.IsCancellationRequested)
-                {
-                    return null;
-                }
-
-                _cookies ??= await _cookieGenerator.GetCookies(cancellationToken);
-
-                return _cookies.Flatten(";");
-            }
-            finally
-            {
-                _semaphore.Release();
-            }
-        }
-
-        private async Task<string> RefreshCookieResponse(CancellationToken cancellationToken)
+        private async Task<string?> GetCookieResponse(CancellationToken cancellationToken)
         {
             try
             {
@@ -113,8 +93,12 @@ namespace Bet.Extensions.Http.MessageHandlers.CookieAuthentication
                 }
 
                 _cookies = await _cookieGenerator.GetCookies(cancellationToken);
+                if (_cookies != null)
+                {
+                    return _cookies.Flatten(";");
+                }
 
-                return _cookies.Flatten(";");
+                return null;
             }
             finally
             {

@@ -42,7 +42,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="optionsName">The name of the options to be used.</param>
         public ResilienceHttpTypedClientBuilder(IServiceCollection services, string? name = null, string? optionsName = null)
         {
-            Services = services ?? throw new System.ArgumentNullException(nameof(services));
+            Services = services ?? throw new ArgumentNullException(nameof(services));
 
             var builderName = name ?? TypeNameHelper.GetTypeDisplayName(typeof(TClient), fullName: false);
             var options = optionsName ?? TypeNameHelper.GetTypeDisplayName(typeof(TImplementation), fullName: false);
@@ -83,7 +83,7 @@ namespace Microsoft.Extensions.DependencyInjection
             // override the option name.
             OptionsName = optionsSectionName;
 
-            ConfigureHttpClientOptions<HttpClientOptions>(optionsSectionName, OptionsName, rootSectionName, configureAction);
+            ConfigureHttpClientOptions(optionsSectionName, OptionsName, rootSectionName, configureAction);
             ConfigureHttpClient<HttpClientOptions>(OptionsName);
             return this;
         }

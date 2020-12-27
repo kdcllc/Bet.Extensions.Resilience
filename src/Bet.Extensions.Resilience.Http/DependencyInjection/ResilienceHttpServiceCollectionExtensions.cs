@@ -2,7 +2,6 @@
 
 using Bet.Extensions.Http.MessageHandlers.HttpTimeout;
 using Bet.Extensions.Resilience.Abstractions.Options;
-using Bet.Extensions.Resilience.Http;
 using Bet.Extensions.Resilience.Http.Options;
 
 using Microsoft.Extensions.Options;
@@ -14,7 +13,7 @@ using Polly.Timeout;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
-    public static class ServiceCollectionExtensions
+    public static class ResilienceHttpServiceCollectionExtensions
     {
         /// <summary>
         /// Add Default Http Policies.

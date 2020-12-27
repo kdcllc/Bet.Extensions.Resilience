@@ -18,12 +18,11 @@ namespace Microsoft.Extensions.DependencyInjection
             this IResilienceBuilder<TPolicy, TOptions> builder,
             string sectionName,
             Action<PolicyBucketOptions<TOptions>> configurePolicy,
-            string? policyName = null,
+            string policyName = "",
             Action<TOptions>? configure = null)
             where TPolicy : IsPolicy where TOptions : PolicyOptions, new()
         {
-            if (string.IsNullOrWhiteSpace(policyName)
-                && policyName == null)
+            if (string.IsNullOrWhiteSpace(policyName))
             {
                 policyName = builder.PolicyName;
             }

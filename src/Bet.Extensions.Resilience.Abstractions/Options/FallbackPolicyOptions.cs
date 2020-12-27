@@ -6,11 +6,11 @@
     /// https://github.com/App-vNext/Polly/wiki/Fallback.
     /// </summary>
     /// <example>
-    ///
+    /// <![CDATA[
     ///  Policy.<UserAvatar>
     ///     .Handle<Whatever>()
     ///     .Fallback<UserAvatar>(UserAvatar.Blank).
-    ///
+    /// ]]>
     /// </example>
     public class FallbackPolicyOptions : PolicyOptions
     {

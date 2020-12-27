@@ -24,7 +24,7 @@ namespace Bet.Extensions.Http.MessageHandlers.CookieAuthentication
         {
         }
 
-        public async Task<IEnumerable<string>> GetCookies(CancellationToken cancellationToken)
+        public async Task<IEnumerable<string>?> GetCookies(CancellationToken cancellationToken)
         {
             using (var client = _createHttpClient())
             {
@@ -50,7 +50,7 @@ namespace Bet.Extensions.Http.MessageHandlers.CookieAuthentication
                     var httpCode = response.StatusCode;
                     var message = await response.Content.ReadAsStringAsync();
 
-                    if (_options.OnError != null)
+                    if (_options?.OnError != null)
                     {
                         _options.OnError(httpCode, message);
                     }

@@ -94,7 +94,7 @@ namespace Polly
                 // failed bulkhead policy
                 .Or<BulkheadRejectedException>()
 
-                .Fallback<HttpResponseMessage>(fallbackAction: Fallback, onFallback: OnFallbackAction)
+                .Fallback(fallbackAction: Fallback, onFallback: OnFallbackAction)
 
                 .WithPolicyKey(options.Name);
 

@@ -13,7 +13,7 @@ using Polly.Registry;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
-    public static class ServiceCollectionExtensions
+    public static class ResilienceServiceCollectionExtensions
     {
         private static readonly Func<IServiceCollection, PolicyRegistrant?> FindPolicyIntance = GetPolicyRegistrant;
 

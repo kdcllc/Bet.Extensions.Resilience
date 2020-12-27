@@ -8,8 +8,10 @@ using Bet.Extensions.Testing.Logging;
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+
 using Polly;
 using Polly.Retry;
+
 using Xunit;
 using Xunit.Abstractions;
 
@@ -58,7 +60,7 @@ namespace Bet.Extensions.Resilience.UnitTest.Policies
 
             async Task TimedOutTask()
             {
-                await policy.ExecuteAsync(async () =>
+                await policy.ExecuteAsync(() =>
                 {
                     throw new Exception("Failed");
                 });
@@ -101,7 +103,7 @@ namespace Bet.Extensions.Resilience.UnitTest.Policies
 
             async Task<bool> TimedOutTask()
             {
-                return await policy.ExecuteAsync(async () =>
+                return await policy.ExecuteAsync(() =>
                 {
                     throw new Exception("Failed");
                 });

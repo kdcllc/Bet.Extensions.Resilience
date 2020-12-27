@@ -4,12 +4,12 @@ using System.Linq;
 #if NETSTANDARD2_0
 using System.Data.SqlClient;
 
-#elif NETSTANDARD2_1
+#elif NET5_0
 using Microsoft.Data.SqlClient;
 #endif
 using Polly;
 
-namespace Bet.Extensions.Resilience.SqlClient
+namespace Bet.Extensions.Resilience.Data.SqlClient
 {
     public static class SqlPolicyExtensions
     {
