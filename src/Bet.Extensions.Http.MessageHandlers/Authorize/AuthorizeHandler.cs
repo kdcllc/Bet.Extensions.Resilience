@@ -53,6 +53,10 @@ namespace Bet.Extensions.Http.MessageHandlers.Authorize
                 await AuthorizeAsync(request, cancellationToken).ConfigureAwait(false);
             }
 
+            // adds authorization header
+            request.Headers.Remove("Authorization");
+            request.Headers.Add("Authorization", $"{_authType} {_accessToken}");
+
             var response = await base.SendAsync(request, cancellationToken).ConfigureAwait(false);
 
             // test for 403 and actual bearer token in initial request
