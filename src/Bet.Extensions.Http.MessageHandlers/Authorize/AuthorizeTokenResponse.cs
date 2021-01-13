@@ -28,7 +28,7 @@ namespace Bet.Extensions.Http.MessageHandlers.Authorize
         public string TokenType { get; set; } = string.Empty;
 
         [JsonProperty("expires_in")]
-        public int ExpiresInSeconds { get; set; }
+        public long ExpiresInSeconds { get; set; }
 
         public TimeSpan ExpiresIn => TimeSpan.FromSeconds(ExpiresInSeconds);
     }
