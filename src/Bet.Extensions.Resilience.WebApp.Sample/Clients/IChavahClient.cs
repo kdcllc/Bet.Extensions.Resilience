@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-
-using Bet.Extensions.Resilience.WebApp.Sample.Clients.Models;
+﻿using Bet.Extensions.Resilience.WebApp.Sample.Clients.Models;
 
 namespace Bet.Extensions.Resilience.WebApp.Sample.Clients
 {

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-
-using Bet.Extensions.Resilience.Abstractions.Options;
+﻿using Bet.Extensions.Resilience.Abstractions.Options;
 
 using Microsoft.Extensions.Logging;
 

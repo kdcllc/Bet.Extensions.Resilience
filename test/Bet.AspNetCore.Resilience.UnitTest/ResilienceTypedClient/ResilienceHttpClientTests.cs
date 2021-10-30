@@ -1,7 +1,4 @@
-using System;
-using System.Collections.Generic;
 using System.Net;
-using System.Threading.Tasks;
 
 using Bet.AspNetCore.Resilience.UnitTest.ResilienceTypedClient.Clients;
 using Bet.Extensions.Http.MessageHandlers;

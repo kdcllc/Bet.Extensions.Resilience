@@ -1,5 +1,3 @@
-using System;
-
 namespace Bet.Extensions.Resilience.WebApp.Sample.Models
 {
     public class ErrorViewModel

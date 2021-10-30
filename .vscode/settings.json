@@ -6,7 +6,13 @@
         "*.targets": "xml",
         "*.tasks": "xml"
     },
-    
+
     "dotnet-test-explorer.enableTelemetry": false,
-    "dotnet-test-explorer.testProjectPath": "/test/**/*"
+    "dotnet-test-explorer.testProjectPath": "/test/**/*",
+    "markdownlint.config": {
+        "MD028": false,
+        "MD025": {
+            "front_matter_title": ""
+        }
+    }
 }

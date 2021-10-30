@@ -1,6 +1,7 @@
-﻿using System;
-using System.Diagnostics.Tracing;
+﻿using System.Diagnostics.Tracing;
+
 using Microsoft.Extensions.Hosting;
+
 using Xunit;
 
 namespace Bet.AspNetCore.Resilience.UnitTest.GenericHosting

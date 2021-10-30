@@ -1,16 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Net.Http;
-using System.Threading.Tasks;
-
-using Bet.Extensions.Resilience.Abstractions;
+﻿using Bet.Extensions.Resilience.Abstractions;
 using Bet.Extensions.Resilience.Abstractions.Options;
 using Bet.Extensions.Resilience.Http.Options;
 using Bet.Extensions.Resilience.WebApp.Sample.Clients;
 using Bet.Extensions.Resilience.WebApp.Sample.Clients.Models;
 
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.DependencyInjection;
 
 using Polly.CircuitBreaker;
 

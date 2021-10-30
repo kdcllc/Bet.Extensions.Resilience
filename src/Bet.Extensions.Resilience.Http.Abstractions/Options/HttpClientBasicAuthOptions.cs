@@ -1,5 +1,4 @@
-﻿using System;
-using System.Text;
+﻿using System.Text;
 
 namespace Bet.Extensions.Resilience.Http.Abstractions.Options
 {

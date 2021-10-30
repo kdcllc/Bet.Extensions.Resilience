@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Bet.Extensions.Http.MessageHandlers.CorrelationId
+﻿namespace Bet.Extensions.Http.MessageHandlers.CorrelationId
 {
     /// <summary>
     /// Provides access to per request correlation properties.

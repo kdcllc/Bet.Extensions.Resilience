@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Net.Http;
-using System.Net.Http.Headers;
+﻿using System.Net.Http.Headers;
 
 using Bet.Extensions.Resilience.Abstractions;
 using Bet.Extensions.Resilience.Abstractions.Options;
@@ -69,9 +66,9 @@ namespace Microsoft.Extensions.DependencyInjection
             string? rootSectionName = null,
             Action<HttpClientOptions>? configureAction = null)
         {
-             ConfigureHttpClientOptions(OptionsName, OptionsName, rootSectionName, configureAction);
-             ConfigureHttpClient<HttpClientOptions>(OptionsName);
-             return this;
+            ConfigureHttpClientOptions(OptionsName, OptionsName, rootSectionName, configureAction);
+            ConfigureHttpClient<HttpClientOptions>(OptionsName);
+            return this;
         }
 
         /// <inheritdoc/>
@@ -271,7 +268,8 @@ namespace Microsoft.Extensions.DependencyInjection
                          client.DefaultRequestHeaders.Add("accept", config.ContentType);
                          client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(config.ContentType));
                      }
-                 }));
+                 }
+            ));
 
             ConfigureAll();
         }

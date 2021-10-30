@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-
-using Bet.Extensions.Resilience.Abstractions;
+﻿using Bet.Extensions.Resilience.Abstractions;
 using Bet.Extensions.Resilience.Abstractions.DependencyInjection;
 using Bet.Extensions.Resilience.Abstractions.Options;
 using Bet.Extensions.Resilience.UnitTest.Policies.Options;

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Linq;
-
-using Bet.Extensions.Resilience.Abstractions.Internal;
+﻿using Bet.Extensions.Resilience.Abstractions.Internal;
 using Bet.Extensions.Resilience.Abstractions.Options;
 
 using Microsoft.Extensions.DependencyInjection.Extensions;

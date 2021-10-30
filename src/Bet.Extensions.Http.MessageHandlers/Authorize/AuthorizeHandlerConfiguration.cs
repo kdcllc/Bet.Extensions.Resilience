@@ -1,7 +1,4 @@
-﻿using System;
-using System.Net.Http;
-
-namespace Bet.Extensions.Http.MessageHandlers.Authorize
+﻿namespace Bet.Extensions.Http.MessageHandlers.Authorize
 {
     public class AuthorizeHandlerConfiguration<TResponse> where TResponse : new()
     {

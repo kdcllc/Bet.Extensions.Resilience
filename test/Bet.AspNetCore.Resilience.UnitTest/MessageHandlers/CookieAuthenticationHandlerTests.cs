@@ -1,12 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Net.Http;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Text;
 
 using Bet.Extensions.Http.MessageHandlers.CookieAuthentication;
 using Bet.Extensions.Resilience.Http.Abstractions.Options;
 using Bet.Extensions.Testing.Logging;
+
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -42,35 +39,35 @@ namespace Bet.AspNetCore.Resilience.UnitTest.MessageHandlers
                })
                .Configure(app =>
                {
-               app.MapWhen(
-                   context => context.Request.Path == "/auth" && context.Request.Method == "POST",
-                   (appBuilder) =>
-                   {
-                       appBuilder.Run(async context =>
+                   app.MapWhen(
+                       context => context.Request.Path == "/auth" && context.Request.Method == "POST",
+                       (appBuilder) =>
                        {
-                           context.Response.StatusCode = StatusCodes.Status200OK;
-                           context.Response.Headers.Add("Set-Cookie", "authenticated");
-
-                           await context.Response.WriteAsync(string.Empty);
-                       });
-                   });
-
-               app.Map("/test", (appBuilder) =>
-                   {
-                       appBuilder.Run(async context =>
-                       {
-                           if (context.Request.Headers.ContainsKey("Cookie"))
+                           appBuilder.Run(async context =>
                            {
                                context.Response.StatusCode = StatusCodes.Status200OK;
-                           }
-                           else
-                           {
-                               context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-                           }
+                               context.Response.Headers.Add("Set-Cookie", "authenticated");
 
-                           await context.Response.WriteAsync(string.Empty);
+                               await context.Response.WriteAsync(string.Empty);
+                           });
                        });
-                   });
+
+                   app.Map("/test", (appBuilder) =>
+                       {
+                           appBuilder.Run(async context =>
+                           {
+                               if (context.Request.Headers.ContainsKey("Cookie"))
+                               {
+                                   context.Response.StatusCode = StatusCodes.Status200OK;
+                               }
+                               else
+                               {
+                                   context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                               }
+
+                               await context.Response.WriteAsync(string.Empty);
+                           });
+                       });
                });
 
             _server = new TestServer(webHost);

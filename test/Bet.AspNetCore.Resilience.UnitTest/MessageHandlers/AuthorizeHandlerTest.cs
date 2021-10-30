@@ -1,9 +1,5 @@
-﻿using System;
-using System.Net;
-using System.Net.Http;
+﻿using System.Net;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 using Bet.Extensions.Http.MessageHandlers.Authorize;
 
@@ -148,9 +144,9 @@ namespace Bet.AspNetCore.Resilience.UnitTest.MessageHandlers
                     return new HttpRequestMessage(
                             HttpMethod.Post,
                             new Uri(authClientOptions.BaseAddress, "unauth/token"))
-                            {
-                                Content = new StringContent(body, Encoding.UTF8, "application/x-www-form-urlencoded")
-                            };
+                    {
+                        Content = new StringContent(body, Encoding.UTF8, "application/x-www-form-urlencoded")
+                    };
                 },
                 response =>
                 {
@@ -167,7 +163,7 @@ namespace Bet.AspNetCore.Resilience.UnitTest.MessageHandlers
                                     handlerConfiguration,
                                     AuthType.Bearer,
                                     logger)
-                                { InnerHandler = _server.CreateHandler() };
+            { InnerHandler = _server.CreateHandler() };
             using var client = new HttpClient(authHandler);
             var uri = new Uri($"{BaseUrl}test");
 

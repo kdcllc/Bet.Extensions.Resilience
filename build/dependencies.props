@@ -1,75 +1,100 @@
 <Project>
-  <PropertyGroup>
-    <RunCodeAnalysis>true</RunCodeAnalysis>
-    <AspNetCoreCommon>3.1.*</AspNetCoreCommon>
-    <NetCoreCommon>3.1.*</NetCoreCommon>
-    <BetCommon>3.1.*</BetCommon>
-  </PropertyGroup>
+	<PropertyGroup>
+		<RunCodeAnalysis>true</RunCodeAnalysis>
+		<AspNetCoreCommon>3.1.*</AspNetCoreCommon>
+		<NetCoreCommon>3.1.*</NetCoreCommon>
+		<BetCommon>4.0.*</BetCommon>
+	</PropertyGroup>
 
-  <PropertyGroup Condition="'$(TargetFramework)' == 'net5.0' Or '$(TargetFramework)' == 'netstandard2.1'">
-    <AspNetCoreCommon>5.0.*</AspNetCoreCommon>
-    <NetCoreCommon>5.0.*</NetCoreCommon>
-  </PropertyGroup>
+	<PropertyGroup Condition="'$(TargetFramework)' == 'net5.0' Or '$(TargetFramework)' == 'netstandard2.1'">
+		<AspNetCoreCommon>5.0.*</AspNetCoreCommon>
+		<NetCoreCommon>5.0.*</NetCoreCommon>
+	</PropertyGroup>
 
-  <ItemGroup Label="NetCore">
-    <PackageReference Update="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="$(AspNetCoreCommon)" />
-    <PackageReference Update="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="$(AspNetCoreCommon)" />
-    <PackageReference Update="Microsoft.AspNetCore.Mvc.Testing" Version="$(AspNetCoreCommon)"/>
-    <PackageReference Update="Microsoft.AspNetCore.TestHost" Version="$(AspNetCoreCommon)"/>
-    <PackageReference Update="Microsoft.AspNetCore.Hosting.Abstractions" Version="$(AspNetCoreCommon)"/>
-    <PackageReference Update="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.10.*" />
-  </ItemGroup>
+	<PropertyGroup Condition="'$(TargetFramework)' == 'net6.0'">
+		<AspNetCoreCommon>6.0.0-rc.2.*</AspNetCoreCommon>
+		<NetCoreCommon>6.0.0-rc.2.*</NetCoreCommon>
+	</PropertyGroup>
 
-  <ItemGroup Label="Extensions">
-    <PackageReference Update="Microsoft.Extensions.Configuration" Version="$(NetCoreCommon)" />
-    <PackageReference Update="Microsoft.Extensions.DependencyInjection" Version="$(NetCoreCommon)" />
-    <PackageReference Update="Microsoft.Extensions.DependencyInjection.Abstractions" Version="$(NetCoreCommon)" />
-    <PackageReference Update="Microsoft.Extensions.Hosting" Version="$(NetCoreCommon)" />
-    <PackageReference Update="Microsoft.Extensions.Http.Polly" Version="$(NetCoreCommon)"/>
-    <PackageReference Update="Microsoft.Extensions.Logging.Abstractions" Version="$(NetCoreCommon)" />
-    <PackageReference Update="Microsoft.Extensions.Logging.Console" Version="$(NetCoreCommon)" />
-    <PackageReference Update="Microsoft.Extensions.Logging.Debug" Version="$(NetCoreCommon)" />
-    <PackageReference Update="Microsoft.Extensions.Options" Version="$(NetCoreCommon)" />
-    <PackageReference Update="Microsoft.Extensions.Options.ConfigurationExtensions" Version="$(NetCoreCommon)" />
-    <PackageReference Update="Microsoft.Extensions.DiagnosticAdapter" Version="$(NetCoreCommon)" />
-    <PackageReference Update="Microsoft.Extensions.Logging" Version="$(NetCoreCommon)"/>
-  </ItemGroup>
+	<ItemGroup Label="NetCore">
+		<PackageReference Update="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="$(AspNetCoreCommon)" />
+		<PackageReference Update="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="$(AspNetCoreCommon)" />
+		<PackageReference Update="Microsoft.AspNetCore.Mvc.Testing" Version="$(AspNetCoreCommon)"/>
+		<PackageReference Update="Microsoft.AspNetCore.TestHost" Version="$(AspNetCoreCommon)"/>
+		<PackageReference Update="Microsoft.AspNetCore.Hosting.Abstractions" Version="$(AspNetCoreCommon)"/>
+		<PackageReference Update="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.11.*" />
+	</ItemGroup>
 
-  <ItemGroup Label="Unit Tests">
-    <PackageReference Update="Microsoft.NET.Test.Sdk" Version="16.8.3" />
-    <PackageReference Update="Moq" Version="4.15.2" />
-    <PackageReference Update="xunit" Version="2.4.1" />
-    <PackageReference Update="xunit.runner.visualstudio" Version="2.4.3" />
-    <PackageReference Update="FluentAssertions" Version="5.10.3" />
-    <PackageReference Update="coverlet.collector" Version="3.0.0" />
-  </ItemGroup>
+	<ItemGroup Label="Extensions">
+		<PackageReference Update="Microsoft.Extensions.Configuration" Version="$(NetCoreCommon)" />
+		<PackageReference Update="Microsoft.Extensions.DependencyInjection" Version="$(NetCoreCommon)" />
+		<PackageReference Update="Microsoft.Extensions.DependencyInjection.Abstractions" Version="$(NetCoreCommon)" />
+		<PackageReference Update="Microsoft.Extensions.Hosting" Version="$(NetCoreCommon)" />
+		<PackageReference Update="Microsoft.Extensions.Http.Polly" Version="$(NetCoreCommon)"/>
+		<PackageReference Update="Microsoft.Extensions.Logging.Abstractions" Version="$(NetCoreCommon)" />
+		<PackageReference Update="Microsoft.Extensions.Logging.Console" Version="$(NetCoreCommon)" />
+		<PackageReference Update="Microsoft.Extensions.Logging.Debug" Version="$(NetCoreCommon)" />
+		<PackageReference Update="Microsoft.Extensions.Options" Version="$(NetCoreCommon)" />
+		<PackageReference Update="Microsoft.Extensions.Options.ConfigurationExtensions" Version="$(NetCoreCommon)" />
+		<PackageReference Update="Microsoft.Extensions.DiagnosticAdapter" Version="$(NetCoreCommon)" />
+		<PackageReference Update="Microsoft.Extensions.Logging" Version="$(NetCoreCommon)"/>
+	</ItemGroup>
 
-  <ItemGroup Label="Shared">
-    <PackageReference Update="Newtonsoft.Json" Version="12.0.*" />
-    <PackageReference Update="Polly" Version="7.2.1" />
-    <PackageReference Update="Microsoft.Data.SqlClient" Version="2.1.*" />
-    <PackageReference Update="System.Data.SqlClient" Version="4.8.2" />
-  </ItemGroup>
+	<ItemGroup Label="Testing">
+		<PackageReference Update="Microsoft.NET.Test.Sdk" Version="17.0.*" />
+		<PackageReference Update="xunit" Version="2.4.1" />
+		<PackageReference Update="xunit.runner.visualstudio" Version="2.4.3">
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+			<PrivateAssets>all</PrivateAssets>
+		</PackageReference>
+		<PackageReference Update="coverlet.collector" Version="3.1.0">
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+			<PrivateAssets>all</PrivateAssets>
+		</PackageReference>
 
-  <ItemGroup Label="Bet">
-    <PackageReference Update="Bet.Extensions" Version="$(BetCommon)" />
-    <PackageReference Update="Bet.Extensions.Hosting" Version="$(BetCommon)" />
-    <PackageReference Update="Bet.Extensions.Options" Version="$(BetCommon)" />
-    <PackageReference Update="Bet.Extensions.Testing" Version="$(BetCommon)" />
-    <PackageReference Update="Bet.AspNetCore.Middleware" Version="$(BetCommon)" />
-  </ItemGroup>
+		<PackageReference Update="Moq" Version="4.16.*" />
+		<PackageReference Update="FluentAssertions" Version="6.2.*" />
 
-  <ItemGroup Label="SourceLink">
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
-  </ItemGroup>
+	</ItemGroup>
 
-  <ItemGroup Label="Analyzers">
-    <PackageReference Include="Bet.CodeAnalyzers" Version="1.0.10" PrivateAssets="All" />
-    <PackageReference Include="Bet.EditorConfig" Version="1.0.10" PrivateAssets="All" />
-  </ItemGroup>
+	<ItemGroup Label="Shared">
+		<PackageReference Update="Newtonsoft.Json" Version="13.0.*" />
+		<PackageReference Update="Polly" Version="7.2.2" />
+		<PackageReference Update="Microsoft.Data.SqlClient" Version="3.0.*" />
+		<PackageReference Update="System.Data.SqlClient" Version="4.8.3" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <None Include="../../img/icon.png" Pack="true" Visible="false" PackagePath="" />
-  </ItemGroup>
+	<ItemGroup Label="Bet">
+		<PackageReference Update="Bet.Extensions" Version="$(BetCommon)" />
+		<PackageReference Update="Bet.Extensions.Hosting" Version="$(BetCommon)" />
+		<PackageReference Update="Bet.Extensions.Options" Version="$(BetCommon)" />
+		<PackageReference Update="Bet.Extensions.Testing" Version="$(BetCommon)" />
+		<PackageReference Update="Bet.AspNetCore.Middleware" Version="$(BetCommon)" />
+	</ItemGroup>
 
+	<ItemGroup Label="SourceLink">
+		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
+	</ItemGroup>
+
+	<ItemGroup Label="Analyzers">
+		<PackageReference Include="Bet.CodeAnalyzers" Version="1.0.12">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="Bet.EditorConfig" Version="1.0.12">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Include="../../img/icon.png" Pack="true" Visible="false" PackagePath="" />
+	</ItemGroup>
+
+	<!-- Workaround for this bug (replace the analyzer name with the one you need to exclude (filename only, no extension) -->
+	<Target Name="RemoveLoggingAnalyzer" BeforeTargets="CoreCompile">
+		<ItemGroup>
+			<Analyzer Remove="@(Analyzer)" Condition="%(FileName) == 'Microsoft.Extensions.Logging.Generators'" />
+		</ItemGroup>
+	</Target>
 </Project>

@@ -1,6 +1,4 @@
-﻿using System.Net.Http;
-
-using Bet.Extensions.Resilience.Abstractions;
+﻿using Bet.Extensions.Resilience.Abstractions;
 
 namespace Polly
 {

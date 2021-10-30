@@ -1,5 +1,5 @@
-﻿using System;
-using Bet.Extensions.Testing.Logging;
+﻿using Bet.Extensions.Testing.Logging;
+
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -47,11 +47,11 @@ namespace Bet.AspNetCore.Resilience.UnitTest.GenericHosting
                       context => context.Request.Path.Value.Contains("/service1"),
                       (IApplicationBuilder pp) =>
                       {
-                        pp.Run(async (context) =>
-                        {
-                            await context.Response.WriteAsync($"Path: {context.Request.Path} - Path Base: {context.Request.PathBase}");
-                        });
-                     });
+                          pp.Run(async (context) =>
+                          {
+                              await context.Response.WriteAsync($"Path: {context.Request.Path} - Path Base: {context.Request.PathBase}");
+                          });
+                      });
 
                     app.Run(context =>
                             {
@@ -59,7 +59,7 @@ namespace Bet.AspNetCore.Resilience.UnitTest.GenericHosting
                                 return context.Response.WriteAsync(@"
                             <a href=""/hello"">/hello</a> <a href=""/hello/world"">/hello/world</a>
                         ");
-                    });
+                            });
                 }));
 
             return testServer;

@@ -1,6 +1,3 @@
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Hosting;
-
 namespace Bet.Extensions.Resilience.WebApp.Sample
 {
     public sealed class Program

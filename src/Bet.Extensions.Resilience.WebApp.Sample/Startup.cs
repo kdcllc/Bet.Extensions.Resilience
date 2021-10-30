@@ -1,13 +1,6 @@
 using Bet.AspNetCore.Middleware.Diagnostics;
-using Bet.Extensions.Resilience.Http.Abstractions.Options;
 using Bet.Extensions.Resilience.Http.Options;
 using Bet.Extensions.Resilience.WebApp.Sample.Clients;
-
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 
 namespace Bet.Extensions.Resilience.WebApp.Sample
 {

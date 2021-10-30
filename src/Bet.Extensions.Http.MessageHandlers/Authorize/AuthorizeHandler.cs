@@ -1,9 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Net;
 
 using Microsoft.Extensions.Logging;
 
@@ -20,7 +15,7 @@ namespace Bet.Extensions.Http.MessageHandlers.Authorize
         private readonly AuthType _authType;
         private readonly ILogger<AuthorizeHandler<THttpClientOptions, TReponse>> _logger;
         private readonly SemaphoreSlim _sem = new SemaphoreSlim(1);
-        private string _accessToken;
+        private string? _accessToken;
         private DateTimeOffset _expirationTime;
 
         public AuthorizeHandler(

@@ -1,6 +1,4 @@
-﻿using System.Threading.Tasks;
-
-using Bet.Extensions.Http.MessageHandlers.CorrelationId;
+﻿using Bet.Extensions.Http.MessageHandlers.CorrelationId;
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
