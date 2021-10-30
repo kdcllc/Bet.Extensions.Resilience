@@ -1,7 +1,4 @@
-﻿using System;
-using System.Threading;
-
-using Bet.Extensions.Http.MessageHandlers.HttpTimeout;
+﻿using Bet.Extensions.Http.MessageHandlers.HttpTimeout;
 
 using Microsoft.Extensions.DependencyInjection.Extensions;
 

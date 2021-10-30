@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Net;
-using System.Net.Http;
-using System.Threading.Tasks;
+﻿using System.Net;
 
 using Bet.Extensions.Resilience.Abstractions;
 using Bet.Extensions.Resilience.Abstractions.Options;
-using Bet.Extensions.Resilience.Http;
 using Bet.Extensions.Resilience.Http.Options;
 using Bet.Extensions.Testing.Logging;
 

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Net.Http;
-
-using Bet.Extensions.Resilience.Http.Abstractions.Options;
+﻿using Bet.Extensions.Resilience.Http.Abstractions.Options;
 
 using Polly;
 

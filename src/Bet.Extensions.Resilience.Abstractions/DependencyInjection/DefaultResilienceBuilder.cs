@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-using Bet.Extensions.Resilience.Abstractions.Options;
+﻿using Bet.Extensions.Resilience.Abstractions.Options;
 
 using Microsoft.Extensions.DependencyInjection;
 

@@ -1,6 +1,4 @@
-﻿using System;
-
-using Bet.Extensions.Resilience.Abstractions.DependencyInjection;
+﻿using Bet.Extensions.Resilience.Abstractions.DependencyInjection;
 
 using Microsoft.Extensions.DependencyInjection;
 

@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Bet.Extensions.Resilience.Abstractions.Options
+﻿namespace Bet.Extensions.Resilience.Abstractions.Options
 {
     /// <summary>
     /// The <see cref="Polly.CircuitBreaker.AsyncCircuitBreakerPolicy"/> Policy Options.

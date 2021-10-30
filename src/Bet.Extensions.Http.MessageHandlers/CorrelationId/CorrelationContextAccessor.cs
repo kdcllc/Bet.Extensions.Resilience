@@ -1,6 +1,4 @@
-﻿using System.Threading;
-
-namespace Bet.Extensions.Http.MessageHandlers.CorrelationId
+﻿namespace Bet.Extensions.Http.MessageHandlers.CorrelationId
 {
     /// <inheritdoc />
     public class CorrelationContextAccessor : ICorrelationContextAccessor

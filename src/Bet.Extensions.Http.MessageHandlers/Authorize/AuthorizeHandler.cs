@@ -1,13 +1,6 @@
-﻿using System;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Net;
 
 using Microsoft.Extensions.Logging;
-
-using Newtonsoft.Json;
 
 namespace Bet.Extensions.Http.MessageHandlers.Authorize
 {
@@ -16,16 +9,16 @@ namespace Bet.Extensions.Http.MessageHandlers.Authorize
         where TReponse : new()
     {
         private readonly THttpClientOptions _httpClientOptions;
-        private readonly AuthorizeHandlerConfiguration<TReponse> _handlerConfiguration;
+        private readonly AuthorizeHandlerConfiguration<THttpClientOptions, TReponse> _handlerConfiguration;
         private readonly AuthType _authType;
         private readonly ILogger<AuthorizeHandler<THttpClientOptions, TReponse>> _logger;
-        private readonly SemaphoreSlim _sem = new SemaphoreSlim(1);
-        private string _accessToken;
-        private DateTimeOffset _expirationTime;
+        private readonly SemaphoreSlim _sem = new (1);
+        private string? _accessToken;
+        private DateTimeOffset? _expirationTime;
 
         public AuthorizeHandler(
             THttpClientOptions httpClientOptions,
-            AuthorizeHandlerConfiguration<TReponse> handlerConfiguration,
+            AuthorizeHandlerConfiguration<THttpClientOptions, TReponse> handlerConfiguration,
             AuthType authType,
             ILogger<AuthorizeHandler<THttpClientOptions, TReponse>> logger)
         {
@@ -45,7 +38,7 @@ namespace Bet.Extensions.Http.MessageHandlers.Authorize
                 await _sem.WaitAsync(cancellationToken).ConfigureAwait(false);
                 await AuthorizeAsync(request, cancellationToken).ConfigureAwait(false);
             }
-            else if (_expirationTime.Subtract(DateTimeOffset.UtcNow) < TimeSpan.FromMinutes(1))
+            else if (_expirationTime?.Subtract(DateTimeOffset.UtcNow) < TimeSpan.FromMinutes(1))
             {
                 _logger.LogInformation("{tokenType} Authentication token will expire in less than a minute. Attempting to Authenticate.", _authType);
                 await _sem.WaitAsync(cancellationToken).ConfigureAwait(false);
@@ -102,7 +95,8 @@ namespace Bet.Extensions.Http.MessageHandlers.Authorize
                 }
 
                 var rawResponse = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-                var authResponse = JsonConvert.DeserializeObject<TReponse>(rawResponse);
+
+                var authResponse = _handlerConfiguration.JsonSerializer.Deserialize<TReponse>(rawResponse);
 
                 _logger.LogInformation("{tokenType} Authentication token authenticated successfully. Retrying request.", _authType);
 

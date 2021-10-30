@@ -1,10 +1,8 @@
-﻿using System;
-
-#if NETSTANDARD2_0
+﻿#if NETSTANDARD2_0
 
 using System.Data.SqlClient;
 
-#elif NET5_0
+#else
 
 using Microsoft.Data.SqlClient;
 

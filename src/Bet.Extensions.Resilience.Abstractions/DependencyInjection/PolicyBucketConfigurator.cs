@@ -1,6 +1,4 @@
-﻿using System;
-
-using Bet.Extensions.Resilience.Abstractions.Internal;
+﻿using Bet.Extensions.Resilience.Abstractions.Internal;
 
 namespace Bet.Extensions.Resilience.Abstractions.DependencyInjection
 {

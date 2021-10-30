@@ -1,10 +1,6 @@
-﻿using System;
-using System.Net.Http;
-using System.Threading;
-using System.Threading.Tasks;
-
-using Bet.Extensions.Http.MessageHandlers.HttpTimeout;
+﻿using Bet.Extensions.Http.MessageHandlers.HttpTimeout;
 using Bet.Extensions.Testing.Logging;
+
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;

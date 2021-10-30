@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Bet.Extensions.Resilience.Abstractions.Internal
+﻿namespace Bet.Extensions.Resilience.Abstractions.Internal
 {
     public sealed class PolicyOptionsRegistrant
     {

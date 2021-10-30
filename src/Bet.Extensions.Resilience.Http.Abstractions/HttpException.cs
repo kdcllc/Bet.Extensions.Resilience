@@ -1,5 +1,4 @@
-﻿using System;
-using System.Net;
+﻿using System.Net;
 
 namespace Bet.Extensions.Resilience.Http.Abstractions
 {

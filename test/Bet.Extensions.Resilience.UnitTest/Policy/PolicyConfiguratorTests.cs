@@ -1,21 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-
-using Bet.Extensions.Resilience.Abstractions;
-using Bet.Extensions.Resilience.Abstractions.Options;
-using Bet.Extensions.Resilience.Http;
-using Bet.Extensions.Testing.Logging;
-
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
-
-using Polly.Registry;
-
-using Xunit;
-using Xunit.Abstractions;
+﻿using Xunit.Abstractions;
 
 namespace Bet.Extensions.Resilience.UnitTest.Policy
 {

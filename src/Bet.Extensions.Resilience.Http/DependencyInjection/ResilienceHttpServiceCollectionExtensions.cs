@@ -1,6 +1,4 @@
-﻿using System.Net.Http;
-
-using Bet.Extensions.Http.MessageHandlers.HttpTimeout;
+﻿using Bet.Extensions.Http.MessageHandlers.HttpTimeout;
 using Bet.Extensions.Resilience.Abstractions.Options;
 using Bet.Extensions.Resilience.Http.Options;
 

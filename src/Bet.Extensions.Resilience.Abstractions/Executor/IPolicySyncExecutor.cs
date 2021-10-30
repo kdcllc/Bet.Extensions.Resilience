@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Bet.Extensions.Resilience.Abstractions.Executor
+﻿namespace Bet.Extensions.Resilience.Abstractions.Executor
 {
     /// <summary>
     /// The policy sync executor for wrapped Polly policies.

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Net.Http;
-using System.Threading.Tasks;
-
-using Bet.Extensions.Resilience.WebApp.Sample.Clients.Models;
+﻿using Bet.Extensions.Resilience.WebApp.Sample.Clients.Models;
 
 using Microsoft.Extensions.Options;
 

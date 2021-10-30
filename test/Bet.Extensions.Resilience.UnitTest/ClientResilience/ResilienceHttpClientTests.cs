@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using Bet.Extensions.Http.MessageHandlers;
+﻿using Bet.Extensions.Http.MessageHandlers;
 using Bet.Extensions.Resilience.Http.Abstractions.Options;
 using Bet.Extensions.Resilience.UnitTest.ClientResilience.Clients;
 

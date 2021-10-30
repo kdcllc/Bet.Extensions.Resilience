@@ -1,6 +1,4 @@
-﻿using System;
-
-using Bet.Extensions.Resilience.Abstractions.Options;
+﻿using Bet.Extensions.Resilience.Abstractions.Options;
 
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Net;
-using System.Net.Http;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Net;
 
 using Bet.Extensions.Resilience.Abstractions;
 using Bet.Extensions.Resilience.Abstractions.Options;
@@ -192,7 +188,7 @@ namespace Polly
                 return HttpPolicyExtensions
                         .HandleTransientHttpError()
 
-                        // HttpStatusCode.TooManyRequests if not specific logic is applied for the retries.
+                         // HttpStatusCode.TooManyRequests if not specific logic is applied for the retries.
                          .OrResult(x => (int)x.StatusCode == 429)
 
                          .WaitAndRetryAsync(

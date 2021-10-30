@@ -1,8 +1,4 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-
-namespace Bet.Extensions.Resilience.Abstractions.Executor
+﻿namespace Bet.Extensions.Resilience.Abstractions.Executor
 {
     /// <summary>
     /// <para>

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Net.Http;
-
-namespace Bet.Extensions.Http.MessageHandlers.HttpTimeout
+﻿namespace Bet.Extensions.Http.MessageHandlers.HttpTimeout
 {
     /// <summary>
     /// The options to configure for <see cref="HttpTimeoutHandler"/>.

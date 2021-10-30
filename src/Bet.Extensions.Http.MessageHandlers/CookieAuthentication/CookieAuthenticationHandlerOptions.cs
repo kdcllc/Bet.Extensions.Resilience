@@ -1,6 +1,4 @@
-﻿using System.Net.Http;
-
-using Bet.Extensions.Resilience.Http.Abstractions.Options;
+﻿using Bet.Extensions.Resilience.Http.Abstractions.Options;
 
 namespace Bet.Extensions.Http.MessageHandlers.CookieAuthentication
 {

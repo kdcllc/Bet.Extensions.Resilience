@@ -38,7 +38,7 @@ If you like or are using this project to learn or start your solution, please gi
 ## Http Delegating Message Handlers
 
 - [`Bet.Extensions.Http.MessageHandlers.Abstractions`](./src/Bet.Extensions.Http.MessageHandlers.Abstractions/)
-- [`Bet.Extensions.Http.MessageHandlers`](./src/Bet.Extensions.Http.MessageHandlers/)
+- [`Bet.Extensions.Http.MessageHandlers`](./src/Bet.Extensions.Http.MessageHandlers/) - Timeout, Authorization
 
 ## Sample Applications
 
