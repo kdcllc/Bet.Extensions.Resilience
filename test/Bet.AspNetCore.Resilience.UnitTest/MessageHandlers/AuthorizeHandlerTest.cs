@@ -95,7 +95,7 @@ namespace Bet.AspNetCore.Resilience.UnitTest.MessageHandlers
                 Username = "MyUserName"
             };
 
-            var handlerConfiguration = new AuthorizeHandlerConfiguration<AuthorizeTokenResponse>(
+            var handlerConfiguration = new AuthorizeHandlerConfiguration<AuthHttpClientOptions, AuthorizeTokenResponse>(
                 (authClientOptions) =>
                 {
                     var body =
@@ -135,7 +135,7 @@ namespace Bet.AspNetCore.Resilience.UnitTest.MessageHandlers
                 Username = "MyUserName"
             };
 
-            var handlerConfiguration = new AuthorizeHandlerConfiguration<AuthorizeTokenResponse>(
+            var handlerConfiguration = new AuthorizeHandlerConfiguration<AuthHttpClientOptions, AuthorizeTokenResponse>(
                 (authClientOptions) =>
                 {
                     var body =
@@ -196,7 +196,7 @@ namespace Bet.AspNetCore.Resilience.UnitTest.MessageHandlers
                 Username = "MyUserName"
             };
 
-            var handlerConfigurationOptions = new AuthorizeHandlerConfiguration<AuthorizeTokenResponse>(
+            var handlerConfigurationOptions = new AuthorizeHandlerConfiguration<AuthHttpClientOptions, AuthorizeTokenResponse>(
                   (authClientOptions) =>
                   {
                       var body = $"grant_type=password&username={authClientOptions.Username}&password={authClientOptions.Password}";
@@ -234,7 +234,7 @@ namespace Bet.AspNetCore.Resilience.UnitTest.MessageHandlers
                 Username = "MyUserName"
             };
 
-            var handlerConfigurationOptions = new AuthorizeHandlerConfiguration<AuthorizeTokenResponse>(
+            var handlerConfigurationOptions = new AuthorizeHandlerConfiguration<AuthHttpClientOptions, AuthorizeTokenResponse>(
                   (authClientOptions) =>
                   {
                       var body = $"grant_type=password&username={authClientOptions.Username}&password={authClientOptions.Password}";

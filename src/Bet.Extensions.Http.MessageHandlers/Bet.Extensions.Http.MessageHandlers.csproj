@@ -1,27 +1,28 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;net5.0;net6.0</TargetFrameworks>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFrameworks>netstandard2.0;netstandard2.1;net5.0;net6.0</TargetFrameworks>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
 
-  <PropertyGroup>
-    <Description>The collection of Http Message Delegating Handlers.</Description>
-    <PackageTags>DotNetCore, HTTP Message Handers, Extensions, CorrelationId, HTTP Timeout, Cookie Authentication</PackageTags>
-  </PropertyGroup>
+	<PropertyGroup>
+		<Description>The collection of Http Message Delegating Handlers.</Description>
+		<PackageTags>DotNetCore, HTTP Message Handers, Extensions, CorrelationId, HTTP Timeout, Cookie Authentication</PackageTags>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="5.0.0" />
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-    <PackageReference Include="Polly" />
-    <PackageReference Include="Bet.Extensions" />
-    <PackageReference Include="Microsoft.Extensions.Options" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Console" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Debug" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="5.0.0" />
+		<PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+		<PackageReference Include="Polly" />
+		<PackageReference Include="Bet.Extensions" />
+		<PackageReference Include="Microsoft.Extensions.Options" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Console" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Debug" />
+		<PackageReference Include="System.Text.Json" Version="5.0.2" Condition="'$(TargetFramework)' == 'netstandard2.0'"/>
+	</ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Bet.Extensions.Resilience.Http.Abstractions\Bet.Extensions.Resilience.Http.Abstractions.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\Bet.Extensions.Resilience.Http.Abstractions\Bet.Extensions.Resilience.Http.Abstractions.csproj" />
+	</ItemGroup>
 
 </Project>

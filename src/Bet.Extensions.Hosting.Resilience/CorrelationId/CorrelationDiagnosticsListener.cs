@@ -20,7 +20,7 @@ namespace Bet.Extensions.Hosting.Resilience.CorrelationId
         private readonly ICorrelationContextFactory _correlationContextFactory;
         private readonly ILogger<DiagnosticListener> _logger;
         private readonly IDisposable _reference;
-        private Activity _activity;
+        private Activity? _activity;
 
         public CorrelationDiagnosticsListener(
             ICorrelationContextFactory correlationContextFactory,
@@ -88,19 +88,19 @@ namespace Bet.Extensions.Hosting.Resilience.CorrelationId
 
             _logger.LogDebug("System.Net.Http.HttpRequestOut.Start");
 
-            var correlationId = string.IsNullOrEmpty(parentActivity) ? _activity.GetBaggageItem(_options.Header) : parentActivity;
+            var correlationId = string.IsNullOrEmpty(parentActivity) ? _activity?.GetBaggageItem(_options.Header) : parentActivity;
 
             if (string.IsNullOrEmpty(correlationId))
             {
                 correlationId = SetCorrelationId(request);
-                _activity.AddBaggage(_options.Header, correlationId);
+                _activity?.AddBaggage(_options.Header, correlationId);
 
                 _correlationContextFactory.Create(correlationId, _options.Header);
             }
 
             if (!request.Headers.TryGetValues(_options.Header, out var values))
             {
-                request.Headers.Add(_options.Header, new string[] { correlationId });
+                request.Headers.Add(_options.Header, new string[] { correlationId ?? Guid.NewGuid().ToString() });
             }
 
             _logger.LogInformation("Request CorrelationId: {correlationId}", correlationId);
@@ -130,7 +130,7 @@ namespace Bet.Extensions.Hosting.Resilience.CorrelationId
                 }
             }
 
-            _activity.Stop();
+            _activity?.Stop();
         }
 
         [DiagnosticName("System.Net.Http.Response")]
@@ -169,13 +169,13 @@ namespace Bet.Extensions.Hosting.Resilience.CorrelationId
 
         private StringValues GenerateCorrelationId()
         {
-            if (_options.UseGuidForCorrelationId || string.IsNullOrEmpty(_activity.Id))
+            if (_options.UseGuidForCorrelationId || string.IsNullOrEmpty(_activity?.Id))
             {
                 return Guid.NewGuid().ToString();
             }
             else
             {
-                return _activity.Id;
+                return _activity?.Id;
             }
         }
     }
