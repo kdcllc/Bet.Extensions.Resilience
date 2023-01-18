@@ -1,4 +1,5 @@
-﻿@{
+﻿@model BibleQuoteModel
+@{
     ViewData["Title"] = "Home Page";
 }
 
@@ -6,38 +7,46 @@
      var host = $"https://{Context.Request.Host}";
 }
 @section Styles{
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link rel="stylesheet" href="~/css/AudioPlayer.css" asp-append-version="true" />
-    <style>
-
-        /*#player {
-            position: relative;
-            max-width: 700px;
-            height: 500px;
-            border: solid 1px gray;
-        }*/
-
-    </style>
 }
 
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    <h1 class="display-4">Bible Search</h1>
+    <p>This demostrate how to utilize .</p>
 
     <p>
-        <!-- Audio player container-->
-        <div id='player' class="container align-content-lg-center"></div>
+        <form asp-action="Index" asp-controller="Home" method="POST" class="form-group">
+            <label asp-for="Search">Search</label>
+            <input  class="form-control" asp-for="Search" placeholder="Your name goes here i.e romans+12:1-2" />
+
+            <input class="form-control btn-info" type="submit" value="Search"/>
+        </form>
+    </p>
+
+    @if (Model?.Result != null)
+    {
+       <p>
+            @foreach (var verse in Model?.Result?.Verses)
+            {
+                    <div>@verse.Text</div>
+            }
+        </p>
+    }
+
+    <p>
+        Please click Status to attempt to communicate with https://localhost:8001/api/throw end point.
+    </p>
+    <p>
+        <form asp-action="Status" asp-controller="Home"  method="POST" class="form-group">
+            <input class="form-control btn-info" type="submit" value="Status" />
+        </form>
+    </p>
+
+    <p>
+        @ViewBag.Status
     </p>
 </div>
 
 
-
 @section Scripts{
 
-    <script>
-        var host = "@(host)";
-    </script>
-
-    <script src="~/js/AudioPlayer.js" asp-append-version="true"></script>
-    <script src="~/js/Custom.js" asp-append-version="true"></script>
 }

@@ -6,23 +6,17 @@
 		<BetCommon>4.0.*</BetCommon>
 	</PropertyGroup>
 
-	<PropertyGroup Condition="'$(TargetFramework)' == 'net5.0' Or '$(TargetFramework)' == 'netstandard2.1'">
-		<AspNetCoreCommon>5.0.*</AspNetCoreCommon>
-		<NetCoreCommon>5.0.*</NetCoreCommon>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(TargetFramework)' == 'net6.0'">
-		<AspNetCoreCommon>6.0.0-rc.2.*</AspNetCoreCommon>
-		<NetCoreCommon>6.0.0-rc.2.*</NetCoreCommon>
+	<PropertyGroup Condition="'$(TargetFramework)' == 'net7.0' Or '$(TargetFramework)' == 'netstandard2.1'">
+		<AspNetCoreCommon>7.0.*</AspNetCoreCommon>
+		<NetCoreCommon>7.0.*</NetCoreCommon>
 	</PropertyGroup>
 
 	<ItemGroup Label="NetCore">
-		<PackageReference Update="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="$(AspNetCoreCommon)" />
 		<PackageReference Update="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="$(AspNetCoreCommon)" />
 		<PackageReference Update="Microsoft.AspNetCore.Mvc.Testing" Version="$(AspNetCoreCommon)"/>
 		<PackageReference Update="Microsoft.AspNetCore.TestHost" Version="$(AspNetCoreCommon)"/>
 		<PackageReference Update="Microsoft.AspNetCore.Hosting.Abstractions" Version="$(AspNetCoreCommon)"/>
-		<PackageReference Update="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.11.*" />
+		<PackageReference Update="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.17.*" />
 	</ItemGroup>
 
 	<ItemGroup Label="Extensions">
@@ -41,27 +35,27 @@
 	</ItemGroup>
 
 	<ItemGroup Label="Testing">
-		<PackageReference Update="Microsoft.NET.Test.Sdk" Version="17.0.*" />
-		<PackageReference Update="xunit" Version="2.4.1" />
-		<PackageReference Update="xunit.runner.visualstudio" Version="2.4.3">
+		<PackageReference Update="Microsoft.NET.Test.Sdk" Version="17.4.*" />
+		<PackageReference Update="xunit" Version="2.4.*" />
+		<PackageReference Update="xunit.runner.visualstudio" Version="2.4.*">
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 			<PrivateAssets>all</PrivateAssets>
 		</PackageReference>
-		<PackageReference Update="coverlet.collector" Version="3.1.0">
+		<PackageReference Update="coverlet.collector" Version="3.2.*">
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 			<PrivateAssets>all</PrivateAssets>
 		</PackageReference>
 
-		<PackageReference Update="Moq" Version="4.16.*" />
-		<PackageReference Update="FluentAssertions" Version="6.2.*" />
+		<PackageReference Update="Moq" Version="4.18.*" />
+		<PackageReference Update="FluentAssertions" Version="6.9.*" />
 
 	</ItemGroup>
 
 	<ItemGroup Label="Shared">
 		<PackageReference Update="Newtonsoft.Json" Version="13.0.*" />
-		<PackageReference Update="Polly" Version="7.2.2" />
-		<PackageReference Update="Microsoft.Data.SqlClient" Version="3.0.*" />
-		<PackageReference Update="System.Data.SqlClient" Version="4.8.3" />
+		<PackageReference Update="Polly" Version="7.2.*" />
+		<PackageReference Update="Microsoft.Data.SqlClient" Version="5.0.*" />
+		<PackageReference Update="System.Data.SqlClient" Version="4.8.*" />
 	</ItemGroup>
 
 	<ItemGroup Label="Bet">
@@ -73,7 +67,7 @@
 	</ItemGroup>
 
 	<ItemGroup Label="SourceLink">
-		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
+		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.*" PrivateAssets="All" />
 	</ItemGroup>
 
 	<ItemGroup Label="Analyzers">

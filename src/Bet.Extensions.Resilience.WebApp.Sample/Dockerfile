@@ -1,9 +1,9 @@
 
-FROM kdcllc/dotnet-sdk:5.0-buster as builder
+FROM kdcllc/dotnet-sdk:7.0 as builder
 RUN dotnet publish "./src/Bet.Extensions.Resilience.WebApp.Sample/Bet.Extensions.Resilience.WebApp.Sample.csproj" -c Release  -o /app
 
 # https://hub.docker.com/_/microsoft-dotnet-core-aspnet/
-FROM mcr.microsoft.com/dotnet/core/aspnet:5.0-buster-slim AS final
+FROM mcr.microsoft.com/dotnet/core/aspnet:7.0 AS final
 WORKDIR /app
 EXPOSE 80
 EXPOSE 443
