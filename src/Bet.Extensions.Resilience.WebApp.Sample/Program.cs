@@ -54,6 +54,7 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
+
     app.UseDeveloperListRegisteredServices();
 }
 else
@@ -65,6 +66,7 @@ else
 }
 
 app.UseHttpsRedirection();
+
 app.UseStaticFiles();
 
 app.UseCookiePolicy();
