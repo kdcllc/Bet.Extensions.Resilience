@@ -1,9 +1,8 @@
 ﻿using Bet.Extensions.Resilience.Abstractions.Options;
 
-namespace Bet.Extensions.Resilience.UnitTest.Policies.Options
+namespace Bet.Extensions.Resilience.UnitTest.Policies.Options;
+
+public class TestTimeoutPolicyOptions : TimeoutPolicyOptions
 {
-    public class TestTimeoutPolicyOptions : TimeoutPolicyOptions
-    {
-        public string CustomValue { get; set; } = string.Empty;
-    }
+    public string CustomValue { get; set; } = string.Empty;
 }

@@ -1,6 +1,5 @@
-﻿namespace Bet.Extensions.Resilience.UnitTest.ClientResilience
+﻿namespace Bet.Extensions.Resilience.UnitTest.ClientResilience;
+
+public class TestDelegatingHandler : DelegatingHandler
 {
-    public class TestDelegatingHandler : DelegatingHandler
-    {
-    }
 }

@@ -8,46 +8,45 @@ using Microsoft.Extensions.Logging;
 
 using Xunit.Abstractions;
 
-namespace Bet.AspNetCore.Resilience.UnitTest
+namespace Bet.AspNetCore.Resilience.UnitTest;
+
+internal sealed class ResilienceTypedClientTestServerBuilder
 {
-    internal sealed class ResilienceTypedClientTestServerBuilder
+    private readonly ITestOutputHelper _output;
+
+    public ResilienceTypedClientTestServerBuilder(ITestOutputHelper output)
     {
-        private readonly ITestOutputHelper _output;
+        _output = output;
+    }
 
-        public ResilienceTypedClientTestServerBuilder(ITestOutputHelper output)
-        {
-            _output = output;
-        }
+    public int CallCount { get; private set; }
 
-        public int CallCount { get; private set; }
-
-        public TestServer GetSimpleServer()
-        {
-            var testServer = new TestServer(
-                new WebHostBuilder()
-                .ConfigureLogging(logger =>
-                {
-                    logger.AddDebug();
-                    logger.AddXunit(_output);
-                })
-                .Configure(app =>
-                {
-                    app.Run(async context =>
+    public TestServer GetSimpleServer()
+    {
+        var testServer = new TestServer(
+            new WebHostBuilder()
+            .ConfigureLogging(logger =>
+            {
+                logger.AddDebug();
+                logger.AddXunit(_output);
+            })
+            .Configure(app =>
+            {
+                app.Run(async context =>
+                  {
+                      if (CallCount++ % 2 == 0)
                       {
-                          if (CallCount++ % 2 == 0)
-                          {
-                              context.Response.StatusCode = StatusCodes.Status500InternalServerError;
-                          }
-                          else
-                          {
-                              context.Response.StatusCode = StatusCodes.Status200OK;
-                          }
+                          context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+                      }
+                      else
+                      {
+                          context.Response.StatusCode = StatusCodes.Status200OK;
+                      }
 
-                          await context.Response.WriteAsync(string.Empty);
-                      });
-                }));
+                      await context.Response.WriteAsync(string.Empty);
+                  });
+            }));
 
-            return testServer;
-        }
+        return testServer;
     }
 }

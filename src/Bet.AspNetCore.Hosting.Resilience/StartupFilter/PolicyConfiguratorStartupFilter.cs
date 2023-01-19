@@ -3,26 +3,25 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Microsoft.AspNetCore.Hosting
+namespace Microsoft.AspNetCore.Hosting;
+
+public class PolicyConfiguratorStartupFilter : IStartupFilter
 {
-    public class PolicyConfiguratorStartupFilter : IStartupFilter
+    private readonly IServiceProvider _provider;
+
+    public PolicyConfiguratorStartupFilter(IServiceProvider provider)
     {
-        private readonly IServiceProvider _provider;
+        _provider = provider ?? throw new ArgumentNullException(nameof(provider));
+    }
 
-        public PolicyConfiguratorStartupFilter(IServiceProvider provider)
+    public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next)
+    {
+        return app =>
         {
-            _provider = provider ?? throw new ArgumentNullException(nameof(provider));
-        }
+            var policyRegistrant = _provider.GetRequiredService<PolicyBucketConfigurator>();
+            policyRegistrant.Register();
 
-        public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next)
-        {
-            return app =>
-            {
-                var policyRegistrant = _provider.GetRequiredService<PolicyBucketConfigurator>();
-                policyRegistrant.Register();
-
-                next(app);
-            };
-        }
+            next(app);
+        };
     }
 }

@@ -1,8 +1,7 @@
-﻿namespace Bet.Extensions.Resilience.Abstractions.Internal
+﻿namespace Bet.Extensions.Resilience.Abstractions.Internal;
+
+public sealed class PolicyOptionsRegistrant
 {
-    public sealed class PolicyOptionsRegistrant
-    {
-        public Dictionary<string, (string sectionName, Type optionsType)> RegisteredPolicyOptions { get; }
-            = new Dictionary<string, (string sectionName, Type optionsType)>();
-    }
+    public Dictionary<string, (string sectionName, Type optionsType)> RegisteredPolicyOptions { get; }
+        = new Dictionary<string, (string sectionName, Type optionsType)>();
 }

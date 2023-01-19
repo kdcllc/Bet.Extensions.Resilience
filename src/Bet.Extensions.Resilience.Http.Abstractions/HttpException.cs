@@ -1,27 +1,26 @@
 ﻿using System.Net;
 
-namespace Bet.Extensions.Resilience.Http.Abstractions
+namespace Bet.Extensions.Resilience.Http.Abstractions;
+
+public class HttpException : Exception
 {
-    public class HttpException : Exception
+    public HttpException(HttpStatusCode statusCode, string message)
+        : base(message)
     {
-        public HttpException(HttpStatusCode statusCode, string message)
-            : base(message)
-        {
-            StatusCode = statusCode;
-        }
-
-        public HttpException() : base()
-        {
-        }
-
-        public HttpException(string message) : base(message)
-        {
-        }
-
-        public HttpException(string message, Exception innerException) : base(message, innerException)
-        {
-        }
-
-        public HttpStatusCode StatusCode { get; }
+        StatusCode = statusCode;
     }
+
+    public HttpException() : base()
+    {
+    }
+
+    public HttpException(string message) : base(message)
+    {
+    }
+
+    public HttpException(string message, Exception innerException) : base(message, innerException)
+    {
+    }
+
+    public HttpStatusCode StatusCode { get; }
 }

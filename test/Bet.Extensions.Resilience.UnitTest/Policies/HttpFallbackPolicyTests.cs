@@ -15,66 +15,65 @@ using Polly.Timeout;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Bet.Extensions.Resilience.UnitTest.Policies
+namespace Bet.Extensions.Resilience.UnitTest.Policies;
+
+public class HttpFallbackPolicyTests
 {
-    public class HttpFallbackPolicyTests
+    private readonly ITestOutputHelper _output;
+
+    public HttpFallbackPolicyTests(ITestOutputHelper output)
     {
-        private readonly ITestOutputHelper _output;
+        _output = output ?? throw new ArgumentNullException(nameof(output));
+    }
 
-        public HttpFallbackPolicyTests(ITestOutputHelper output)
+    [Fact]
+    public async Task HttpTimeoutPolicy_With_Result_Async_Should()
+    {
+        var services = new ServiceCollection();
+
+        // logger is required for policies.
+        services.AddLogging(builder =>
         {
-            _output = output ?? throw new ArgumentNullException(nameof(output));
-        }
+            builder.AddXunit(_output);
+        });
 
-        [Fact]
-        public async Task HttpTimeoutPolicy_With_Result_Async_Should()
+        var dic = new Dictionary<string, string>
         {
-            var services = new ServiceCollection();
+            { $"{PolicyOptionsKeys.TimeoutPolicy}:Timeout", "00:00:01" },
+            { $"{HttpPolicyOptionsKeys.HttpFallbackPolicy}:Message", "Hello" },
+            { $"{HttpPolicyOptionsKeys.HttpFallbackPolicy}:StatusCode", "400" },
+        };
 
-            // logger is required for policies.
-            services.AddLogging(builder =>
-            {
-                builder.AddXunit(_output);
-            });
+        var config = new ConfigurationBuilder().AddInMemoryCollection(dic).Build();
+        services.AddSingleton<IConfiguration>(config);
 
-            var dic = new Dictionary<string, string>
-            {
-                { $"{PolicyOptionsKeys.TimeoutPolicy}:Timeout", "00:00:01" },
-                { $"{HttpPolicyOptionsKeys.HttpFallbackPolicy}:Message", "Hello" },
-                { $"{HttpPolicyOptionsKeys.HttpFallbackPolicy}:StatusCode", "400" },
-            };
+        services.AddPollyPolicy<AsyncTimeoutPolicy<HttpResponseMessage>, TimeoutPolicyOptions>(PolicyOptionsKeys.TimeoutPolicy)
+                .ConfigurePolicy(
+                    sectionName: PolicyOptionsKeys.TimeoutPolicy,
+                    (policy) => PolicyShapes.CreateTimeoutAsync<TimeoutPolicyOptions, HttpResponseMessage>(policy));
 
-            var config = new ConfigurationBuilder().AddInMemoryCollection(dic).Build();
-            services.AddSingleton<IConfiguration>(config);
+        services.AddPollyPolicy<AsyncFallbackPolicy<HttpResponseMessage>, HttpFallbackPolicyOptions>(HttpPolicyOptionsKeys.HttpFallbackPolicy)
+                .ConfigurePolicy(
+                    sectionName: HttpPolicyOptionsKeys.HttpFallbackPolicy,
+                    (policy) => policy.HttpCreateFallbackAsync());
 
-            services.AddPollyPolicy<AsyncTimeoutPolicy<HttpResponseMessage>, TimeoutPolicyOptions>(PolicyOptionsKeys.TimeoutPolicy)
-                    .ConfigurePolicy(
-                        sectionName: PolicyOptionsKeys.TimeoutPolicy,
-                        (policy) => PolicyShapes.CreateTimeoutAsync<TimeoutPolicyOptions, HttpResponseMessage>(policy));
+        var sp = services.BuildServiceProvider();
 
-            services.AddPollyPolicy<AsyncFallbackPolicy<HttpResponseMessage>, HttpFallbackPolicyOptions>(HttpPolicyOptionsKeys.HttpFallbackPolicy)
-                    .ConfigurePolicy(
-                        sectionName: HttpPolicyOptionsKeys.HttpFallbackPolicy,
-                        (policy) => policy.HttpCreateFallbackAsync());
+        var fallbackPolicy = sp.GetRequiredService<PolicyBucket<AsyncFallbackPolicy<HttpResponseMessage>, HttpFallbackPolicyOptions>>().GetPolicy(HttpPolicyOptionsKeys.HttpFallbackPolicy) as IAsyncPolicy<HttpResponseMessage>;
 
-            var sp = services.BuildServiceProvider();
+        Assert.NotNull(fallbackPolicy);
 
-            var fallbackPolicy = sp.GetRequiredService<PolicyBucket<AsyncFallbackPolicy<HttpResponseMessage>, HttpFallbackPolicyOptions>>().GetPolicy(HttpPolicyOptionsKeys.HttpFallbackPolicy) as IAsyncPolicy<HttpResponseMessage>;
+        var timeoutPolicy = sp.GetRequiredService<PolicyBucket<AsyncTimeoutPolicy<HttpResponseMessage>, TimeoutPolicyOptions>>().GetPolicy(PolicyOptionsKeys.TimeoutPolicy) as IAsyncPolicy<HttpResponseMessage>;
+        Assert.NotNull(timeoutPolicy);
 
-            Assert.NotNull(fallbackPolicy);
+        var policy = fallbackPolicy.WrapAsync(timeoutPolicy);
 
-            var timeoutPolicy = sp.GetRequiredService<PolicyBucket<AsyncTimeoutPolicy<HttpResponseMessage>, TimeoutPolicyOptions>>().GetPolicy(PolicyOptionsKeys.TimeoutPolicy) as IAsyncPolicy<HttpResponseMessage>;
-            Assert.NotNull(timeoutPolicy);
+        var result = await policy.ExecuteAsync(async () =>
+        {
+            await Task.Delay(TimeSpan.FromSeconds(2));
+            return await Task.FromResult(new HttpResponseMessage());
+        });
 
-            var policy = fallbackPolicy.WrapAsync(timeoutPolicy);
-
-            var result = await policy.ExecuteAsync(async () =>
-            {
-                await Task.Delay(TimeSpan.FromSeconds(2));
-                return await Task.FromResult(new HttpResponseMessage());
-            });
-
-            Assert.Equal(HttpStatusCode.BadRequest, result.StatusCode);
-        }
+        Assert.Equal(HttpStatusCode.BadRequest, result.StatusCode);
     }
 }

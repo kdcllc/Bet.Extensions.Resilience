@@ -11,101 +11,100 @@ using Polly.Retry;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Bet.Extensions.Resilience.UnitTest.Policies
+namespace Bet.Extensions.Resilience.UnitTest.Policies;
+
+public class RetryPolicyTests
 {
-    public class RetryPolicyTests
+    private readonly ITestOutputHelper _output;
+
+    public RetryPolicyTests(ITestOutputHelper output)
     {
-        private readonly ITestOutputHelper _output;
+        _output = output ?? throw new ArgumentNullException(nameof(output));
+    }
 
-        public RetryPolicyTests(ITestOutputHelper output)
+    [Fact]
+    public async Task RetryPolicy_Async_Should_Throw_Exception()
+    {
+        var policyOptionsName = PolicyOptionsKeys.RetryPolicy;
+
+        var services = new ServiceCollection();
+
+        // logger is required for policies.
+        services.AddLogging(builder =>
         {
-            _output = output ?? throw new ArgumentNullException(nameof(output));
-        }
+            builder.AddXunit(_output);
+        });
 
-        [Fact]
-        public async Task RetryPolicy_Async_Should_Throw_Exception()
+        var dic = new Dictionary<string, string>
         {
-            var policyOptionsName = PolicyOptionsKeys.RetryPolicy;
+            { $"{policyOptionsName}:BackOffPower", "2" },
+            { $"{policyOptionsName}:Count", "3" },
+        };
 
-            var services = new ServiceCollection();
+        var config = new ConfigurationBuilder().AddInMemoryCollection(dic).Build();
+        services.AddSingleton<IConfiguration>(config);
 
-            // logger is required for policies.
-            services.AddLogging(builder =>
+        services.AddPollyPolicy<AsyncRetryPolicy, RetryPolicyOptions>(policyOptionsName)
+           .ConfigurePolicy(
+           policyOptionsName,
+           policy => policy.CreateRetryAsync());
+
+        var sp = services.BuildServiceProvider();
+
+        var policy = (IAsyncPolicy)sp.GetRequiredService<PolicyBucket<AsyncRetryPolicy, RetryPolicyOptions>>().GetPolicy(policyOptionsName);
+        Assert.NotNull(policy);
+
+        async Task TimedOutTask()
+        {
+            await policy.ExecuteAsync(() =>
             {
-                builder.AddXunit(_output);
+                throw new Exception("Failed");
             });
-
-            var dic = new Dictionary<string, string>
-            {
-                { $"{policyOptionsName}:BackOffPower", "2" },
-                { $"{policyOptionsName}:Count", "3" },
-            };
-
-            var config = new ConfigurationBuilder().AddInMemoryCollection(dic).Build();
-            services.AddSingleton<IConfiguration>(config);
-
-            services.AddPollyPolicy<AsyncRetryPolicy, RetryPolicyOptions>(policyOptionsName)
-               .ConfigurePolicy(
-               policyOptionsName,
-               policy => policy.CreateRetryAsync());
-
-            var sp = services.BuildServiceProvider();
-
-            var policy = (IAsyncPolicy)sp.GetRequiredService<PolicyBucket<AsyncRetryPolicy, RetryPolicyOptions>>().GetPolicy(policyOptionsName);
-            Assert.NotNull(policy);
-
-            async Task TimedOutTask()
-            {
-                await policy.ExecuteAsync(() =>
-                {
-                    throw new Exception("Failed");
-                });
-            }
-
-            await Assert.ThrowsAsync<Exception>(async () => await TimedOutTask());
         }
 
-        [Fact]
-        public async Task RetryPolicy_Async_With_Result_Should_Throw_Exception()
+        await Assert.ThrowsAsync<Exception>(async () => await TimedOutTask());
+    }
+
+    [Fact]
+    public async Task RetryPolicy_Async_With_Result_Should_Throw_Exception()
+    {
+        var policyOptionsName = PolicyOptionsKeys.RetryPolicy;
+
+        var services = new ServiceCollection();
+
+        // logger is required for policies.
+        services.AddLogging(builder =>
         {
-            var policyOptionsName = PolicyOptionsKeys.RetryPolicy;
+            builder.AddXunit(_output);
+        });
 
-            var services = new ServiceCollection();
+        var dic = new Dictionary<string, string>
+        {
+            { $"{policyOptionsName}:BackOffPower", "2" },
+            { $"{policyOptionsName}:Count", "3" },
+        };
 
-            // logger is required for policies.
-            services.AddLogging(builder =>
+        var config = new ConfigurationBuilder().AddInMemoryCollection(dic).Build();
+        services.AddSingleton<IConfiguration>(config);
+
+        services.AddPollyPolicy<AsyncRetryPolicy, RetryPolicyOptions>(policyOptionsName)
+           .ConfigurePolicy(
+           policyOptionsName,
+           policy => PolicyShapes.CreateRetryAsync<RetryPolicyOptions, bool>(policy, (outcome) => outcome.GetExceptionMessages()));
+
+        var sp = services.BuildServiceProvider();
+
+        var policy = (IAsyncPolicy<bool>)sp.GetRequiredService<PolicyBucket<AsyncRetryPolicy, RetryPolicyOptions>>().GetPolicy(policyOptionsName);
+        Assert.NotNull(policy);
+
+        async Task<bool> TimedOutTask()
+        {
+            return await policy.ExecuteAsync(() =>
             {
-                builder.AddXunit(_output);
+                throw new Exception("Failed");
             });
-
-            var dic = new Dictionary<string, string>
-            {
-                { $"{policyOptionsName}:BackOffPower", "2" },
-                { $"{policyOptionsName}:Count", "3" },
-            };
-
-            var config = new ConfigurationBuilder().AddInMemoryCollection(dic).Build();
-            services.AddSingleton<IConfiguration>(config);
-
-            services.AddPollyPolicy<AsyncRetryPolicy, RetryPolicyOptions>(policyOptionsName)
-               .ConfigurePolicy(
-               policyOptionsName,
-               policy => PolicyShapes.CreateRetryAsync<RetryPolicyOptions, bool>(policy, (outcome) => outcome.GetExceptionMessages()));
-
-            var sp = services.BuildServiceProvider();
-
-            var policy = (IAsyncPolicy<bool>)sp.GetRequiredService<PolicyBucket<AsyncRetryPolicy, RetryPolicyOptions>>().GetPolicy(policyOptionsName);
-            Assert.NotNull(policy);
-
-            async Task<bool> TimedOutTask()
-            {
-                return await policy.ExecuteAsync(() =>
-                {
-                    throw new Exception("Failed");
-                });
-            }
-
-            await Assert.ThrowsAsync<Exception>(async () => await TimedOutTask());
         }
+
+        await Assert.ThrowsAsync<Exception>(async () => await TimedOutTask());
     }
 }

@@ -15,147 +15,146 @@ using Polly.Timeout;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Bet.Extensions.Resilience.UnitTest.Policies
+namespace Bet.Extensions.Resilience.UnitTest.Policies;
+
+public class HttpTimeoutPolicyTests
 {
-    public class HttpTimeoutPolicyTests
+    private readonly ITestOutputHelper _output;
+
+    public HttpTimeoutPolicyTests(ITestOutputHelper output)
     {
-        private readonly ITestOutputHelper _output;
+        _output = output ?? throw new ArgumentNullException(nameof(output));
+    }
 
-        public HttpTimeoutPolicyTests(ITestOutputHelper output)
+    [Fact]
+    public async Task HttpTimeoutPolicy_With_Result_Async_Should_Throw_TimeoutRejectedException()
+    {
+        var policyOptionsName = PolicyOptionsKeys.TimeoutPolicy;
+
+        var services = new ServiceCollection();
+
+        // logger is required for policies.
+        services.AddLogging(builder =>
         {
-            _output = output ?? throw new ArgumentNullException(nameof(output));
+            builder.AddXunit(_output);
+        });
+
+        var dic = new Dictionary<string, string>
+        {
+            { $"{policyOptionsName}:Timeout", "00:00:01" },
+        };
+
+        var config = new ConfigurationBuilder().AddInMemoryCollection(dic).Build();
+        services.AddSingleton<IConfiguration>(config);
+
+        services.AddPollyPolicy<AsyncTimeoutPolicy<HttpResponseMessage>, TimeoutPolicyOptions>(PolicyOptionsKeys.TimeoutPolicy)
+               .ConfigurePolicy(
+               policyOptionsName,
+               policy => PolicyShapes.CreateTimeoutAsync<TimeoutPolicyOptions, HttpResponseMessage>(policy));
+
+        var sp = services.BuildServiceProvider();
+
+        var policy = (IAsyncPolicy<HttpResponseMessage>)sp.GetRequiredService<PolicyBucket<AsyncTimeoutPolicy<HttpResponseMessage>, TimeoutPolicyOptions>>()
+                                                          .GetPolicy(policyOptionsName);
+        Assert.NotNull(policy);
+
+        async Task<HttpResponseMessage> TimedOutTask()
+        {
+            return await policy.ExecuteAsync(async () =>
+            {
+                await Task.Delay(TimeSpan.FromSeconds(2));
+                return await Task.FromResult(new HttpResponseMessage());
+            });
         }
 
-        [Fact]
-        public async Task HttpTimeoutPolicy_With_Result_Async_Should_Throw_TimeoutRejectedException()
+        await Assert.ThrowsAsync<TimeoutRejectedException>(async () => await TimedOutTask());
+    }
+
+    [Fact]
+    public async Task HttpTimeoutPolicy_With_Result_Async_Should_Succeeded()
+    {
+        var policyOptionsName = PolicyOptionsKeys.TimeoutPolicy;
+
+        var services = new ServiceCollection();
+
+        // logger is required for policies.
+        services.AddLogging(builder =>
         {
-            var policyOptionsName = PolicyOptionsKeys.TimeoutPolicy;
+            builder.AddXunit(_output);
+        });
 
-            var services = new ServiceCollection();
-
-            // logger is required for policies.
-            services.AddLogging(builder =>
-            {
-                builder.AddXunit(_output);
-            });
-
-            var dic = new Dictionary<string, string>
-            {
-                { $"{policyOptionsName}:Timeout", "00:00:01" },
-            };
-
-            var config = new ConfigurationBuilder().AddInMemoryCollection(dic).Build();
-            services.AddSingleton<IConfiguration>(config);
-
-            services.AddPollyPolicy<AsyncTimeoutPolicy<HttpResponseMessage>, TimeoutPolicyOptions>(PolicyOptionsKeys.TimeoutPolicy)
-                   .ConfigurePolicy(
-                   policyOptionsName,
-                   policy => PolicyShapes.CreateTimeoutAsync<TimeoutPolicyOptions, HttpResponseMessage>(policy));
-
-            var sp = services.BuildServiceProvider();
-
-            var policy = (IAsyncPolicy<HttpResponseMessage>)sp.GetRequiredService<PolicyBucket<AsyncTimeoutPolicy<HttpResponseMessage>, TimeoutPolicyOptions>>()
-                                                              .GetPolicy(policyOptionsName);
-            Assert.NotNull(policy);
-
-            async Task<HttpResponseMessage> TimedOutTask()
-            {
-                return await policy.ExecuteAsync(async () =>
-                {
-                    await Task.Delay(TimeSpan.FromSeconds(2));
-                    return await Task.FromResult(new HttpResponseMessage());
-                });
-            }
-
-            await Assert.ThrowsAsync<TimeoutRejectedException>(async () => await TimedOutTask());
-        }
-
-        [Fact]
-        public async Task HttpTimeoutPolicy_With_Result_Async_Should_Succeeded()
+        var dic = new Dictionary<string, string>
         {
-            var policyOptionsName = PolicyOptionsKeys.TimeoutPolicy;
+            { $"{policyOptionsName}:Timeout", "00:00:02" },
+        };
 
-            var services = new ServiceCollection();
+        var config = new ConfigurationBuilder().AddInMemoryCollection(dic).Build();
+        services.AddSingleton<IConfiguration>(config);
 
-            // logger is required for policies.
-            services.AddLogging(builder =>
-            {
-                builder.AddXunit(_output);
-            });
+        services.AddPollyPolicy<AsyncTimeoutPolicy<HttpResponseMessage>, TimeoutPolicyOptions>(PolicyOptionsKeys.TimeoutPolicy)
+               .ConfigurePolicy(
+               policyOptionsName,
+               policy => PolicyShapes.CreateTimeoutAsync<TimeoutPolicyOptions, HttpResponseMessage>(policy));
 
-            var dic = new Dictionary<string, string>
-            {
-                { $"{policyOptionsName}:Timeout", "00:00:02" },
-            };
+        var sp = services.BuildServiceProvider();
 
-            var config = new ConfigurationBuilder().AddInMemoryCollection(dic).Build();
-            services.AddSingleton<IConfiguration>(config);
+        var policy = (IAsyncPolicy<HttpResponseMessage>)sp.GetRequiredService<PolicyBucket<AsyncTimeoutPolicy<HttpResponseMessage>, TimeoutPolicyOptions>>()
+                                                          .GetPolicy(policyOptionsName);
+        Assert.NotNull(policy);
 
-            services.AddPollyPolicy<AsyncTimeoutPolicy<HttpResponseMessage>, TimeoutPolicyOptions>(PolicyOptionsKeys.TimeoutPolicy)
-                   .ConfigurePolicy(
-                   policyOptionsName,
-                   policy => PolicyShapes.CreateTimeoutAsync<TimeoutPolicyOptions, HttpResponseMessage>(policy));
-
-            var sp = services.BuildServiceProvider();
-
-            var policy = (IAsyncPolicy<HttpResponseMessage>)sp.GetRequiredService<PolicyBucket<AsyncTimeoutPolicy<HttpResponseMessage>, TimeoutPolicyOptions>>()
-                                                              .GetPolicy(policyOptionsName);
-            Assert.NotNull(policy);
-
-            var result = await policy.ExecuteAsync(async () =>
-            {
-                await Task.Delay(TimeSpan.FromSeconds(1));
-                return await Task.FromResult(new HttpResponseMessage(HttpStatusCode.BadRequest));
-            });
-
-            Assert.Equal(HttpStatusCode.BadRequest, result.StatusCode);
-        }
-
-        [Fact]
-        public async Task HttpTimeoutPolicy_Registry_With_Result_Async_Should_Succeeded()
+        var result = await policy.ExecuteAsync(async () =>
         {
-            var policyOptionsName = PolicyOptionsKeys.TimeoutPolicy;
+            await Task.Delay(TimeSpan.FromSeconds(1));
+            return await Task.FromResult(new HttpResponseMessage(HttpStatusCode.BadRequest));
+        });
 
-            var services = new ServiceCollection();
+        Assert.Equal(HttpStatusCode.BadRequest, result.StatusCode);
+    }
 
-            // logger is required for policies.
-            services.AddLogging(builder =>
-            {
-                builder.AddXunit(_output);
-            });
+    [Fact]
+    public async Task HttpTimeoutPolicy_Registry_With_Result_Async_Should_Succeeded()
+    {
+        var policyOptionsName = PolicyOptionsKeys.TimeoutPolicy;
 
-            var dic = new Dictionary<string, string>
-            {
-                { $"{policyOptionsName}:Timeout", "00:00:02" },
-            };
+        var services = new ServiceCollection();
 
-            var config = new ConfigurationBuilder().AddInMemoryCollection(dic).Build();
-            services.AddSingleton<IConfiguration>(config);
+        // logger is required for policies.
+        services.AddLogging(builder =>
+        {
+            builder.AddXunit(_output);
+        });
 
-            services.AddPollyPolicy<AsyncTimeoutPolicy<HttpResponseMessage>, TimeoutPolicyOptions>(PolicyOptionsKeys.TimeoutPolicy)
-                   .ConfigurePolicy(
-                   policyOptionsName,
-                   policy => PolicyShapes.CreateTimeoutAsync<TimeoutPolicyOptions, HttpResponseMessage>(policy));
+        var dic = new Dictionary<string, string>
+        {
+            { $"{policyOptionsName}:Timeout", "00:00:02" },
+        };
 
-            var sp = services.BuildServiceProvider();
+        var config = new ConfigurationBuilder().AddInMemoryCollection(dic).Build();
+        services.AddSingleton<IConfiguration>(config);
 
-            // register policy with global registry
-            // simulates registrations for the policies.
-            var registration = sp.GetRequiredService<PolicyBucketConfigurator>();
-            registration.Register();
+        services.AddPollyPolicy<AsyncTimeoutPolicy<HttpResponseMessage>, TimeoutPolicyOptions>(PolicyOptionsKeys.TimeoutPolicy)
+               .ConfigurePolicy(
+               policyOptionsName,
+               policy => PolicyShapes.CreateTimeoutAsync<TimeoutPolicyOptions, HttpResponseMessage>(policy));
 
-            var registry = sp.GetRequiredService<IReadOnlyPolicyRegistry<string>>();
+        var sp = services.BuildServiceProvider();
 
-            var policy = registry.Get<IAsyncPolicy<HttpResponseMessage>>(policyOptionsName);
-            Assert.NotNull(policy);
+        // register policy with global registry
+        // simulates registrations for the policies.
+        var registration = sp.GetRequiredService<PolicyBucketConfigurator>();
+        registration.Register();
 
-            var result = await policy.ExecuteAsync(async () =>
-            {
-                await Task.Delay(TimeSpan.FromSeconds(1));
-                return await Task.FromResult(new HttpResponseMessage(HttpStatusCode.BadRequest));
-            });
+        var registry = sp.GetRequiredService<IReadOnlyPolicyRegistry<string>>();
 
-            Assert.Equal(HttpStatusCode.BadRequest, result.StatusCode);
-        }
+        var policy = registry.Get<IAsyncPolicy<HttpResponseMessage>>(policyOptionsName);
+        Assert.NotNull(policy);
+
+        var result = await policy.ExecuteAsync(async () =>
+        {
+            await Task.Delay(TimeSpan.FromSeconds(1));
+            return await Task.FromResult(new HttpResponseMessage(HttpStatusCode.BadRequest));
+        });
+
+        Assert.Equal(HttpStatusCode.BadRequest, result.StatusCode);
     }
 }

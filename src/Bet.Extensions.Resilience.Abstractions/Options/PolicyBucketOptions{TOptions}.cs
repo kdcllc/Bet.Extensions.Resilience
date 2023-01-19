@@ -2,14 +2,13 @@
 
 using Polly;
 
-namespace Bet.Extensions.Resilience.Abstractions.Options
+namespace Bet.Extensions.Resilience.Abstractions.Options;
+
+public class PolicyBucketOptions<TOptions> where TOptions : PolicyOptions
 {
-    public class PolicyBucketOptions<TOptions> where TOptions : PolicyOptions
-    {
-        public string Name { get; set; } = string.Empty;
+    public string Name { get; set; } = string.Empty;
 
-        public IServiceProvider? ServiceProvider { get; set; }
+    public IServiceProvider? ServiceProvider { get; set; }
 
-        public Func<TOptions, ILogger, IsPolicy> ConfigurePolicy { get; set; } = (options, logger) => Policy.NoOpAsync();
-    }
+    public Func<TOptions, ILogger, IsPolicy> ConfigurePolicy { get; set; } = (options, logger) => Policy.NoOpAsync();
 }

@@ -1,9 +1,8 @@
 ﻿using Polly;
 
-namespace Bet.Extensions.Resilience.Abstractions
+namespace Bet.Extensions.Resilience.Abstractions;
+
+public interface IPolicyBucketLabel
 {
-    public interface IPolicyBucketLabel
-    {
-        IsPolicy GetPolicy(string policyName);
-    }
+    IsPolicy GetPolicy(string policyName);
 }

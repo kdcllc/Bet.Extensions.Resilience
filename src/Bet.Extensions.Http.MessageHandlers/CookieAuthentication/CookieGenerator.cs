@@ -2,61 +2,60 @@
 
 using Bet.Extensions.Resilience.Http.Abstractions;
 
-namespace Bet.Extensions.Http.MessageHandlers.CookieAuthentication
+namespace Bet.Extensions.Http.MessageHandlers.CookieAuthentication;
+
+internal class CookieGenerator
 {
-    internal class CookieGenerator
+    private readonly CookieGeneratorOptions _options;
+    private readonly Func<HttpClient> _createHttpClient;
+
+    public CookieGenerator(CookieGeneratorOptions options, Func<HttpClient> createHttpClient)
     {
-        private readonly CookieGeneratorOptions _options;
-        private readonly Func<HttpClient> _createHttpClient;
+        _options = options ?? throw new ArgumentNullException(nameof(options));
+        _createHttpClient = createHttpClient ?? throw new ArgumentNullException(nameof(createHttpClient));
+    }
 
-        public CookieGenerator(CookieGeneratorOptions options, Func<HttpClient> createHttpClient)
-        {
-            _options = options ?? throw new ArgumentNullException(nameof(options));
-            _createHttpClient = createHttpClient ?? throw new ArgumentNullException(nameof(createHttpClient));
-        }
+    public CookieGenerator(CookieGeneratorOptions options) : this(options, () => new HttpClient())
+    {
+    }
 
-        public CookieGenerator(CookieGeneratorOptions options) : this(options, () => new HttpClient())
+    public async Task<IEnumerable<string>?> GetCookies(CancellationToken cancellationToken)
+    {
+        using (var client = _createHttpClient())
         {
-        }
+            client.DefaultRequestHeaders.Add("accept", _options.HttpOptions?.ContentType ?? "application/json");
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(_options.HttpOptions?.ContentType ?? "application/json"));
 
-        public async Task<IEnumerable<string>?> GetCookies(CancellationToken cancellationToken)
-        {
-            using (var client = _createHttpClient())
+            var request = _options.AuthenticationRequest(_options.HttpOptions);
+
+            var response = await client.SendAsync(request, cancellationToken);
+
+            if (cancellationToken.IsCancellationRequested)
             {
-                client.DefaultRequestHeaders.Add("accept", _options.HttpOptions?.ContentType ?? "application/json");
-                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(_options.HttpOptions?.ContentType ?? "application/json"));
+                return null;
+            }
 
-                var request = _options.AuthenticationRequest(_options.HttpOptions);
+            if (response.IsSuccessStatusCode
+                && response.Headers.TryGetValues("Set-Cookie", out var responseHeaderCookies))
+            {
+                return responseHeaderCookies;
+            }
+            else
+            {
+                var httpCode = response.StatusCode;
+                var message = await response.Content.ReadAsStringAsync();
 
-                var response = await client.SendAsync(request, cancellationToken);
-
-                if (cancellationToken.IsCancellationRequested)
+                if (_options?.OnError != null)
                 {
-                    return null;
-                }
-
-                if (response.IsSuccessStatusCode
-                    && response.Headers.TryGetValues("Set-Cookie", out var responseHeaderCookies))
-                {
-                    return responseHeaderCookies;
+                    _options.OnError(httpCode, message);
                 }
                 else
                 {
-                    var httpCode = response.StatusCode;
-                    var message = await response.Content.ReadAsStringAsync();
-
-                    if (_options?.OnError != null)
-                    {
-                        _options.OnError(httpCode, message);
-                    }
-                    else
-                    {
-                        throw new HttpException(httpCode, message);
-                    }
+                    throw new HttpException(httpCode, message);
                 }
-
-                return null;
             }
+
+            return null;
         }
     }
 }

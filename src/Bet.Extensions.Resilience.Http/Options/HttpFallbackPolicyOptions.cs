@@ -1,9 +1,8 @@
 ﻿using Bet.Extensions.Resilience.Abstractions.Options;
 
-namespace Bet.Extensions.Resilience.Http.Options
+namespace Bet.Extensions.Resilience.Http.Options;
+
+public class HttpFallbackPolicyOptions : FallbackPolicyOptions
 {
-    public class HttpFallbackPolicyOptions : FallbackPolicyOptions
-    {
-        public int StatusCode { get; set; } = 500;
-    }
+    public int StatusCode { get; set; } = 500;
 }

@@ -1,7 +1,6 @@
-﻿namespace Bet.Extensions.Http.MessageHandlers.Serializers
+﻿namespace Bet.Extensions.Http.MessageHandlers.Serializers;
+
+public interface IJsonSerializer
 {
-    public interface IJsonSerializer
-    {
-        T? Deserialize<T>(string value);
-    }
+    T? Deserialize<T>(string value);
 }

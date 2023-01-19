@@ -12,18 +12,17 @@ using Microsoft.Extensions.Logging;
 
 using Polly;
 
-namespace Bet.Extensions.Resilience.Data.SqlClient
+namespace Bet.Extensions.Resilience.Data.SqlClient;
+
+public class SqlFailoverDbConnection : FailoverDbConnection
 {
-    public class SqlFailoverDbConnection : FailoverDbConnection
+    public SqlFailoverDbConnection(
+        string connectionString,
+        Guid correlationId,
+        ISyncPolicy syncPolicy,
+        IAsyncPolicy asyncPolicy,
+        ILogger logger) : base(correlationId, syncPolicy, asyncPolicy, logger)
     {
-        public SqlFailoverDbConnection(
-            string connectionString,
-            Guid correlationId,
-            ISyncPolicy syncPolicy,
-            IAsyncPolicy asyncPolicy,
-            ILogger logger) : base(correlationId, syncPolicy, asyncPolicy, logger)
-        {
-            Connection = new SqlConnection(connectionString);
-        }
+        Connection = new SqlConnection(connectionString);
     }
 }
