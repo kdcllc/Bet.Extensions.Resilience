@@ -1,8 +1,7 @@
-﻿namespace Bet.AspNetCore.Resilience.UnitTest.ResilienceTypedClient.Clients
+﻿namespace Bet.AspNetCore.Resilience.UnitTest.ResilienceTypedClient.Clients;
+
+// Simple typed client for use in tests
+public interface ICustomTypedClient
 {
-    // Simple typed client for use in tests
-    public interface ICustomTypedClient
-    {
-        HttpClient HttpClient { get; }
-    }
+    HttpClient HttpClient { get; }
 }

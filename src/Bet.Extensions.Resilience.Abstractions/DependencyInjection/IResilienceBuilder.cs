@@ -2,14 +2,13 @@
 
 using Polly;
 
-namespace Microsoft.Extensions.DependencyInjection
+namespace Microsoft.Extensions.DependencyInjection;
+
+public interface IResilienceBuilder<TPolicy, TOptions> where TPolicy : IsPolicy where TOptions : PolicyOptions
 {
-    public interface IResilienceBuilder<TPolicy, TOptions> where TPolicy : IsPolicy where TOptions : PolicyOptions
-    {
-        IServiceCollection Services { get; }
+    IServiceCollection Services { get; }
 
-        string PolicyName { get; }
+    string PolicyName { get; }
 
-        List<string> PolicyNames { get; }
-    }
+    List<string> PolicyNames { get; }
 }

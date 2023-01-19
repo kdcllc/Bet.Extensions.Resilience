@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>netstandard2.0;netstandard2.1;net5.0;net6.0</TargetFrameworks>
+		<TargetFrameworks>netstandard2.0;netstandard2.1;net7.0</TargetFrameworks>
 		<Nullable>enable</Nullable>
 	</PropertyGroup>
 
@@ -12,7 +12,7 @@
 
 	<ItemGroup>
 		<!--https://devblogs.microsoft.com/dotnet/introducing-the-new-microsoftdatasqlclient/-->
-		<PackageReference Include="Microsoft.Data.SqlClient" Condition="'$(TargetFramework)' == 'net5.0' Or '$(TargetFramework)' == 'net6.0' Or '$(TargetFramework)' == 'netstandard2.1'" />
+		<PackageReference Include="Microsoft.Data.SqlClient" Condition="'$(TargetFramework)' == 'net7.0'  Or '$(TargetFramework)' == 'netstandard2.1'" />
 		<PackageReference Include="System.Data.SqlClient" Condition="'$(TargetFramework)' == 'netstandard2.0'" />
 	</ItemGroup>
 

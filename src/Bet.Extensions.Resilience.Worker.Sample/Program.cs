@@ -102,12 +102,12 @@ namespace Bet.Extensions.Resilience.Worker.Sample
                                     },
                                     policyName: "TimeoutPolicyAsync");
 
-                        services.AddPollyPolicy<AsyncTimeoutPolicy<bool>, TimeoutPolicyOptions>("TimeoutPolicyPessimistic")
+                        services.AddPollyPolicy<AsyncTimeoutPolicy<string>, TimeoutPolicyOptions>("TimeoutPolicyPessimistic")
                                 .ConfigurePolicy(
                                     sectionName: "DefaultPolicy:TimeoutPolicy",
                                     (policy) =>
                                     {
-                                        PolicyShapes.CreateTimeoutAsync<TimeoutPolicyOptions, bool>(policy);
+                                        PolicyShapes.CreateTimeoutAsync<TimeoutPolicyOptions, string>(policy);
                                     });
                     });
         }

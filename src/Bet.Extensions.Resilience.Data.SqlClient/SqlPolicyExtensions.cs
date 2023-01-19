@@ -7,62 +7,61 @@ using Microsoft.Data.SqlClient;
 #endif
 using Polly;
 
-namespace Bet.Extensions.Resilience.Data.SqlClient
+namespace Bet.Extensions.Resilience.Data.SqlClient;
+
+public static class SqlPolicyExtensions
 {
-    public static class SqlPolicyExtensions
+    private static readonly Func<SqlException, bool> TransientSqlErrorsPredicate = (ex) =>
     {
-        private static readonly Func<SqlException, bool> TransientSqlErrorsPredicate = (ex) =>
+        var codes = new int[]
         {
-            var codes = new int[]
-            {
-                (int)SqlHandledExceptions.DatabaseNotCurrentlyAvailable,
-                (int)SqlHandledExceptions.ErrorProcessingRequest,
-                (int)SqlHandledExceptions.ServiceCurrentlyBusy,
-                (int)SqlHandledExceptions.NotEnoughResources
-            };
-
-            return codes.Contains(ex.Number);
+            (int)SqlHandledExceptions.DatabaseNotCurrentlyAvailable,
+            (int)SqlHandledExceptions.ErrorProcessingRequest,
+            (int)SqlHandledExceptions.ServiceCurrentlyBusy,
+            (int)SqlHandledExceptions.NotEnoughResources
         };
 
-        private static readonly Func<SqlException, bool> TransactionSqlErrorsPredicate = (ex) =>
-        {
-            var codes = new int[]
-            {
-                (int)SqlHandledExceptions.SessionTerminatedLongTransaction,
-                (int)SqlHandledExceptions.SessionTerminatedToManyLocks
-            };
+        return codes.Contains(ex.Number);
+    };
 
-            return codes.Contains(ex.Number);
+    private static readonly Func<SqlException, bool> TransactionSqlErrorsPredicate = (ex) =>
+    {
+        var codes = new int[]
+        {
+            (int)SqlHandledExceptions.SessionTerminatedLongTransaction,
+            (int)SqlHandledExceptions.SessionTerminatedToManyLocks
         };
 
-        public static PolicyBuilder<TResult> HandleTransientSqlErrors<TResult>()
-        {
-            return Policy<TResult>.Handle<SqlException>(ex => TransientSqlErrorsPredicate(ex));
-        }
+        return codes.Contains(ex.Number);
+    };
 
-        public static PolicyBuilder<TResult> HandleTransientSqlErrors<TResult>(SqlHandledExceptions exception)
-        {
-            return Policy<TResult>.Handle<SqlException>(ex => ex.Number == (int)exception);
-        }
+    public static PolicyBuilder<TResult> HandleTransientSqlErrors<TResult>()
+    {
+        return Policy<TResult>.Handle<SqlException>(ex => TransientSqlErrorsPredicate(ex));
+    }
 
-        public static PolicyBuilder HandleTransientSqlErrors()
-        {
-            return Policy.Handle<SqlException>(ex => TransientSqlErrorsPredicate(ex));
-        }
+    public static PolicyBuilder<TResult> HandleTransientSqlErrors<TResult>(SqlHandledExceptions exception)
+    {
+        return Policy<TResult>.Handle<SqlException>(ex => ex.Number == (int)exception);
+    }
 
-        public static PolicyBuilder HandleTransientSqlErrors(SqlHandledExceptions exception)
-        {
-            return Policy.Handle<SqlException>(ex => ex.Number == (int)exception);
-        }
+    public static PolicyBuilder HandleTransientSqlErrors()
+    {
+        return Policy.Handle<SqlException>(ex => TransientSqlErrorsPredicate(ex));
+    }
 
-        public static PolicyBuilder<TResult> HandleTransactionSqlErrors<TResult>()
-        {
-            return Policy<TResult>.Handle<SqlException>(ex => TransactionSqlErrorsPredicate(ex));
-        }
+    public static PolicyBuilder HandleTransientSqlErrors(SqlHandledExceptions exception)
+    {
+        return Policy.Handle<SqlException>(ex => ex.Number == (int)exception);
+    }
 
-        public static PolicyBuilder HandleTransactionSqlErrors()
-        {
-            return Policy.Handle<SqlException>(ex => TransactionSqlErrorsPredicate(ex));
-        }
+    public static PolicyBuilder<TResult> HandleTransactionSqlErrors<TResult>()
+    {
+        return Policy<TResult>.Handle<SqlException>(ex => TransactionSqlErrorsPredicate(ex));
+    }
+
+    public static PolicyBuilder HandleTransactionSqlErrors()
+    {
+        return Policy.Handle<SqlException>(ex => TransactionSqlErrorsPredicate(ex));
     }
 }

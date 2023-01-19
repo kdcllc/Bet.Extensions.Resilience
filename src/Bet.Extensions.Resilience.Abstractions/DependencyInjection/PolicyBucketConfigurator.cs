@@ -1,30 +1,29 @@
 ﻿using Bet.Extensions.Resilience.Abstractions.Internal;
 
-namespace Bet.Extensions.Resilience.Abstractions.DependencyInjection
+namespace Bet.Extensions.Resilience.Abstractions.DependencyInjection;
+
+public class PolicyBucketConfigurator
 {
-    public class PolicyBucketConfigurator
+    private readonly IServiceProvider _provider;
+
+    public PolicyBucketConfigurator(IServiceProvider provider)
     {
-        private readonly IServiceProvider _provider;
+        _provider = provider ?? throw new ArgumentNullException(nameof(provider));
+    }
 
-        public PolicyBucketConfigurator(IServiceProvider provider)
+    public void Register()
+    {
+        var policyRegistrant = (PolicyRegistrant)_provider.GetService(typeof(PolicyRegistrant));
+
+        foreach (var reg in policyRegistrant.RegisteredPolicies)
         {
-            _provider = provider ?? throw new ArgumentNullException(nameof(provider));
-        }
+            var policy = (IPolicyBucketLabel)_provider.GetService(reg.Value);
 
-        public void Register()
-        {
-            var policyRegistrant = (PolicyRegistrant)_provider.GetService(typeof(PolicyRegistrant));
+            var policyOptionsRegistrant = (PolicyOptionsRegistrant)_provider.GetService(typeof(PolicyOptionsRegistrant));
 
-            foreach (var reg in policyRegistrant.RegisteredPolicies)
+            foreach (var item in policyOptionsRegistrant.RegisteredPolicyOptions)
             {
-                var policy = (IPolicyBucketLabel)_provider.GetService(reg.Value);
-
-                var policyOptionsRegistrant = (PolicyOptionsRegistrant)_provider.GetService(typeof(PolicyOptionsRegistrant));
-
-                foreach (var item in policyOptionsRegistrant.RegisteredPolicyOptions)
-                {
-                    policy.GetPolicy(item.Key);
-                }
+                policy.GetPolicy(item.Key);
             }
         }
     }

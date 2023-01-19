@@ -11,82 +11,81 @@ using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Bet.AspNetCore.Resilience.UnitTest.ResilienceTypedClient
+namespace Bet.AspNetCore.Resilience.UnitTest.ResilienceTypedClient;
+
+public class ResilienceHttpClientTests
 {
-    public class ResilienceHttpClientTests
+    public ResilienceHttpClientTests(ITestOutputHelper output)
     {
-        public ResilienceHttpClientTests(ITestOutputHelper output)
+        Output = output;
+    }
+
+    public ITestOutputHelper Output { get; }
+
+    [Fact]
+    public async Task Test_AddClientTyped_WithOptions_And_Default_Policies()
+    {
+        // Assign
+        var services = new ServiceCollection();
+
+        var id = Guid.NewGuid().ToString();
+
+        var dic1 = new Dictionary<string, string>()
         {
-            Output = output;
-        }
+            { "TestHttpClient:Timeout", "00:05:00" },
+            { "TestHttpClient:ContentType", "application/json" },
+            { "TestHttpClient:Id", id }
+        };
 
-        public ITestOutputHelper Output { get; }
+        var configurationBuilder = new ConfigurationBuilder().AddInMemoryCollection(dic1);
 
-        [Fact]
-        public async Task Test_AddClientTyped_WithOptions_And_Default_Policies()
+        services.AddLogging(builder =>
         {
-            // Assign
-            var services = new ServiceCollection();
+            builder.AddXunit(Output);
+        });
 
-            var id = Guid.NewGuid().ToString();
+        services.AddSingleton<IConfiguration>(configurationBuilder.Build());
 
-            var dic1 = new Dictionary<string, string>()
-            {
-                { "TestHttpClient:Timeout", "00:05:00" },
-                { "TestHttpClient:ContentType", "application/json" },
-                { "TestHttpClient:Id", id }
-            };
+        using var server = new ResilienceTypedClientTestServerBuilder(Output).GetSimpleServer();
+        var handler = server.CreateHandler();
 
-            var configurationBuilder = new ConfigurationBuilder().AddInMemoryCollection(dic1);
+        var clientBuilder = services
+            .AddResilienceHttpClient<ICustomTypedClientWithOptions, CustomTypedClientWithOptions>()
+            .ConfigureHttpClientOptions<CustomHttpClientOptions>(
+                optionsSectionName: "TestHttpClient",
+                configureAction: (op) => op.BaseAddress = server.BaseAddress)
+            .ConfigurePrimaryHandler((sp) => handler)
+            .ConfigureDefaultPolicies();
 
-            services.AddLogging(builder =>
-            {
-                builder.AddXunit(Output);
-            });
+        services.AddHttpDefaultResiliencePolicies();
 
-            services.AddSingleton<IConfiguration>(configurationBuilder.Build());
+        var provider = services.BuildServiceProvider();
 
-            using var server = new ResilienceTypedClientTestServerBuilder(Output).GetSimpleServer();
-            var handler = server.CreateHandler();
+        // simulates registrations for the policies.
+        var registration = provider.GetRequiredService<PolicyBucketConfigurator>();
+        registration.Register();
 
-            var clientBuilder = services
-                .AddResilienceHttpClient<ICustomTypedClientWithOptions, CustomTypedClientWithOptions>()
-                .ConfigureHttpClientOptions<CustomHttpClientOptions>(
-                    optionsSectionName: "TestHttpClient",
-                    configureAction: (op) => op.BaseAddress = server.BaseAddress)
-                .ConfigurePrimaryHandler((sp) => handler)
-                .ConfigureDefaultPolicies();
+        var client = provider.GetRequiredService<ICustomTypedClientWithOptions>();
 
-            services.AddHttpDefaultResiliencePolicies();
+        var result = await client.SendRequestAsync();
 
-            var provider = services.BuildServiceProvider();
+        Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+    }
 
-            // simulates registrations for the policies.
-            var registration = provider.GetRequiredService<PolicyBucketConfigurator>();
-            registration.Register();
+    [Fact]
+    public void Should_Throw_InvalideOptionException_When_More_Than_One_PrimaryHandler_Added()
+    {
+        // Assign
+        var serviceCollection = new ServiceCollection();
 
-            var client = provider.GetRequiredService<ICustomTypedClientWithOptions>();
+        serviceCollection.AddLogging(builder => builder.AddXunit(Output));
 
-            var result = await client.SendRequestAsync();
+        using var server = new ResilienceTypedClientTestServerBuilder(Output).GetSimpleServer();
+        var handler = server.CreateHandler();
 
-            Assert.Equal(HttpStatusCode.OK, result.StatusCode);
-        }
-
-        [Fact]
-        public void Should_Throw_InvalideOptionException_When_More_Than_One_PrimaryHandler_Added()
-        {
-            // Assign
-            var serviceCollection = new ServiceCollection();
-
-            serviceCollection.AddLogging(builder => builder.AddXunit(Output));
-
-            using var server = new ResilienceTypedClientTestServerBuilder(Output).GetSimpleServer();
-            var handler = server.CreateHandler();
-
-            Assert.Throws<InvalidOperationException>(() => serviceCollection
-                .AddResilienceHttpClient<ICustomTypedClient, CustomTypedClient>()
-                .ConfigurePrimaryHandler((sp) => new DefaultHttpClientHandler())
-                .ConfigurePrimaryHandler((sp) => new DefaultHttpClientHandler()));
-        }
+        Assert.Throws<InvalidOperationException>(() => serviceCollection
+            .AddResilienceHttpClient<ICustomTypedClient, CustomTypedClient>()
+            .ConfigurePrimaryHandler((sp) => new DefaultHttpClientHandler())
+            .ConfigurePrimaryHandler((sp) => new DefaultHttpClientHandler()));
     }
 }

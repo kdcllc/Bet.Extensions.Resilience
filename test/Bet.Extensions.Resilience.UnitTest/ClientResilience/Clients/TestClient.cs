@@ -1,12 +1,11 @@
-﻿namespace Bet.Extensions.Resilience.UnitTest.ClientResilience.Clients
-{
-    public class TestClient : ITestClient
-    {
-        public TestClient(HttpClient client)
-        {
-            HttpClient = client;
-        }
+﻿namespace Bet.Extensions.Resilience.UnitTest.ClientResilience.Clients;
 
-        public HttpClient HttpClient { get; }
+public class TestClient : ITestClient
+{
+    public TestClient(HttpClient client)
+    {
+        HttpClient = client;
     }
+
+    public HttpClient HttpClient { get; }
 }

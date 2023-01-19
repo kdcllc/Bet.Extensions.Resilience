@@ -2,15 +2,14 @@
 
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
-namespace Microsoft.Extensions.DependencyInjection
-{
-    public static class UserAgentHandlerServiceCollectionExtensions
-    {
-        public static IHttpClientBuilder AddUserAgentHander(this IHttpClientBuilder builder)
-        {
-            builder.Services.TryAddTransient<UserAgentHandler>();
+namespace Microsoft.Extensions.DependencyInjection;
 
-            return builder.AddHttpMessageHandler(sp => sp.GetRequiredService<UserAgentHandler>());
-        }
+public static class UserAgentHandlerServiceCollectionExtensions
+{
+    public static IHttpClientBuilder AddUserAgentHander(this IHttpClientBuilder builder)
+    {
+        builder.Services.TryAddTransient<UserAgentHandler>();
+
+        return builder.AddHttpMessageHandler(sp => sp.GetRequiredService<UserAgentHandler>());
     }
 }

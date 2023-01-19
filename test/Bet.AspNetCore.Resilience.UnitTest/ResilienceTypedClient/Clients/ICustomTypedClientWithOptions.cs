@@ -1,11 +1,10 @@
-﻿namespace Bet.AspNetCore.Resilience.UnitTest.ResilienceTypedClient.Clients
+﻿namespace Bet.AspNetCore.Resilience.UnitTest.ResilienceTypedClient.Clients;
+
+public interface ICustomTypedClientWithOptions
 {
-    public interface ICustomTypedClientWithOptions
-    {
-        HttpClient HttpClient { get; }
+    HttpClient HttpClient { get; }
 
-        string Id { get; }
+    string Id { get; }
 
-        Task<HttpResponseMessage> SendRequestAsync();
-    }
+    Task<HttpResponseMessage> SendRequestAsync();
 }

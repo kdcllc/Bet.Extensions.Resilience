@@ -1,12 +1,11 @@
-﻿namespace Bet.Extensions.Resilience.Data.SqlClient
+﻿namespace Bet.Extensions.Resilience.Data.SqlClient;
+
+public enum SqlHandledExceptions
 {
-    public enum SqlHandledExceptions
-    {
-        DatabaseNotCurrentlyAvailable = 40613,
-        ErrorProcessingRequest = 40197,
-        ServiceCurrentlyBusy = 40501,
-        NotEnoughResources = 49918,
-        SessionTerminatedLongTransaction = 40549,
-        SessionTerminatedToManyLocks = 40550
-    }
+    DatabaseNotCurrentlyAvailable = 40613,
+    ErrorProcessingRequest = 40197,
+    ServiceCurrentlyBusy = 40501,
+    NotEnoughResources = 49918,
+    SessionTerminatedLongTransaction = 40549,
+    SessionTerminatedToManyLocks = 40550
 }

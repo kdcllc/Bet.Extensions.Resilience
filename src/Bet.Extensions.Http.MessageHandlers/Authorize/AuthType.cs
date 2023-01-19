@@ -1,8 +1,7 @@
-﻿namespace Bet.Extensions.Http.MessageHandlers.Authorize
+﻿namespace Bet.Extensions.Http.MessageHandlers.Authorize;
+
+public enum AuthType
 {
-    public enum AuthType
-    {
-        Basic,
-        Bearer
-    }
+    Basic,
+    Bearer
 }
